@@ -1,0 +1,131 @@
+<div class="row">
+	<div class="col-md-4">
+		<pre>
+&#60;list-group 
+	items="colors" 
+	filterable="true"> 
+&#60;/list-group>	
+</pre>
+		<list-group items="colors" filterable="true"></list-group>
+	</div>
+
+	<div class="col-md-4">
+		<pre>
+&#60;list-group 
+	items="colors" 
+	filterable="{
+		placeholder:'Filter colors...'
+	}"> 
+&#60;/list-group>	
+</pre>
+		<list-group items="colors"
+			filterable="{placeholder:'Filter colors...'}"></list-group>
+	</div>
+
+	<div class="col-md-4">
+		<pre>
+&#60;list-group 
+	items="colors" 
+	filterable="{
+		autoFilter : false
+	}"> 
+&#60;/list-group>	
+</pre>
+		<list-group items="colors" filterable="{
+		autoFilter : false
+	}"></list-group>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-4">
+		<pre>
+&#60;list-group 
+	items="colors" 
+	filterable="{
+		operator : 'eq'
+	}"> 
+&#60;/list-group>	
+</pre>
+		<list-group items="colors" filterable="{
+		operator : 'eq'
+	}"></list-group>
+	</div>
+	<div class="col-md-4">
+		<pre>
+&#60;list-group 
+	items="colors" 
+	filterable="{
+		operator : 'eq',
+		ignoreCase : true
+	}"> 
+&#60;/list-group>	
+</pre>
+		<list-group items="colors"
+			filterable="{
+		operator : 'eq',
+		ignoreCase : true
+	}"></list-group>
+	</div>
+	<div class="col-md-4">
+		<pre>
+&#60;list-group 
+	items="colors" 
+	filterable="{
+		operator : 'neq',
+		ignoreCase : true
+	}"> 
+&#60;/list-group>	
+</pre>
+		<list-group items="colors"
+			filterable="{
+		operator : 'neq',
+		ignoreCase : true
+	}"></list-group>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-4">
+		<pre>
+&#60;list-group 
+	items="colors" 
+	filterable="{
+		operator : 'startswith'
+	}"> 
+&#60;/list-group>	
+</pre>
+		<list-group items="colors"
+			filterable="{
+		operator : 'startswith'
+	}"></list-group>
+	</div>
+
+	<div class="col-md-4">
+		<pre>
+&#60;list-group 
+	items="colors" 
+	filterable="{
+		operator : 'endswith'
+	}"> 
+&#60;/list-group>	
+</pre>
+		<list-group items="colors" filterable="{
+		operator : 'endswith'
+	}"></list-group>
+	</div>
+
+	<div class="col-md-4">
+		<pre>
+&#60;list-group 
+	items="colors" 
+	filterable="{
+		operator : 'contains'
+	}"> 
+&#60;/list-group>	
+</pre>
+		<list-group items="colors" filterable="{
+		operator : 'contains'
+	}"></list-group>
+	</div>
+</div>

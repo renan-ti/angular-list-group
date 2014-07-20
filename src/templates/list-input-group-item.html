@@ -1,0 +1,40 @@
+<div class="input-group list-input-group-item"
+	ng-class="{'input-group-lg' : isLarge(), 'input-group-sm' : isSmall()}">
+
+	<span class="input-group-addon" ng-if="isSelectable()"> <input
+		type="checkbox" ng-model="$$model.selected" />
+	</span> <input type="text" class="form-control" ng-model="$$model.html"
+		ng-if="$$model.editing"> <span class="form-control"
+		ng-bind-html="$$model.html" ng-if="!$$model.editing"></span>
+
+	<div class="input-group-btn"
+		ng-repeat="action in actions track by action.id">
+
+		<button type="button" class="btn btn-default dropdown-toggle"
+			data-toggle="dropdown" ng-if="isDropDown(action)">
+			<span class="glyphicon {{action.icon}}"
+				ng-if="options.action.display.icon"></span> <span
+				ng-bind="action.label" ng-if="options.action.display.label"></span>
+			<span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu dropdown-menu-right" role="menu"
+			ng-if="isDropDown(action) && !isSplit(action)">
+			<li ng-repeat="child in action.actions"><a ng-href
+				ng-click="$click(child.fn)"><span
+					class="glyphicon {{child.icon}}"
+					ng-if="options.action.display.icon"></span> <span
+					ng-bind="child.label"></span></a></li>
+		</ul>
+
+		<button class="btn {{action.class}}"
+			ng-class="{'btn-default' : action.class == null}" type="button"
+			ng-click="$click(action.fn)" ng-if="!isDropDown(action)">
+			<span class="glyphicon {{action.icon}}"
+				ng-if="options.action.display.icon"></span>&nbsp; <span
+				ng-bind="action.label" ng-if="options.action.display.label"></span>
+		</button>
+
+	</div>
+</div>
+
+

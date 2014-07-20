@@ -1,0 +1,4 @@
+.list-input-group-item .input-group-btn:not(:last-child ) .btn {
+	border-radius: 0;
+	border-left: none;
+}

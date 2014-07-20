@@ -1,0 +1,24 @@
+<div class="panel panel-default">
+
+	<div class="panel-body">
+		<div class="input-group" ng-if="!filter.autoFilter">
+			<input type="text" class="form-control"
+				placeholder="{{filter.placeholder}}" ng-model="filter.text">
+			<div class="input-group-btn">
+				<button class="btn btn-default" ng-click="$filter()"
+					ng-disabled="!filter">
+					<i class="glyphicon glyphicon-search"></i>
+				</button>
+			</div>
+		</div>
+
+		<input type="text" class="form-control"
+			placeholder="{{filter.placeholder}}" ng-model="filter.text"
+			ng-if="filter.autoFilter">
+
+	</div>
+
+	<selectable-list-group-template ng-if="isSelectable()"></selectable-list-group-template>
+	<list-group-template ng-if="!isSelectable()"></list-group-template>
+
+</div>

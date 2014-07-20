@@ -1,0 +1,388 @@
+<div class="container">
+
+	<div class="row">
+		<h1>Built in actions</h1>
+		<!-- 			<h4> -->
+		<!-- 				<code>list-input-group-item</code> -->
+		<!-- 				comes with two built-in actions, -->
+		<!-- 				<code>edit</code> -->
+		<!-- 				and -->
+		<!-- 				<code>delete</code> -->
+		<!-- 				actions. -->
+		<!-- 			</h4> -->
+	</div>
+
+	<div class="row">
+		<div class="col-sm-4">
+			<p>
+				Use the
+				<code>editable</code>
+				attribute to add an edit action button.
+			</p>
+		</div>
+		<div class="col-sm-4">
+			<pre>
+&#60;list-input-group-item ng-model="item" 
+	editable>
+&#60;/list-input-group-item>
+				</pre>
+		</div>
+		<div class="col-sm-4">
+			<list-input-group-item ng-model="item" editable></list-input-group-item>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-4">
+			<p>
+				Use the
+				<code>deletable</code>
+				attribute to add a delete action button.
+			</p>
+		</div>
+		<div class="col-sm-4">
+			<pre>
+&#60;list-input-group-item ng-model="item" 
+	deletable >
+&#60;/list-input-group-item>
+				</pre>
+		</div>
+		<div class="col-sm-4">
+			<list-input-group-item ng-model="item" deletable></list-input-group-item>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-4">
+			<p>
+				Use
+				<code>editable</code>
+				and
+				<code>deletable</code>
+				attributes to add an edit and a delete action buttons.
+			</p>
+		</div>
+		<div class="col-sm-4">
+			<pre>
+&#60;list-input-group-item ng-model="item"
+	editable
+	deletable >
+&#60;/list-input-group-item>
+				</pre>
+		</div>
+		<div class="col-sm-4">
+			<list-input-group-item ng-model="item" editable deletable></list-input-group-item>
+		</div>
+	</div>
+
+	<!-- 		<div class="row"> -->
+	<!-- 			<h4>Built-in actions binding</h4> -->
+	<!-- 		</div> -->
+
+	<div class="row">
+		<div class="col-sm-4">
+			<p>
+				Use the
+				<code>edit-fn</code>
+				attribute to handle the edit action.
+			</p>
+			<p>
+				Declare an
+				<code>'item'</code>
+				named argument to receive the
+				<code>ng-model</code>
+				value.
+			</p>
+		</div>
+		<div class="col-sm-4">
+			<pre>
+&#60;list-input-group-item ng-model="item" 
+	editable
+	edit-fn="handleEditAction(item)">
+&#60;/list-input-group-item>
+				</pre>
+		</div>
+		<div class="col-sm-4">
+			<list-input-group-item ng-model="item" editable
+				edit-fn="handleEditAction(item)"></list-input-group-item>
+			<p ng-bind="handleEditActionOutcome"></p>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col-sm-4">
+			<p>
+				Use the
+				<code>delete-fn</code>
+				attribute to handle the delete action.
+			</p>
+			<p>
+				Declare an
+				<code>'item'</code>
+				named argument to receive the
+				<code>ng-model</code>
+				value.
+			</p>
+		</div>
+		<div class="col-sm-4">
+			<pre>
+&#60;list-input-group-item ng-model="item" 
+	deletable
+	delete-fn="handleDeleteAction(item)">
+&#60;/list-input-group-item>
+				</pre>
+		</div>
+		<div class="col-sm-4">
+			<list-input-group-item ng-model="item" deletable
+				delete-fn="handleDeleteAction(item)"></list-input-group-item>
+			<p ng-bind="handleDeleteActionOutcome"></p>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-4">
+			<p>
+				Use the
+				<code>inline</code>
+				attribute to enable inline edition of the item
+			</p>
+		</div>
+		<div class="col-sm-4">
+			<pre>
+&#60;list-input-group-item ng-model="oItem.name"
+	editable inline>
+&#60;/list-input-group-item>				
+</pre>
+		</div>
+		<div class="col-sm-4">
+			<list-input-group-item ng-model="oItem.name" editable inline></list-input-group-item>
+			<p>model = {{oItem}}</p>
+		</div>
+	</div>
+
+	<div class="row">
+		<h1>Custom actions</h1>
+		<!-- 			<h4> -->
+		<!-- 				<code>list-input-group-item</code> -->
+		<!-- 				let you declare custom actions -->
+		<!-- 			</h4> -->
+	</div>
+
+	<div class="row">
+		<div class="col-sm-4">Add custom actions</div>
+		<div class="col-sm-4">
+			<pre>
+&#60;list-input-group-item ng-model="item" 
+	actions='[
+		{"id":"play",
+			"icon":"glyphicon-play", 
+			"fn":"play(item)"},
+		{"id":"pause",
+			"icon":"glyphicon-pause", 
+			"fn":"pause(item)"},
+		{"id":"stop",
+			"icon":"glyphicon-stop", 
+			"fn":"stop(item)"}]'>
+&#60;/list-input-group-item>
+</pre>
+		</div>
+		<div class="col-sm-4">
+			<list-input-group-item ng-model="item"
+				actions='[
+					{"id":"play","icon":"glyphicon-play", "fn":"play(item)"},
+					{"id":"pause","icon":"glyphicon-pause", "fn":"pause(item)"},
+					{"id":"stop","icon":"glyphicon-stop", "fn":"stop(item)"}]'>
+			</list-input-group-item>
+			<p ng-bind="customActionsMsg"></p>
+		</div>
+	</div>
+
+	<div class="row">
+		<h1>Button dropdowns actions</h1>
+		<!-- 			<h4> -->
+		<!-- 				<code>list-input-group-item</code> -->
+		<!-- 				let you declare dropdown actions -->
+		<!-- 			</h4> -->
+	</div>
+
+	<div class="row">
+		<div class="col-sm-4">Add button dropdowns</div>
+		<div class="col-sm-4">
+			<pre>
+&#60;list-input-group-item ng-model="item"
+actions='[{
+	"icon" : "glyphicon-floppy-disk",
+	"actions": [
+		{"id":"save",
+			"icon":"glyphicon-floppy-save",
+			"label" : "Save", 
+			"fn":"save(item)"},
+		{"id":"remove",
+			"icon":"glyphicon-floppy-remove",
+			"label" : "Remove",
+			"fn":"remove(item)"}	
+	]
+}]'>
+&#60;/list-input-group-item>
+</pre>
+		</div>
+		<div class="col-sm-4">
+			<list-input-group-item ng-model="item"
+				actions='[{
+							"icon" : "glyphicon-floppy-disk",
+							"actions": [
+								{"id":"save","icon":"glyphicon-floppy-save", "label" : "Save", "fn":"save(item)"},
+								{"id":"remove","icon":"glyphicon-floppy-remove", "label" : "Remove", "fn":"remove(item)"}	
+							]
+						}]'>
+			</list-input-group-item>
+			<p ng-bind="dropdownActionMsg"></p>
+		</div>
+	</div>
+
+	<div class="row">
+		<h1>Sizing</h1>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-4">
+			<p>
+				Use the
+				<code>size</code>
+				attribute to set one of the following sizes,
+				<code>large</code>
+				or
+				<code>small</code>
+				.
+			</p>
+			<p>
+				If no
+				<code>size</code>
+				attribute is specified or with a value other than the ones
+				authorized the item is sized to its default size wich can be
+				considered as medium
+			</p>
+		</div>
+		<div class="col-sm-4">
+			<pre>
+&#60;list-input-group-item ng-model="item" 
+	size="large" editable>&#60;/list-input-group-item>
+&#60;list-input-group-item ng-model="item" 
+	editable>&#60;/list-input-group-item>
+&#60;list-input-group-item ng-model="item" 
+	size="small" editable>&#60;/list-input-group-item>
+</pre>
+		</div>
+		<div class="col-sm-4">
+			<list-input-group-item ng-model="item" size="large" editable></list-input-group-item>
+			<br />
+			<list-input-group-item ng-model="item" editable></list-input-group-item>
+			<br />
+			<list-input-group-item ng-model="item" size="small" editable></list-input-group-item>
+		</div>
+	</div>
+
+	<div class="row">
+		<h1>Selection</h1>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-4">
+			<p>
+				Use the
+				<code>selectable</code>
+				attribute to bind a model property that tracks the selection of the
+				item
+			</p>
+		</div>
+		<div class="col-sm-4">
+			<pre>
+&#60;list-input-group-item ng-model="item"
+	selectable="selected"  
+	editable>
+&#60;/list-input-group-item>
+				</pre>
+		</div>
+		<div class="col-sm-4">
+			<list-input-group-item ng-model="item" selectable="model.selected"
+				editable></list-input-group-item>
+			<p>
+				<span>selected = </span><span ng-bind="model.selected"></span>
+			</p>
+		</div>
+	</div>
+
+	<div class="row">
+		<h1>Templating</h1>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-4">
+			<p>
+				Use the
+				<code>template</code>
+				attribute to customize item content
+			</p>
+			<p>
+				In your template use
+				<code>item</code>
+				variable name as the reference to
+				<code>ng-model</code>
+				attribute value.
+			</p>
+		</div>
+		<div class="col-sm-4">
+			<pre>
+&#60;list-input-group-item ng-model="edgarDegas" 
+	template="template"
+	size="large" editable>
+&#60;/list-input-group-item>
+				</pre>
+		</div>
+		<div class="col-sm-4">
+			<list-input-group-item ng-model="edgarDegas" template="template"
+				size="large" editable></list-input-group-item>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-4">
+			<p>
+				Use the
+				<code>template-url</code>
+				attribute to externalize the content of the template
+			</p>
+			<p>
+				In your template use
+				<code>item</code>
+				variable name as the reference to
+				<code>ng-model</code>
+				attribute value.
+			</p>
+			<p>
+				If both
+				<code>template</code>
+				and
+				<code>template-url</code>
+				attributes are specified, only
+				<code>template</code>
+				attribute will be used
+			</p>
+		</div>
+		<div class="col-sm-4">
+			<pre>
+&#60;list-input-group-item ng-model="edgarDegas"
+	template-url="'partials/list-input-group-item.tpl.html'"
+	size="large" editable>
+&#60;/list-input-group-item>
+				</pre>
+		</div>
+		<div class="col-sm-4">
+			<list-input-group-item ng-model="edgarDegas"
+				template-url="'partials/list-input-group-item.tpl.html'"
+				size="large" editable></list-input-group-item>
+		</div>
+	</div>
+
+</div>
