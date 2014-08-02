@@ -13,7 +13,7 @@ demo
 
 			    $scope.selection02;
 
-			    $scope.selection03 = 'hello';
+			    $scope.selection03;
 
 			    $scope.colors = [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet' ];
 
@@ -79,15 +79,12 @@ demo
 					'url' : 'http://www.alfredsisley.org/La-Grande-Rue-Argenteuil.jpg'
 				    } ];
 
-			    $scope.paintingTemplate = '<div class="row"><div class="col-md-4"><a class="thumbnail"><img src="{{item.url}}" height="100%"></a></div><div class="col-md-8"><h4 class="list-group-item-heading">{{item.title}}</h4> <p class="list-group-item-text">{{item.paintedBy}}</p><p class="list-group-item-text">{{item.year}}</p></div></div>';
+			    $scope.paintingTemplate = '<div class="row"><div class="col-md-4"><div class="thumbnail"><img ng-src="{{item.url}}" height="100%"></img></div></div><div class="col-md-8"><h4 class="list-group-item-heading">{{item.title}}</h4> <p class="list-group-item-text">{{item.paintedBy}}</p><p class="list-group-item-text">{{item.year}}</p></div></div>';
 
 			    $scope.getPaintingTemplate = function() {
 				return $scope.paintingTemplate;
 			    }
 
-			    /**
-			     * 
-			     */
 			    $scope.selectionChangeHandler01 = function(items) {
 				$scope.selection01 = items;
 			    };
@@ -96,6 +93,28 @@ demo
 			    };
 			    $scope.selectionChangeHandler03 = function(items) {
 				$scope.selection03 = JSON.stringify(items);
+			    }
+			    /**
+			     * 
+			     */
+			    $scope.resolveContextualClass = function(item) {
+				item = item.toLowerCase();
+				var mapping = {
+				    'green' : 'success',
+				    'blue' : 'info',
+				    'yellow' : 'warning',
+				    'red' : 'danger'
+				}
+				var clazz = '';
+				if (mapping[item]) {
+				    clazz = mapping[item];
+				}
+				return clazz;
+			    }
+
+			    $scope.isDisabled = function(item) {
+				item = item.toLowerCase();
+				return ('green' == item) || ('blue' == item);
 			    }
 
 			} ])

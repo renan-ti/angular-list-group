@@ -122,9 +122,12 @@
     '$parse',
     '$compile',
     '$interpolate',
+    '$q',
+    '$http',
+    '$templateCache',
     'selectableListGroupTpl',
     'listGroupTpl',
-    function ($parse, $compile, $interpolate, selectableListGroupTpl, listGroupTpl) {
+    function ($parse, $compile, $interpolate, $q, $http, $templateCache, selectableListGroupTpl, listGroupTpl) {
       var ListGroupCtrl = [
           '$scope',
           '$parse',
@@ -140,15 +143,33 @@
             };
             // displayed items list
             $scope.$items;
+            $scope.evaluateContextualClass = function (item) {
+              var fn = $parse($scope.contextualClass);
+              var clazz = fn($scope.$parent, { item: item });
+              return resolveContextualClass(clazz);
+            };
+            /**
+					 * 
+					 */
+            $scope.isDisabled = function (item) {
+              var disabled = $scope.disabled === 'true';
+              if (!disabled) {
+                var fn = $parse($scope.disabled);
+                disabled = fn($scope.$parent, { item: item });
+              }
+              return disabled;
+            };
             $scope.selectItem = function (item) {
-              var idx = -1;
-              if ((idx = $scope.isSelected(item)) > -1) {
-                $scope.selectedItems.splice(idx, 1);
-              } else {
-                if ($scope.selectedItems.length > 0 && !$scope.multiSelection == true) {
-                  $scope.selectedItems.length = 0;
+              if (!$scope.isDisabled(item)) {
+                var idx = -1;
+                if ((idx = $scope.isSelected(item)) > -1) {
+                  $scope.selectedItems.splice(idx, 1);
+                } else {
+                  if ($scope.selectedItems.length > 0 && !$scope.multiSelection == true) {
+                    $scope.selectedItems.length = 0;
+                  }
+                  $scope.selectedItems.push(item);
                 }
-                $scope.selectedItems.push(item);
               }
             };
             $scope.isSelected = function (item) {
@@ -161,9 +182,6 @@
               }
               return idx;
             };
-            $scope.clearFilter = function () {
-              $scope.filter.text = '';
-            };
             $scope.$filter = function () {
               var comparator;
               if (angular.isDefined($scope.filter.operator)) {
@@ -172,34 +190,7 @@
               }
               $scope.$items = $filter('filter')($scope.items, $scope.filter.text, comparator);
             };
-            /**
-				 * 
-				 */
-            $scope.resolveInnerHTML = function (item) {
-              var html;
-              if (angular.isString(item)) {
-                html = item;
-              } else if (angular.isDefined($scope.template)) {
-                var tpl = $scope.$parent.$eval($scope.template);
-                var ctx = $scope.$new();
-                ctx.item = item;
-                html = $interpolate(tpl)(ctx);
-              } else {
-                html = angular.toJson(item);
-              }
-              return html;
-            };
-            // $http.get(t, {
-            // cache: $templateCache
-            // })
-            // .success(function(data){
-            // $templateCache.put(uKey, data);
-            // p.resolve();
-            // })
-            // .error(function(err){
-            // p.reject("Could not load template: " + t);
-            // });
-            var unbindselectionChangeWatcher = $scope.$watch('selectedItems', function (newVal, oldVal) {
+            var unbindSelectionChangeWatcher = $scope.$watch('selectedItems', function (newVal, oldVal) {
                 var fn = $parse($scope.selectionChange);
                 var args = { item: newVal[0] };
                 if ($scope.multiSelection == true) {
@@ -213,7 +204,7 @@
                 }
               });
             $scope.$on('$destroy', function () {
-              unbindselectionChangeWatcher();
+              unbindSelectionChangeWatcher();
               unbindFilterWatcher();
             });
           }
@@ -225,23 +216,87 @@
         }
         return selectable;
       };
-      var resolveTemplateName = function (selectable) {
-        var tpl = listGroupTpl;
-        if (isSelectable(selectable)) {
-          tpl = selectableListGroupTpl;
+      var isFilterable = function (value) {
+        var filterable = false;
+        if (angular.isDefined(value)) {
+          filterable = true;
         }
-        return tpl;
+        return filterable;
+      };
+      /**
+			     * 
+			     */
+      var loadTemplate = function (tpl) {
+        var deferred = $q.defer();
+        $http.get(tpl, { cache: $templateCache }).success(function (data) {
+          $templateCache.put(tpl, data);
+          deferred.resolve(data);
+        }).error(function (err) {
+          deferred.reject('Could not load template: ' + tpl);
+        });
+        return deferred.promise;
+      };
+      var resolveContextualClass = function (value) {
+        var clazz = '';
+        var acceptedValues = [
+            'success',
+            'info',
+            'warning',
+            'danger'
+          ];
+        if (acceptedValues.indexOf(value) > -1) {
+          clazz = 'list-group-item-' + value;
+        } else if (angular.isDefined(value)) {
+          clazz = '{{evaluateContextualClass(item)}}';
+        }
+        return clazz;
+      };
+      // var resolveDisabledClass = function(value) {
+      // var clazz = '';
+      // if (value === 'true') {
+      // clazz = 'disabled';
+      // }
+      // return clazz;
+      // }
+      var resolveInnerHTML = function (scope, attrs, selectable) {
+        var resolved = false;
+        var deferred = $q.defer();
+        var promise = deferred.promise;
+        var html = '';
+        if (selectable) {
+          html += '<a  class="list-group-item ' + resolveContextualClass(attrs.contextualClass) + '" ng-repeat="item in items" ng-href  ng-class="{active : (isSelected(item) != -1), disabled : isDisabled(item) }" ng-click="selectItem(item)">';
+        } else {
+          html += '<li class="list-group-item ' + resolveContextualClass(attrs['contextualClass']) + '" ng-repeat="item in $items">';
+        }
+        if (angular.isDefined(attrs.template)) {
+          var tpl = scope.$parent.$eval(attrs.template);
+          html += tpl;
+          resolved = true;
+        } else if (angular.isDefined(attrs.templateUrl)) {
+          loadTemplate(scope.$parent.$eval(attrs.templateUrl)).then(function (tpl) {
+            html += tpl;
+            html += selectable ? '</a>' : '</li>';
+            deferred.resolve(html);
+          });
+        } else {
+          html += '<span ng-bind="item"></span>';
+          promise = deferred.promise;
+          resolved = true;
+        }
+        if (resolved) {
+          html += selectable ? '</a>' : '</li>';
+          deferred.resolve(html);
+        }
+        return promise;
       };
       return {
         restrict: 'EA',
         terminal: true,
         replace: true,
-        templateUrl: function (elem, attrs) {
-          var tpl;
-          if (angular.isDefined(attrs.filterable) && attrs.filterable != 'false') {
-            tpl = 'panel-list-group.html';
-          } else {
-            tpl = resolveTemplateName(attrs.selectable);
+        template: function (elem, attrs) {
+          var tpl = '<div class="list-group"></div>';
+          if (isFilterable(attrs.filterable)) {
+            tpl = $templateCache.get('panel-list-group.html');
           }
           return tpl;
         },
@@ -251,14 +306,19 @@
           selectable: '@',
           filterable: '@',
           selectionChange: '@',
-          template: '@'
+          contextualClass: '@',
+          disabled: '@'
         },
         link: function (scope, element, attrs) {
           scope.$items = scope.items;
           scope.multiSelection = attrs['selectable'] == 'multiple';
-          scope.isSelectable = function () {
-            return isSelectable(attrs['selectable']);
-          };
+          var selectable = isSelectable(attrs['selectable']);
+          var promise = resolveInnerHTML(scope, attrs, selectable);
+          promise.then(function (html) {
+            var cellElement = angular.element(html);
+            element.append(cellElement);
+            $compile(element)(scope);
+          });
           var filterable = scope.$eval(attrs['filterable']);
           if (angular.isObject(filterable)) {
             scope.filterable = angular.extend(scope.filter, filterable);
@@ -551,10 +611,8 @@
   angular.module('angularListGroup').run([
     '$templateCache',
     function ($templateCache) {
-      $templateCache.put('list-group.html', '<ul class="list-group"><li class="list-group-item" ng-repeat="item in $items"><span ng-bind-html="resolveInnerHTML(item)"></span></li></ul>');
       $templateCache.put('list-input-group-item.html', '<div class="input-group list-input-group-item" ng-class="{\'input-group-lg\' : isLarge(), \'input-group-sm\' : isSmall()}"><span class="input-group-addon" ng-if="isSelectable()"><input type="checkbox" ng-model="$$model.selected"></span><input type="text" class="form-control" ng-model="$$model.html" ng-if="$$model.editing"><span class="form-control" ng-bind-html="$$model.html" ng-if="!$$model.editing"></span><div class="input-group-btn" ng-repeat="action in actions track by action.id"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-if="isDropDown(action)"><span class="glyphicon {{action.icon}}" ng-if="options.action.display.icon"></span> <span ng-bind="action.label" ng-if="options.action.display.label"></span> <span class="caret"></span></button><ul class="dropdown-menu dropdown-menu-right" role="menu" ng-if="isDropDown(action) && !isSplit(action)"><li ng-repeat="child in action.actions"><a ng-href="" ng-click="$click(child.fn)"><span class="glyphicon {{child.icon}}" ng-if="options.action.display.icon"></span> <span ng-bind="child.label"></span></a></li></ul><button class="btn {{action.class}}" ng-class="{\'btn-default\' : action.class == null}" type="button" ng-click="$click(action.fn)" ng-if="!isDropDown(action)"><span class="glyphicon {{action.icon}}" ng-if="options.action.display.icon"></span>&nbsp; <span ng-bind="action.label" ng-if="options.action.display.label"></span></button></div></div>');
-      $templateCache.put('panel-list-group.html', '<div class="panel panel-default"><div class="panel-body"><div class="input-group" ng-if="!filter.autoFilter"><input type="text" class="form-control" placeholder="{{filter.placeholder}}" ng-model="filter.text"><div class="input-group-btn"><button class="btn btn-default" ng-click="$filter()" ng-disabled="!filter"><i class="glyphicon glyphicon-search"></i></button></div></div><input type="text" class="form-control" placeholder="{{filter.placeholder}}" ng-model="filter.text" ng-if="filter.autoFilter"></div><selectable-list-group-template ng-if="isSelectable()"></selectable-list-group-template><list-group-template ng-if="!isSelectable()"></list-group-template></div>');
-      $templateCache.put('selectable-list-group.html', '<div class="list-group"><a ng-repeat="item in items" ng-href="" class="list-group-item" ng-class="{\'active\' : (isSelected(item) != -1)}" ng-click="selectItem(item)"><span ng-bind="item"></span></a></div>');
+      $templateCache.put('panel-list-group.html', '<div class="panel panel-default"><div class="panel-body"><div class="input-group" ng-if="!filter.autoFilter"><input type="text" class="form-control" placeholder="{{filter.placeholder}}" ng-model="filter.text"><div class="input-group-btn"><button class="btn btn-default" ng-click="$filter()" ng-disabled="!filter"><i class="glyphicon glyphicon-search"></i></button></div></div><input type="text" class="form-control" placeholder="{{filter.placeholder}}" ng-model="filter.text" ng-if="filter.autoFilter"></div><div transclude=""></div></div>');
     }
   ]);
 }(window, document));

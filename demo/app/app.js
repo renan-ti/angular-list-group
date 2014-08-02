@@ -2,15 +2,19 @@ var demo = angular
 	.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' ])
 	.config([ '$routeProvider', '$sceDelegateProvider', function($routeProvider, $sceDelegateProvider) {
 
-	    $routeProvider.when('/', {
-		templateUrl : 'partials/index.html'
-	    }).when('/item', {
+	    $routeProvider.when('/item', {
 		templateUrl : 'partials/page-list-input-group-item.html'
 	    }).when('/listgroup/basic', {
 		templateUrl : 'partials/listgroup/basic-usage.html',
 		controller : 'ListGroupCtrl'
+	    }).when('/listgroup/contextualclasses', {
+		templateUrl : 'partials/listgroup/contextual-classes.html',
+		controller : 'ListGroupCtrl'
 	    }).when('/listgroup/selectable', {
 		templateUrl : 'partials/listgroup/selectable.html',
+		controller : 'ListGroupCtrl'
+	    }).when('/listgroup/disabled', {
+		templateUrl : 'partials/listgroup/disabled.html',
 		controller : 'ListGroupCtrl'
 	    }).when('/listgroup/filtering', {
 		templateUrl : 'partials/listgroup/filtering.html',
@@ -19,12 +23,12 @@ var demo = angular
 		templateUrl : 'partials/listgroup/templates.html',
 		controller : 'ListGroupCtrl'
 	    }).otherwise({
-		redirectTo : '/'
+		redirectTo : '/listgroup/basic'
 	    });
 
 	} ])
 	.run([ '$sce', function($sce) {
-	    //$sce.trustAsUrl('partials/listgroup/templates.js');
+	    // $sce.trustAsUrl('partials/listgroup/templates.js');
 	} ])
 	.controller(
 		'DemoCtrl',
@@ -39,8 +43,14 @@ var demo = angular
 				    'title' : 'Basic Usage',
 				    'path' : '/listgroup/basic'
 				}, {
+				    'title' : 'Contextual classes',
+				    'path' : '/listgroup/contextualclasses'
+				}, {
 				    'title' : 'Selectable',
 				    'path' : '/listgroup/selectable'
+				}, {
+				    'title' : 'Disabled items',
+				    'path' : '/listgroup/disabled'
 				}, {
 				    'title' : 'Filtering',
 				    'path' : '/listgroup/filtering'
