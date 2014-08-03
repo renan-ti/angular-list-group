@@ -101,7 +101,7 @@ angularListGroupDirectives
 					$scope.evaluateContextualClass = function(item) {
 					    var fn = $parse($scope.contextualClass);
 					    var clazz = fn($scope.$parent, {
-						item : item
+						$item : item
 					    });
 					    return resolveContextualClass(clazz);
 					}

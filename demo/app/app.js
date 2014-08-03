@@ -22,6 +22,9 @@ var demo = angular
 	    }).when('/listgroup/templates', {
 		templateUrl : 'partials/listgroup/templates.html',
 		controller : 'ListGroupCtrl'
+	    }).when('/listgroupeditor/inline', {
+		templateUrl : 'partials/listgroupeditor/inline.html',
+		controller : 'ListGroupEditorCtrl'
 	    }).otherwise({
 		redirectTo : '/listgroup/basic'
 	    });
@@ -58,6 +61,12 @@ var demo = angular
 				    'title' : 'Custom templates',
 				    'path' : '/listgroup/templates'
 				} ]
+			    }, {
+				'title' : 'List Group Editor',
+				'items' : [ {
+				    'title' : 'Inline',
+				    'path' : '/listgroupeditor/inline'
+				} ]
 			    } ];
 
 			    $scope.selectedMenuItem;
@@ -68,61 +77,5 @@ var demo = angular
 			    }
 
 			    $scope.item = "Gustave Courbet";
-
-			    $scope.oItem = {
-				"name" : "Gustave Courbet"
-			    };
-
-			    $scope.edgarDegas = {
-				"firstname" : "Edgar",
-				"lastname" : "Degas",
-				"thumbnail" : "http://thehumaninloved.files.wordpress.com/2013/12/paintings-by-hilaire-germain-edgar-degas-7.jpg"
-			    };
-
-				    $scope.items = [ {
-					"name" : "Edgar Degas"
-				    }, {
-					"name" : "Henri de Toulouse Lautrec"
-				    }, {
-					"name" : "Alfred Sisley"
-				    } ],
-
-				    $scope.handleEditAction = function(item) {
-					$scope.handleEditActionOutcome = 'Edit item => ' + JSON.stringify(item);
-				    },
-
-				    $scope.handleDeleteAction = function(item) {
-					$scope.handleDeleteActionOutcome = 'Delete item => ' + JSON.stringify(item);
-				    },
-
-				    $scope.play = function(item) {
-					$scope.customActionsMsg = 'Play => ' + JSON.stringify(item);
-				    },
-
-				    $scope.pause = function(item) {
-					$scope.customActionsMsg = 'Pause => ' + JSON.stringify(item);
-				    },
-
-				    $scope.stop = function(item) {
-					$scope.customActionsMsg = 'Stop => ' + JSON.stringify(item);
-				    },
-
-				    $scope.save = function(item) {
-					$scope.dropdownActionMsg = 'Save => ' + JSON.stringify(item);
-				    },
-
-				    $scope.remove = function(item) {
-					$scope.dropdownActionMsg = 'Remove => ' + JSON.stringify(item);
-				    },
-
-				    $scope.template = '<img src="{{item.thumbnail}}" style="width:24px;height:24px;" > <span style="color:blue;">{{item.firstname}}</span> <span style="text-transform:uppercase;color:green;">{{item.lastname}}</span>'
-
-			    $scope.model = {
-				selected : false
-			    },
-
-			    $scope.getLabel = function(item) {
-				return item.name;
-			    }
 
 			} ]);

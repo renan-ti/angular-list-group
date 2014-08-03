@@ -1,4 +1,50 @@
-.list-input-group-item .input-group-btn:not(:last-child ) .btn {
-	border-radius: 0;
-	border-left: none;
+.list-group-editor>.list-input-group-item>.form-control {
+	border-radius: 0px !important;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+}
+
+.list-group-editor>.list-input-group-item:last-child>.form-control {
+	border-bottom-left-radius: 4px !important;
+}
+
+.list-group-editor>.list-input-group-item:first-child  {
+	background-color: red;
+}
+
+.list-group-editor>.list-input-group-item>.input-group-btn {
+	border-style: solid;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	border-color: #ccc;
+}
+
+.list-group-editor>.list-input-group-item>.input-group-btn:hover {
+	border-style: solid;
+	border-width: 1px 1px 1px 0px;
+	border-color: #ccc;
+	border-bottom-color: #E6E6E6;
+}
+
+.list-group-editor>.list-input-group-item>.input-group-btn:last-child {
+	border-style: solid;
+	border-top-width: 1px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	border-color: #ccc;
+}
+
+.list-group-editor>.list-input-group-item>.input-group-btn:last-child:hover {
+	border-style: solid;
+	border-width: 1px 0px 1px 0px;
+	border-color: #ccc;
+	border-bottom-color: #E6E6E6;
+}
+
+.list-group-editor>.list-input-group-item>.input-group-btn>.btn {
+	border-radius: 0 !important;
+	border: none;
 }
