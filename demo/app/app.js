@@ -1,6 +1,5 @@
-var demo = angular
-	.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' ])
-	.config([ '$routeProvider', '$sceDelegateProvider', function($routeProvider, $sceDelegateProvider) {
+var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' ]).config(
+	[ '$routeProvider', '$sceDelegateProvider', function($routeProvider, $sceDelegateProvider) {
 
 	    $routeProvider.when('/item', {
 		templateUrl : 'partials/page-list-input-group-item.html'
@@ -22,60 +21,61 @@ var demo = angular
 	    }).when('/listgroup/templates', {
 		templateUrl : 'partials/listgroup/templates.html',
 		controller : 'ListGroupCtrl'
-	    }).when('/listgroupeditor/inline', {
-		templateUrl : 'partials/listgroupeditor/inline.html',
+	    }).when('/listgroupeditor/actions/builtin', {
+		templateUrl : 'partials/listgroupeditor/builtin-actions.html',
 		controller : 'ListGroupEditorCtrl'
-	    }).otherwise({
+	    }).when('/listgroupeditor/actions/custom', {
+		templateUrl : 'partials/listgroupeditor/custom-actions.html',
+		controller : 'ListGroupEditorCtrl'
+	    })
+	    .otherwise({
 		redirectTo : '/listgroup/basic'
 	    });
 
-	} ])
-	.run([ '$sce', function($sce) {
-	    // $sce.trustAsUrl('partials/listgroup/templates.js');
-	} ])
-	.controller(
-		'DemoCtrl',
-		[
-			'$scope',
-			'$location',
-			function($scope, $location) {
+	} ]).run([ '$sce', function($sce) {
+    // $sce.trustAsUrl('partials/listgroup/templates.js');
+} ]).controller('DemoCtrl', [ '$scope', '$location', function($scope, $location) {
 
-			    $scope.menus = [ {
-				'title' : 'List Group',
-				'items' : [ {
-				    'title' : 'Basic Usage',
-				    'path' : '/listgroup/basic'
-				}, {
-				    'title' : 'Contextual classes',
-				    'path' : '/listgroup/contextualclasses'
-				}, {
-				    'title' : 'Selectable',
-				    'path' : '/listgroup/selectable'
-				}, {
-				    'title' : 'Disabled items',
-				    'path' : '/listgroup/disabled'
-				}, {
-				    'title' : 'Filtering',
-				    'path' : '/listgroup/filtering'
-				}, {
-				    'title' : 'Custom templates',
-				    'path' : '/listgroup/templates'
-				} ]
-			    }, {
-				'title' : 'List Group Editor',
-				'items' : [ {
-				    'title' : 'Inline',
-				    'path' : '/listgroupeditor/inline'
-				} ]
-			    } ];
+    $scope.menus = [ {
+	'title' : 'List Group',
+	'items' : [ {
+	    'title' : 'Basic Usage',
+	    'path' : '/listgroup/basic'
+	}, {
+	    'title' : 'Contextual classes',
+	    'path' : '/listgroup/contextualclasses'
+	}, {
+	    'title' : 'Selectable',
+	    'path' : '/listgroup/selectable'
+	}, {
+	    'title' : 'Disabled items',
+	    'path' : '/listgroup/disabled'
+	}, {
+	    'title' : 'Filtering',
+	    'path' : '/listgroup/filtering'
+	}, {
+	    'title' : 'Custom templates',
+	    'path' : '/listgroup/templates'
+	} ]
+    }, {
+	'title' : 'List Group Editor',
+	'items' : [ {
+	    'title' : 'Built-in actions',
+	    'path' : '/listgroupeditor/actions/builtin'
+	}, {
+	    'title' : 'Custom actions',
+	    'path' : '/listgroupeditor/actions/custom'
+	
+	} ]
+    } ];
 
-			    $scope.selectedMenuItem;
+    $scope.selectedMenuItem;
 
-			    $scope.selectMenuItem = function(item) {
-				$scope.selectedMenuItem = item;
-				$location.path(item.path).replace();
-			    }
+    $scope.selectMenuItem = function(item) {
+	$scope.selectedMenuItem = item;
+	$location.path(item.path).replace();
+    }
 
-			    $scope.item = "Gustave Courbet";
+    $scope.item = "Gustave Courbet";
 
-			} ]);
+} ]);

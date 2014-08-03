@@ -1,9 +1,7 @@
 <div class="panel panel-default list-group-editor">
-	<div class="panel-heading" >title</div>
-	<div class="panel-body">
-		test
-	</div>
-	
+	<div class="panel-heading" ng-if="title" ng-bind="title"></div>
+	<div class="panel-body" ng-if="body"></div>
+
 	<div transclude></div>
 
 </div>

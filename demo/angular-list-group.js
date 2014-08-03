@@ -115,19 +115,42 @@
           function ($scope, $filter, $log) {
             $scope.$$delete = function ($item) {
               $log.debug('delete item => ' + angular.toJson($item));
-              var p = $scope.deletable({ $item: $item });
+              if (angular.isDefined($scope.onDelete)) {
+                var p = $scope.onDelete({ $item: $item });
+                if (p && angular.isFunction(p.then)) {
+                  p.then(function (data) {
+                    $scope.items = $filter('filter')($scope.items, function (item) {
+                      return $item !== item;
+                    });
+                  });
+                } else {
+                  throw new Error('Delete callback must return a Promise');
+                }
+              }
+            };
+            $scope.$$edit = function ($item) {
+              $log.debug('edit item => ' + angular.toJson($item));
+              if (angular.isDefined($scope.onEdit)) {
+                var p = $scope.onEdit({ $item: $item });
+              }
               if (p && angular.isFunction(p.then)) {
                 p.then(function (data) {
-                  $scope.items = $filter('filter')($scope.items, function (item) {
-                    return $item !== item;
-                  });
                 });
               } else {
                 throw new Error('Delete callback must return a Promise');
               }
             };
+            $scope.$$invoke = function (fn, args) {
+              fn($scope.$parent, args);
+            };
             $scope.$$isDeletable = function () {
               return angular.isDefined($scope.deletable);
+            };
+            $scope.$$isEditable = function () {
+              return angular.isDefined($scope.editable);
+            };
+            $scope.$$hasActions = function () {
+              return angular.isDefined($scope.actions);
             };
           }
         ];
@@ -138,6 +161,14 @@
         var tokens = ['<list-input-group-item ng-repeat="item in items" ng-model="item" '];
         if (scope.$$isDeletable()) {
           tokens.push('deletable delete-fn="$$delete(item)"');
+        }
+        if (scope.$$isEditable()) {
+          tokens.push('editable edit-fn="$$edit(item)"');
+        }
+        if (scope.$$hasActions()) {
+          tokens.push('actions=\'');
+          tokens.push(scope.actions);
+          tokens.push('\'');
         }
         // html += 'deletable editable
         // actions=\'[{"id":"play","icon":"glyphicon-play",
@@ -159,11 +190,24 @@
         },
         controller: ListGroupEditorCtrl,
         scope: {
+          title: '@',
           items: '=',
-          deletable: '&'
+          deletable: '@',
+          onDelete: '&',
+          editable: '@',
+          onEdit: '&',
+          actions: '@'
         },
         link: function (scope, element, attrs) {
-          scope.test = 'toto';
+          var props = [
+              'deletable',
+              'editable'
+            ];
+          angular.forEach(props, function (prop) {
+            if (angular.isDefined(attrs[prop]) && angular.isUndefined(scope[prop])) {
+              scope[prop] = true;
+            }
+          });
           var promise = resolveInnerHTML(scope, attrs);
           promise.then(function (html) {
             var cellElement = angular.element(html);
@@ -439,20 +483,20 @@
         '$timeout',
         function ($scope, $element, $attrs, $compile, $interpolate, $parse, $sce, $http, $templateCache, $timeout) {
           /**
-				 * 
-				 */
+		 * 
+		 */
           $scope.$$model = {
             selected: false,
             html: '',
             editing: false
           };
           /**
-				 * item actions
-				 */
+		 * item actions
+		 */
           $scope.actions = [];
           /**
-				 * Render options
-				 */
+		 * Render options
+		 */
           $scope.options = {
             action: {
               display: {
@@ -462,8 +506,8 @@
             }
           };
           /**
-				 * 
-				 */
+		 * 
+		 */
           $scope.init = function () {
             $scope.resolveActions();
             $scope.resolveOptions();
@@ -472,8 +516,8 @@
             }
           };
           /**
-				 * 
-				 */
+		 * 
+		 */
           $scope.resolveInnerHTML = function (item) {
             var html = '';
             var item = $scope.ngModelCtrl.$modelValue;
@@ -500,24 +544,24 @@
             $scope.$$model.html = $sce.trustAsHtml(html);
           };
           /**
-				 * Selection change handler
-				 */
+		 * Selection change handler
+		 */
           $scope.selectionChange = function (newVal, oldVal) {
             $parse($attrs['selectable']).assign($scope, newVal);
           };
           /**
-				 * 
-				 */
+		 * 
+		 */
           $scope.$click = function (fn) {
             if (angular.isString(fn)) {
               fn = $parse(fn);
             }
             var item = $scope.ngModelCtrl.$modelValue;
-            fn($scope, { item: item });
+            $scope.$parent.$$invoke(fn, { $item: item });
           };
           /**
-				 * Edit action handler
-				 */
+		 * Edit action handler
+		 */
           $scope.$edit = function () {
             if ($scope.hasAttribute('inline')) {
               $scope.startInlineEdition();
@@ -540,8 +584,8 @@
             $scope.endInlineEdition();
           };
           /**
-				 * Delete action handler
-				 */
+		 * Delete action handler
+		 */
           $scope.$delete = function () {
             if ($scope.hasAttribute('deleteFn')) {
               var deleteFn = $parse($attrs['deleteFn']);
@@ -550,37 +594,37 @@
             }
           };
           /**
-				 * Returns <code>true</code> if the action is rendered as a
-				 * button dropdowns
-				 */
+		 * Returns <code>true</code> if the action is rendered as a
+		 * button dropdowns
+		 */
           $scope.isDropDown = function (action) {
             return angular.isDefined(action.actions);
           };
           /**
-				 * Returns <code>true</code> if the selectable attribute is
-				 * specified
-				 */
+		 * Returns <code>true</code> if the selectable attribute is
+		 * specified
+		 */
           $scope.isSelectable = function () {
             return $scope.hasAttribute('selectable');
           };
           /**
-				 * Returns <code>true</code> if the size attribute is set to
-				 * 'large'
-				 */
+		 * Returns <code>true</code> if the size attribute is set to
+		 * 'large'
+		 */
           $scope.isLarge = function () {
             return $scope.isSizeEquals('large');
           };
           /**
-				 * Returns <code>true</code> if the size attribute is set to
-				 * 'small'
-				 */
+		 * Returns <code>true</code> if the size attribute is set to
+		 * 'small'
+		 */
           $scope.isSmall = function () {
             return $scope.isSizeEquals('small');
           };
           /**
-				 * Returns <code>true</code> if the size attribute is equal to
-				 * the specified value
-				 */
+		 * Returns <code>true</code> if the size attribute is equal to
+		 * the specified value
+		 */
           $scope.isSizeEquals = function (value) {
             var equals = false;
             if ($scope.hasAttribute('size')) {
@@ -611,8 +655,8 @@
             }
           };
           /**
-				 * 
-				 */
+		 * 
+		 */
           $scope.startInlineEdition = function () {
             var tmp = [];
             angular.forEach($scope.actions, function (action) {
@@ -630,8 +674,8 @@
             });
           };
           /**
-				 * 
-				 */
+		 * 
+		 */
           $scope.endInlineEdition = function () {
             var tmp = [];
             angular.forEach($scope.actions, function (action) {
@@ -645,8 +689,8 @@
             $scope.$$model.editing = false;
           };
           /**
-				 * Returns the value of the attribute as an object.
-				 */
+		 * Returns the value of the attribute as an object.
+		 */
           $scope.getAttributeAsObject = function (attrName) {
             var value = $attrs[attrName];
             if ($scope.hasAttribute(attrName) && angular.isString(value)) {
@@ -655,9 +699,9 @@
             return value;
           };
           /**
-				 * Returns <code>true</code> an attribute with the specified
-				 * name exists
-				 */
+		 * Returns <code>true</code> an attribute with the specified
+		 * name exists
+		 */
           $scope.hasAttribute = function (attrName) {
             return angular.isDefined($attrs[attrName]) == true;
           };
@@ -686,7 +730,7 @@
     '$templateCache',
     function ($templateCache) {
       $templateCache.put('list-input-group-item.html', '<div class="input-group list-input-group-item" ng-class="{\'input-group-lg\' : isLarge(), \'input-group-sm\' : isSmall()}"><span class="input-group-addon" ng-if="isSelectable()"><input type="checkbox" ng-model="$$model.selected"></span><input type="text" class="form-control" ng-model="$$model.html" ng-if="$$model.editing"><span class="form-control" ng-bind-html="$$model.html" ng-if="!$$model.editing"></span><div class="input-group-btn" ng-repeat="action in actions track by action.id"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-if="isDropDown(action)"><span class="glyphicon {{action.icon}}" ng-if="options.action.display.icon"></span> <span ng-bind="action.label" ng-if="options.action.display.label"></span> <span class="caret"></span></button><ul class="dropdown-menu dropdown-menu-right" role="menu" ng-if="isDropDown(action) && !isSplit(action)"><li ng-repeat="child in action.actions"><a ng-href="" ng-click="$click(child.fn)"><span class="glyphicon {{child.icon}}" ng-if="options.action.display.icon"></span> <span ng-bind="child.label"></span></a></li></ul><button class="btn {{action.class}}" ng-class="{\'btn-default\' : action.class == null}" type="button" ng-click="$click(action.fn)" ng-if="!isDropDown(action)"><span class="glyphicon {{action.icon}}" ng-if="options.action.display.icon"></span>&nbsp; <span ng-bind="action.label" ng-if="options.action.display.label"></span></button></div></div>');
-      $templateCache.put('panel-list-editor.html', '<div class="panel panel-default list-group-editor"><div class="panel-heading">title</div><div class="panel-body">test</div><div transclude=""></div></div>');
+      $templateCache.put('panel-list-editor.html', '<div class="panel panel-default list-group-editor"><div class="panel-heading" ng-if="title" ng-bind="title"></div><div class="panel-body" ng-if="body"></div><div transclude=""></div></div>');
       $templateCache.put('panel-list-group.html', '<div class="panel panel-default"><div class="panel-body"><div class="input-group" ng-if="!filter.autoFilter"><input type="text" class="form-control" placeholder="{{filter.placeholder}}" ng-model="filter.text"><div class="input-group-btn"><button class="btn btn-default" ng-click="$filter()" ng-disabled="!filter"><i class="glyphicon glyphicon-search"></i></button></div></div><input type="text" class="form-control" placeholder="{{filter.placeholder}}" ng-model="filter.text" ng-if="filter.autoFilter"></div><div transclude=""></div></div>');
     }
   ]);

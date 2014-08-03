@@ -1,0 +1,44 @@
+<div class="row">
+	<div class="col-md-12">
+		<div class="alert alert-info" role="alert" ng-bind-html="msg02"></div>
+	</div>
+</div>
+<div class="row">
+
+	<div class="col-md-12">
+		<div>
+			<p>
+				Use
+				<code>deletable</code>
+				attribute to add a delete action button
+			</p>
+			<p>
+				Use
+				<code>on-delete</code>
+				attribute to specify a callback function.
+
+			</p>
+			<p>
+				<mark>
+					Note argument function name
+					<code>$item</code>
+				</mark>
+			</p>
+		</div>
+
+		<pre>
+&#60;list-group 
+	title="Tracks" 
+	items="tracks"
+	actions='[{"id":"play","icon":"glyphicon-play", "fn":"play($item)"},
+			{"id":"pause","icon":"glyphicon-pause", "fn":"pause($item)"},
+			{"id":"stop","icon":"glyphicon-stop", "fn":"stop($item)"}]'>
+&#60;/list-group>	
+</pre>
+		<list-group-editor title="Tracks" items="tracks"
+			actions='[{"id":"play","icon":"glyphicon-play", "fn":"play($item)"},
+					{"id":"pause","icon":"glyphicon-pause", "fn":"pause($item)"},
+					{"id":"stop","icon":"glyphicon-stop", "fn":"stop($item)"}]'></list-group-editor>
+	</div>
+
+</div>
