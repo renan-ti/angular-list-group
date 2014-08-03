@@ -79,7 +79,7 @@ demo.controller('ListGroupEditorCtrl', [ '$scope', '$q', '$log', function($scope
     
     $scope.play = function($item) {
 	$log.debug('ListGroupEditorCtrl::play => ' + angular.toJson($item));
-	$scope.msg02 = $scope.$message('play', $item);
+	$scope.msg02 = $scope.$message('play', angular.toJson($item));
     }
 
     $scope.$message = function(methodName, $item) {
