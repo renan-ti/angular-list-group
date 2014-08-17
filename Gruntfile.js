@@ -39,7 +39,12 @@ module.exports = function(grunt) {
 		    },
 		    stripBanners : true
 		},
-		src : [ '<%= src %>/*.js', '<%= src%>/services/*.js', '<%= src %>/directives/*.js',
+		src : [ '<%= src %>/*.js', 
+		        '<%= src%>/filter/*.js',
+		        '<%= src%>/service/*.js', 
+		        '<%= src %>/directive/list-group.js',
+		        '<%= src %>/directive/list-input-group-item.js',
+		        '<%= src %>/directive/list-group-editor.js',
 			'<%= build %>/templates.js' ],
 		dest : '<%= dist %>/<%= pkg.name %>.js',
 	    },

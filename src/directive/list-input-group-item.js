@@ -1,31 +1,4 @@
-angularListGroupDirectives.directive('listInputGroupItem', function() {
-
-    var ACTION_EDIT = {
-	'id' : 'edit',
-	'icon' : 'glyphicon-edit',
-	'label' : 'edit',
-	'fn' : '$edit(item)'
-    };
-
-    var ACTION_VALIDATE = {
-	'id' : 'validate',
-	'icon' : 'glyphicon-ok',
-	'label' : 'ok',
-	'fn' : '$validate(item)'
-    };
-
-    var ACTION_CANCEL = {
-	'id' : 'remove',
-	'icon' : 'glyphicon-remove',
-	'label' : 'ok',
-	'fn' : '$cancel(item)'
-    };
-    var ACTION_DELETE = {
-	'id' : 'delete',
-	'icon' : 'glyphicon-trash',
-	'label' : 'remove',
-	'fn' : '$delete(item)'
-    };
+angularListGroupDirectives.directive('listInputGroupItem', function($compile, $parse, $templateCache) {
 
     var ListInputGroupItemCtrl = [ '$scope', '$element', '$attrs', '$compile', '$interpolate', '$parse', '$sce',
 	    '$http', '$templateCache', '$timeout',
@@ -53,18 +26,6 @@ angularListGroupDirectives.directive('listInputGroupItem', function() {
 			    label : false,
 			    icon : true
 			}
-		    }
-		};
-
-		/**
-		 * 
-		 */
-		$scope.init = function() {
-		    $scope.resolveActions();
-		    $scope.resolveOptions();
-
-		    if ($scope.hasAttribute('selectable')) {
-			$scope.$watch('$$model.selected', $scope.selectionChange)
 		    }
 		};
 
@@ -111,13 +72,17 @@ angularListGroupDirectives.directive('listInputGroupItem', function() {
 		 * 
 		 */
 		$scope.$click = function(fn) {
-		    if (angular.isString(fn)) {
-			fn = $parse(fn);
+		    if (angular.isDefined(fn)) {
+			if (angular.isString(fn)) {
+			    fn = $parse(fn);
+			}
+			fn($scope, {
+			    $item : $scope.ngModelCtrl.$modelValue
+			});
 		    }
-		    var item = $scope.ngModelCtrl.$modelValue;
-		    $scope.$parent.$$invoke(fn, {
-			$item : item
-		    });
+		    // $scope.$parent.$$invoke(fn, {
+		    // $item : item
+		    // });
 
 		};
 
@@ -176,57 +141,12 @@ angularListGroupDirectives.directive('listInputGroupItem', function() {
 		    return $scope.hasAttribute('selectable');
 		}
 
-		/**
-		 * Returns <code>true</code> if the size attribute is set to
-		 * 'large'
-		 */
-		$scope.isLarge = function() {
-		    return $scope.isSizeEquals('large');
-		};
-
-		/**
-		 * Returns <code>true</code> if the size attribute is set to
-		 * 'small'
-		 */
-		$scope.isSmall = function() {
-		    return $scope.isSizeEquals('small');
-		};
-
-		/**
-		 * Returns <code>true</code> if the size attribute is equal to
-		 * the specified value
-		 */
-		$scope.isSizeEquals = function(value) {
-		    var equals = false;
-		    if ($scope.hasAttribute('size')) {
-			equals = ($attrs['size'] == value);
-		    }
-		    return equals;
-		};
-
-		$scope.resolveActions = function() {
-		    var actions = $scope.getAttributeAsObject('actions');
-		    if (angular.isDefined(actions) == true) {
-			if (angular.isArray(actions)) {
-			    $scope.actions = actions;
-			} else {
-			    $scope.actions.push(actions);
-			}
-		    }
-		    if ($scope.hasAttribute('editable')) {
-			$scope.actions.push(ACTION_EDIT);
-		    }
-		    if ($scope.hasAttribute('deletable')) {
-			$scope.actions.push(ACTION_DELETE);
-		    }
-		};
-
-		$scope.resolveOptions = function() {
-		    if ($scope.hasAttribute('options')) {
-			var opts = $scope.getAttributeAsObject('options');
-			$scope.options = angular.extend(scope.options, opts);
-		    }
-		};
+		// $scope.resolveOptions = function() {
+		// if ($scope.hasAttribute('options')) {
+		// var opts = $scope.getAttributeAsObject('options');
+		// $scope.options = angular.extend(scope.options, opts);
+		// }
+		// };
 
 		/**
 		 * 
@@ -274,13 +194,14 @@ angularListGroupDirectives.directive('listInputGroupItem', function() {
 		    return value;
 		};
 
-		/**
-		 * Returns <code>true</code> an attribute with the specified
-		 * name exists
-		 */
-		$scope.hasAttribute = function(attrName) {
-		    return angular.isDefined($attrs[attrName]) == true;
-		};
+		var sizeClassnameMap = {
+		    'small' : 'input-group-sm',
+		    'large' : 'input-group-lg'
+		}
+
+		this.resolveSizeClassname = function(size) {
+		    return sizeClassnameMap[size];
+		}
 
 	    } ];
 
@@ -288,18 +209,70 @@ angularListGroupDirectives.directive('listInputGroupItem', function() {
 	restrict : 'EA',
 	terminal : true,
 	replace : true,
-	templateUrl : 'list-input-group-item.html',
-	require : [ 'ngModel' ],
-	scope : true,
+	template : '<div class="input-group list-input-group-item"></div>',
+	// require : [ 'ngModel' ],
+	require : [ 'listInputGroupItem', '^listGroupEditor', '^ngModel' ],
+	scope : {
+	    item : '=ngModel'
+	},
 	controller : ListInputGroupItemCtrl,
-	link : function(scope, element, attrs, ctrls) {
-	    scope.ngModelCtrl = ctrls[0];
-	    if (!scope.ngModelCtrl)
-		return;
-	    scope.ngModelCtrl.$render = function() {
-		scope.resolveInnerHTML(this.$modelValue);
+	compile : function(element, attrs) {
+	    return function(scope, element, attrs, ctrls, transcludeFn) {
+		console.log('listInputGroupItem::compile::pre');
+
+		var listInputGroupItemCtrl = ctrls[0];
+		var listGroupEditorCtrl = ctrls[1];
+		scope.actions = listGroupEditorCtrl.$$getActions();
+
+		var sizeClassname = listInputGroupItemCtrl.resolveSizeClassname(attrs.size);
+		if (sizeClassname) {
+		    element.addClass(sizeClassname);
+		}
+		if (attrs.selectable) {
+		    var newElm = $compile($templateCache.get('checkbox-input-group-addon.html'))(scope);
+		    element.append(newElm);
+		}
+		var tpl = listGroupEditorCtrl.getTemplate();
+		if (tpl) {
+		    var newElm = $compile('<span class="form-control">' + tpl + '</span>')(scope);
+		    element.append(newElm);
+		} else {
+		    var html = '<span class="form-control">';
+		    if (angular.isString(scope.item)) {
+			html += scope.item;
+		    } else {
+			html += angular.toJson(scope.item);
+		    }
+		    html += '</span>';
+		    var newElm = $compile(html)(scope);
+		    element.append(newElm);
+		}
+
+		var actions = listGroupEditorCtrl.$$getActions();
+		angular.forEach(actions, function(action) {
+		    var inputGroup = angular.element('<div class="input-group-btn"></div>');
+		    var btn = angular.element('<button class="btn btn-default"></button>');
+
+		    var fn = $parse(action.fn);
+		    btn.bind('click', function() {
+			scope.$apply(function() {
+			    // scope(listGroupEditor > ngRepeat >
+			    // listInputGroupItem)
+			    fn(scope.$parent.$parent.$parent, {
+				$item : scope.item
+			    });
+			});
+		    });
+
+		    var icon = angular.element('<span class="glyphicon"></span>');
+		    if (action.icon) {
+			icon.addClass(action.icon);
+		    }
+		    btn.append(icon);
+		    inputGroup.append(btn);
+		    element.append(inputGroup);
+		});
 	    }
-	    scope.init();
 	}
     }
 

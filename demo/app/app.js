@@ -6,11 +6,11 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' 
 	    }).when('/listgroup/basic', {
 		templateUrl : 'partials/listgroup/basic-usage.html',
 		controller : 'ListGroupCtrl'
-	    }).when('/listgroup/contextualclasses', {
-		templateUrl : 'partials/listgroup/contextual-classes.html',
-		controller : 'ListGroupCtrl'
 	    }).when('/listgroup/selectable', {
 		templateUrl : 'partials/listgroup/selectable.html',
+		controller : 'ListGroupCtrl'
+	    }).when('/listgroup/contextualclasses', {
+		templateUrl : 'partials/listgroup/contextual-classes.html',
 		controller : 'ListGroupCtrl'
 	    }).when('/listgroup/disabled', {
 		templateUrl : 'partials/listgroup/disabled.html',
@@ -21,14 +21,16 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' 
 	    }).when('/listgroup/templates', {
 		templateUrl : 'partials/listgroup/templates.html',
 		controller : 'ListGroupCtrl'
+	    }).when('/listgroup/panel', {
+		templateUrl : 'partials/listgroup/panel.html',
+		controller : 'ListGroupCtrl'
 	    }).when('/listgroupeditor/actions/builtin', {
 		templateUrl : 'partials/listgroupeditor/builtin-actions.html',
 		controller : 'ListGroupEditorCtrl'
 	    }).when('/listgroupeditor/actions/custom', {
 		templateUrl : 'partials/listgroupeditor/custom-actions.html',
 		controller : 'ListGroupEditorCtrl'
-	    })
-	    .otherwise({
+	    }).otherwise({
 		redirectTo : '/listgroup/basic'
 	    });
 
@@ -42,11 +44,11 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' 
 	    'title' : 'Basic Usage',
 	    'path' : '/listgroup/basic'
 	}, {
-	    'title' : 'Contextual classes',
-	    'path' : '/listgroup/contextualclasses'
-	}, {
 	    'title' : 'Selectable',
 	    'path' : '/listgroup/selectable'
+	}, {
+	    'title' : 'Contextual classes',
+	    'path' : '/listgroup/contextualclasses'
 	}, {
 	    'title' : 'Disabled items',
 	    'path' : '/listgroup/disabled'
@@ -56,6 +58,9 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' 
 	}, {
 	    'title' : 'Custom templates',
 	    'path' : '/listgroup/templates'
+	}, {
+	    'title' : 'Heading',
+	    'path' : '/listgroup/panel'
 	} ]
     }, {
 	'title' : 'List Group Editor',
@@ -65,7 +70,7 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' 
 	}, {
 	    'title' : 'Custom actions',
 	    'path' : '/listgroupeditor/actions/custom'
-	
+
 	} ]
     } ];
 

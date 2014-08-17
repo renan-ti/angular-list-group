@@ -27,15 +27,16 @@
 		</div>
 
 		<pre>
-&#60;list-group 
+&#60;list-group-editor 
 	title="Tracks" 
 	items="tracks"
 	actions='[{"id":"play","icon":"glyphicon-play", "fn":"play($item)"},
 			{"id":"pause","icon":"glyphicon-pause", "fn":"pause($item)"},
 			{"id":"stop","icon":"glyphicon-stop", "fn":"stop($item)"}]'>
-&#60;/list-group>	
+&#60;/list-group-editor>	
 </pre>
 		<list-group-editor title="Tracks" items="tracks"
+			template="template"
 			actions='[{"id":"play","icon":"glyphicon-play", "fn":"play($item)"},
 					{"id":"pause","icon":"glyphicon-pause", "fn":"pause($item)"},
 					{"id":"stop","icon":"glyphicon-stop", "fn":"stop($item)"}]'></list-group-editor>

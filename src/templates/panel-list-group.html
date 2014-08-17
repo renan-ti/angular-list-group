@@ -1,6 +1,12 @@
-<div class="panel panel-default">
+<div class="panel" ng-class="$resolvePanelContextualClassName()"
+	ng-cloak>
 
-	<div class="panel-body">
+	<div class="panel-heading" ng-if="title"
+		ng-class="{'panel-heading-no-body' : !$isFilterable()}">
+		<h3 class="panel-title" ng-bind="title"></h3>
+	</div>
+
+	<div class="panel-body" ng-if="$isFilterable()">
 		<div class="input-group" ng-if="!filter.autoFilter">
 			<input type="text" class="form-control"
 				placeholder="{{filter.placeholder}}" ng-model="filter.text">
@@ -15,9 +21,9 @@
 		<input type="text" class="form-control"
 			placeholder="{{filter.placeholder}}" ng-model="filter.text"
 			ng-if="filter.autoFilter">
-
 	</div>
 
-	<div transclude></div>
+	<div class="panel-footer" ng-if="$displayFooter()"
+		ng-bind-html="footer"></div>
 
 </div>

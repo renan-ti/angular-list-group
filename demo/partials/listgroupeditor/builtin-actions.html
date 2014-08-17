@@ -27,15 +27,18 @@
 		</div>
 
 		<pre>
-&#60;list-group 
+&#60;list-group-editor 
 	title="Built-in delete action" 
 	items="colors"
-	deletable
-	on-delete="deleteItem($item)"> 
-&#60;/list-group>	
+	deletable="true"
+	on-delete="deleteItem($item)"
+	panel="success"
+	size="small"> 
+&#60;/list-group-editor>	
 </pre>
 		<list-group-editor title="Built-in delete action" items="colors"
-			deletable on-delete="deleteItem($item)"></list-group-editor>
+			deletable="true" on-delete="deleteItem($item)" panel="success"
+			contextual-class="success" size="small"></list-group-editor>
 	</div>
 
 	<div class="col-md-4">
@@ -63,12 +66,12 @@
 &#60;list-group
 	title="Built-in edit action"
 	items="colors02"
-	editable
+	editable="true"
 	on-edit="editItem($item)"> 
 &#60;/list-group>	
 </pre>
 		<list-group-editor title="Built-in edit action" items="colors02"
-			editable on-edit="editItem($item)"></list-group-editor>
+			editable="true" on-edit="editItem($item)"></list-group-editor>
 	</div>
 
 	<div class="col-md-4">
@@ -79,14 +82,16 @@
 &#60;list-group
 	title="Built-in edit and delete actions"
 	items="colors03"
-	deletable
+	deletable="true""
 	on-delete="deleteItem($item)"
-	editable
-	on-edit="editItem($item)"> 
+	editable="true"
+	on-edit="editItem($item)"
+	size="large"> 
 &#60;/list-group>	
 </pre>
-		<list-group-editor title="Built-in edit and delete actions" items="colors03" deletable
-			on-delete="deleteItem($item)" editable on-edit="editItem($item)"></list-group-editor>
+		<list-group-editor title="Built-in edit and delete actions"
+			items="colors03" deletable="true" on-delete="deleteItem($item)"
+			editable="true" on-edit="editItem($item)" size="large"></list-group-editor>
 	</div>
 
 </div>
