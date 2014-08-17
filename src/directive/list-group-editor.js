@@ -23,9 +23,13 @@ var ACTIONS = {
     }
 };
 
-var ListGroupEditorCtrl = function($scope, $parse, $filter, comparatorFactory) {
+var ListGroupEditorCtrl = function($scope, $parse, $filter, comparatorFactory, $templateCache) {
 
     new ListGroupCtrl($scope, $parse, $filter, comparatorFactory);
+
+    this.template;
+
+    this.editTemplate;
 
     this.$$actions = [];
 
@@ -58,13 +62,26 @@ var ListGroupEditorCtrl = function($scope, $parse, $filter, comparatorFactory) {
 	}
     };
 
-    this.template;
-
     this.getTemplate = function() {
 	if (angular.isUndefined(this.template) && $scope.template) {
-	    this.template = $scope.$parent.$eval($scope.template);
+	    this.template = $scope.$parent.$eval($scope.template) || $scope.template;
 	}
 	return this.template;
+    }
+
+    this.getEditTemplate = function() {
+	if (angular.isUndefined(this.editTemplate)) {
+	    if (angular.isUndefined($scope.editTemplate)) {
+		this.editTemplate = '<input type="text" class="form-control" ng-model="$$model.editedValue"></input>';
+	    } else {
+		this.editTemplate = $scope.$parent.$eval($scope.editTemplate) || $scope.editTemplate;
+	    }
+	}
+	return this.editTemplate;
+    };
+
+    this.isEditingInline = function() {
+	return $scope.editable == 'inline';
     }
 
 };
@@ -88,7 +105,8 @@ angularListGroupDirectives
 				template : function(elem, attrs) {
 				    return $templateCache.get('panel-list-group.html');
 				},
-				controller : [ '$scope', '$parse', '$filter', 'comparatorFactory', ListGroupEditorCtrl ],
+				controller : [ '$scope', '$parse', '$filter', 'comparatorFactory', '$templateCache',
+					ListGroupEditorCtrl ],
 				scope : {
 				    items : '=',
 				    selectable : '@',
