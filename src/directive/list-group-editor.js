@@ -33,9 +33,50 @@ var ListGroupEditorCtrl = function($scope, $parse, $filter, comparatorFactory, $
 
     this.$$actions = [];
 
+    this.getTemplate = function() {
+	if (angular.isUndefined(this.template) && $scope.template) {
+	    this.template = $scope.$parent.$eval($scope.template) || $scope.template;
+	}
+	return this.template;
+    }
+
+    this.getEditTemplate = function() {
+	if (angular.isUndefined(this.editTemplate)) {
+	    if (angular.isUndefined($scope.editTemplate)) {
+		this.editTemplate = $templateCache.get('edit-inline-input.tpl.html');
+	    } else {
+		this.editTemplate = $scope.$parent.$eval($scope.editTemplate) || $scope.editTemplate;
+	    }
+	}
+	return this.editTemplate;
+    };
+
+    this.isInlineEditionMode = function() {
+	return $scope.editable == 'inline';
+    };
+
+    /**
+     * 
+     */
+    this.$updateValue = function(oldValue, newValue) {
+	var updated = false;
+	if (this.isNewValue(newValue)) {
+	    for ( var i = 0, len = $scope.items.length; i < len; i++) {
+		if ($scope.items[i] === oldValue) {
+		    $scope.items[i] = newValue;
+		}
+	    }
+	}
+	return updated;
+    };
+
+    this.isNewValue = function(newValue) {
+	return (angular.isString(newValue) && $scope.items.indexOf(newValue) == -1);
+    };
+
     this.$$getActions = function() {
 	return this.$$actions;
-    }
+    };
 
     this.$$resolveActions = function() {
 	if ($scope.actions) {
@@ -62,78 +103,61 @@ var ListGroupEditorCtrl = function($scope, $parse, $filter, comparatorFactory, $
 	}
     };
 
-    this.getTemplate = function() {
-	if (angular.isUndefined(this.template) && $scope.template) {
-	    this.template = $scope.$parent.$eval($scope.template) || $scope.template;
-	}
-	return this.template;
-    }
-
-    this.getEditTemplate = function() {
-	if (angular.isUndefined(this.editTemplate)) {
-	    if (angular.isUndefined($scope.editTemplate)) {
-		this.editTemplate = '<input type="text" class="form-control" ng-model="$$model.editedValue"></input>';
-	    } else {
-		this.editTemplate = $scope.$parent.$eval($scope.editTemplate) || $scope.editTemplate;
-	    }
-	}
-	return this.editTemplate;
-    };
-
-    this.isEditingInline = function() {
-	return $scope.editable == 'inline';
-    }
-
 };
 
-angularListGroupDirectives
-	.directive(
-		'listGroupEditor',
-		[
-			'$parse',
-			'$compile',
-			'$interpolate',
-			'$q',
-			'$http',
-			'$templateCache',
-			function($parse, $compile, $interpolate, $q, $http, $templateCache) {
+angularListGroupDirectives.directive('listGroupEditor', [
+	'$parse',
+	'$compile',
+	'$interpolate',
+	'$q',
+	'$http',
+	'$templateCache',
+	function($parse, $compile, $interpolate, $q, $http, $templateCache) {
 
-			    return {
-				restrict : 'EA',
-				terminal : true,
-				replace : true,
-				template : function(elem, attrs) {
-				    return $templateCache.get('panel-list-group.html');
-				},
-				controller : [ '$scope', '$parse', '$filter', 'comparatorFactory', '$templateCache',
-					ListGroupEditorCtrl ],
-				scope : {
-				    items : '=',
-				    selectable : '@',
-				    filterable : '@',
-				    selectionChange : '@',
-				    contextualClass : '@',
-				    disabled : '@',
-				    title : '@',
-				    panel : '@',
+	    return {
+		restrict : 'EA',
+		terminal : true,
+		replace : true,
+		template : function(elem, attrs) {
+		    return $templateCache.get('panel-list-group.html');
+		},
+		controller : [ '$scope', '$parse', '$filter', 'comparatorFactory', '$templateCache',
+			ListGroupEditorCtrl ],
+		scope : {
+		    items : '=',
+		    selectable : '@',
+		    filterable : '@',
+		    selectionChange : '@',
+		    contextualClass : '@',
+		    disabled : '@',
+		    title : '@',
+		    panel : '@',
 
-				    deletable : '@',
-				    onDelete : '@',
-				    editable : '@',
-				    onEdit : '@',
-				    actions : '@',
-				    template : '@',
-				    size : '@'
-				},
-				link : function(scope, element, attrs, ctrl) {
-				    ctrl.$$resolveActions();
-				    var itemElt = angular
-					    .element('<list-input-group-item ng-repeat="item in items" ng-model="item"></list-input-group-item>');
-				    if (scope.size) {
-					itemElt.attr('size', scope.size);
-				    }
-				    element.append(itemElt);
-				    $compile(element)(scope);
-				}
-			    }
-			} ]);
+		    deletable : '@',
+		    onDelete : '@',
+		    editable : '@',
+		    onEdit : '@',
+		    actions : '@',
+		    template : '@',
+		    size : '@'
+		},
+		link : function(scope, element, attrs, ctrl) {
+		    ctrl.$$resolveActions();
+
+		    if (ctrl.isInlineEditionMode()) {
+			var fn = scope.$resolvePanelClasses;
+			scope.$resolvePanelClasses = function(item) {
+			    return 'panel-toolbar ' + fn();
+			}
+		    }
+
+		    var itemElt = angular
+			    .element('<list-input-group-item ng-repeat="$$item in items"></list-input-group-item>');
+		    if (scope.size) {
+			itemElt.attr('size', scope.size);
+		    }
+		    element.append(itemElt);
+		    $compile(element)(scope);
+		}
+	    }
+	} ]);

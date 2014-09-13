@@ -1,4 +1,4 @@
-angularListGroupDirectives.directive('listInputGroupItem', function($compile, $parse, $templateCache, $timeout) {
+angularListGroupDirectives.directive('listInputGroupItem', function($compile, $parse, $templateCache, $timeout, $log) {
 
     var ListInputGroupItemCtrl = [ '$scope', '$element', '$attrs', '$compile', '$interpolate', '$parse', '$sce',
 	    '$http', '$templateCache', '$timeout',
@@ -31,11 +31,11 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 		var sizeClassnameMap = {
 		    'small' : 'input-group-sm',
 		    'large' : 'input-group-lg'
-		}
+		};
 
 		this.resolveSizeClassname = function(size) {
 		    return sizeClassnameMap[size];
-		}
+		};
 
 	    } ];
 
@@ -44,11 +44,8 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 	terminal : true,
 	replace : true,
 	template : '<div class="input-group list-input-group-item"></div>',
-	// require : [ 'ngModel' ],
-	require : [ 'listInputGroupItem', '^listGroupEditor', '^ngModel' ],
-	scope : {
-	    item : '=ngModel'
-	},
+	require : [ 'listInputGroupItem', '^listGroupEditor' ],
+	scope : false,
 	controller : ListInputGroupItemCtrl,
 	compile : function(element, attrs) {
 	    return function(scope, element, attrs, ctrls, transcludeFn) {
@@ -58,8 +55,23 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 		var editing = false;
 
 		var listInputGroupItemCtrl = ctrls[0];
-
 		var listGroupEditorCtrl = ctrls[1];
+
+		// cancel inline edition
+		scope.$cancel = function() {
+		    endEditing();
+		};
+		// validate inline edition
+		scope.$update = function() {
+		    var oldValue = scope.$$item;
+		    var newValue = scope.$$model.editedValue;
+		    if (listGroupEditorCtrl.$updateValue(oldValue, newValue)) {
+			endEditing();
+		    } else {
+			angular.element(element.children()[0]).addClass('has-error');
+		    }
+
+		};
 
 		var sizeClassname = listInputGroupItemCtrl.resolveSizeClassname(attrs.size);
 		if (sizeClassname) {
@@ -69,16 +81,17 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 		    var newElm = $compile($templateCache.get('checkbox-input-group-addon.html'))(scope);
 		    element.append(newElm);
 		}
+
 		var tpl = listGroupEditorCtrl.getTemplate();
 		if (tpl) {
 		    var newElm = $compile('<span class="form-control">' + tpl + '</span>')(scope);
 		    element.append(newElm);
 		} else {
 		    var html = '<span class="form-control">';
-		    if (angular.isString(scope.item)) {
-			html += scope.item;
+		    if (angular.isString(scope.$$item)) {
+			html += scope.$$item;
 		    } else {
-			html += angular.toJson(scope.item);
+			html += angular.toJson(scope.$$item);
 		    }
 		    html += '</span>';
 		    var newElm = $compile(html)(scope);
@@ -86,20 +99,22 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 		}
 
 		function beginEditing() {
+		    $log.debug('start editing...');
 		    if (!editing) {
 			scope.$apply(function() {
 			    editing = true;
+			    scope.$$model.editedValue = scope.$$item;
 			    var tpl = listGroupEditorCtrl.getEditTemplate();
 			    var editElm = $compile(tpl)(scope.$new());
 			    var readElm = angular.element(element.children()[0]);
 			    readElm.addClass(hiddenElementClassname);
-
-			    editElm.bind('blur', function() {
-				endEditing();
-			    });
 			    element.prepend(editElm);
 			    $timeout(function() {
-				editElm[0].focus();
+				var elts = angular.element(editElm).find('input');
+				if (elts && elts[0]) {
+				    elts[0].focus();
+				    elts[0].select();
+				}
 			    });
 			});
 		    }
@@ -109,10 +124,10 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 		    if (editing) {
 			var readElm = angular.element(element.children()[1]);
 			var editElm = angular.element(element.children()[0]);
-			editElm.unbind('blur');
 			editElm.remove();
 			readElm.removeClass(hiddenElementClassname);
 			editing = false;
+			scope.$$model.editedValue = null;
 		    }
 		}
 
@@ -121,7 +136,7 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 		    var inputGroup = angular.element('<div class="input-group-btn"></div>');
 		    var btn = angular.element('<button class="btn btn-default"></button>');
 
-		    if (listGroupEditorCtrl.isEditingInline()) {
+		    if (listGroupEditorCtrl.isInlineEditionMode()) {
 			btn.bind('click', function() {
 			    beginEditing();
 			});
@@ -129,10 +144,8 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 			var fn = $parse(action.fn);
 			btn.bind('click', function() {
 			    scope.$apply(function() {
-				// scope(listGroupEditor > ngRepeat > //
-				// listInputGroupItem)
 				fn(scope.$parent.$parent.$parent, {
-				    $item : scope.item
+				    $item : scope.$$item
 				});
 			    });
 			});

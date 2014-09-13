@@ -68,7 +68,7 @@ var ListGroupCtrl = function($scope, $parse, $filter, comparatorFactory) {
 	return angular.isDefined($scope.filterable);
     };
 
-    $scope.$resolvePanelContextualClassName = function() {
+    $scope.$resolvePanelClasses = function() {
 	var ctx = 'default';
 	if (angular.isDefined($scope.panel)) {
 	    ctx = $scope.panel;
