@@ -6,7 +6,8 @@
   angular.module('angularListGroup', [
     'angularListGroup.services',
     'angularListGroup.directives',
-    'angularListGroup.filters'
+    'angularListGroup.filters',
+    'ngAnimate'
   ]);
   angularListGroupFilters.filter('listGroupItemContextualClass', function () {
     return function (value) {
@@ -115,6 +116,112 @@
         return match;
       };
       return factory;
+    }
+  ]);
+  angularListGroupServices.factory('listGroupComponentFactory', [
+    '$templateCache',
+    function ($templateCache) {
+      var SIZE_CLASSNAME_MAP = {
+          'small': 'input-group-sm',
+          'large': 'input-group-lg'
+        };
+      return {
+        resolveSizeClassName: function (size) {
+          var classname;
+          if (angular.isDefined(SIZE_CLASSNAME_MAP[size])) {
+            classname = SIZE_CLASSNAME_MAP[size];
+          }
+          return classname;
+        },
+        createPanelBody: function () {
+          return angular.element('<div class="panel-body"></div>');
+        },
+        createInputGroup: function () {
+          return angular.element('<div class="input-group-btn"></div>');
+        },
+        createButton: function (glyphiconClassName) {
+          var btn = angular.element('<button class="btn btn-default"></button>');
+          var icon = this.createIcon(glyphiconClassName);
+          if (icon != null) {
+            btn.append(icon);
+          }
+          return btn;
+        },
+        createIcon: function (glyphiconClassName) {
+          var elt = null;
+          if (angular.isDefined(glyphiconClassName)) {
+            elt = angular.element('<span class="glyphicon ' + glyphiconClassName + '"></span>');
+          }
+          return elt;
+        },
+        addHasError: function (elt) {
+          angular.element(elt).addClass('has-error');
+        },
+        hasBody: function (panel) {
+          var hasBody = false;
+          var children = panel.children();
+          for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            if (hasBody = angular.element(child).hasClass('panel-body')) {
+              break;
+            }
+          }
+          return hasBody;
+        }
+      };
+    }
+  ]);
+  angularListGroupServices.factory('listGroupPanelWrapper', [
+    '$templateCache',
+    '$animate',
+    function ($templateCache, $animate) {
+      return {
+        $$panel: null,
+        $$inlineEditionform: null,
+        wrap: function (elt) {
+          this.$$panel = elt;
+          return this;
+        },
+        appendInlineCreateForm: function (comp) {
+          if (!this.$$inlineEditionform) {
+            this.$$inlineEditionform = comp;
+            var children = angular.element(this.$$panel).children();
+            for (var i = 0; i < children.length; i++) {
+              var child = angular.element(children[i]);
+              if (child.hasClass('panel-heading') || child.hasClass('panel-body')) {
+                var container = angular.element('<div></div>');
+                child.after(container);
+                $animate.enter(comp, container).then(function () {
+                  console.log('sdlkmfjqsmlkfjdsqlfj');
+                });
+                break;
+              }
+            }
+          }
+          return this;
+        },
+        removeInlineCreateForm: function () {
+          var removed = false;
+          var that = this;
+          if (this.$$inlineEditionform != null) {
+            var container = this.$$inlineEditionform.parent();
+            $animate.leave(this.$$inlineEditionform).then(function () {
+              container.remove();
+              that.$$inlineEditionform = null;
+            });
+          }
+          return removed;
+        },
+        focusInlineCreateForm: function () {
+          if (this.$$inlineEditionform != null && this.$$inlineEditionform.find('input')[0]) {
+            this.$$inlineEditionform.find('input')[0].focus();
+          }
+          return this;
+        },
+        setInlineCreateFormOnError: function () {
+          this.$$inlineEditionform.addClass('has-error');
+        }
+      };
     }
   ]);
   var ListGroupCtrl = function ($scope, $parse, $filter, comparatorFactory) {
@@ -372,8 +479,10 @@
     '$parse',
     '$templateCache',
     '$timeout',
+    'listGroupComponentFactory',
+    '$animate',
     '$log',
-    function ($compile, $parse, $templateCache, $timeout, $log) {
+    function ($compile, $parse, $templateCache, $timeout, listGroupComponentFactory, $animate, $log) {
       var ListInputGroupItemCtrl = [
           '$scope',
           '$element',
@@ -391,29 +500,20 @@
               editedValue: null
             };
             /**
-		 * Render options
-		 */
-            $scope.options = {
-              action: {
-                display: {
-                  label: false,
-                  icon: true
-                }
-              }
-            };
-            /**
 		 * Selection change handler
 		 */
-            $scope.selectionChange = function (newVal, oldVal) {
-              $parse($attrs['selectable']).assign($scope, newVal);
+            $scope.$onSelectionChange = function () {
+              var selected = $scope.$$model.selected;
+              console.log('selected => ' + selected);
             };
-            var sizeClassnameMap = {
-                'small': 'input-group-sm',
-                'large': 'input-group-lg'
-              };
-            this.resolveSizeClassname = function (size) {
-              return sizeClassnameMap[size];
-            };
+            $scope.selectionChangeHandler = null;
+            $scope.$watch('$$model.selected', function () {
+              if ($scope.selectionChangeHandler == null) {
+                $scope.selectionChangeHandler = $scope.$onSelectionChange;
+              } else {
+                $scope.$onSelectionChange();
+              }
+            });
           }
         ];
       return {
@@ -434,21 +534,21 @@
             var editing = false;
             var listInputGroupItemCtrl = ctrls[0];
             var listGroupEditorCtrl = ctrls[1];
-            // cancel inline edition
-            scope.$cancel = function () {
-              endEditing();
-            };
-            // validate inline edition
-            scope.$update = function () {
-              var oldValue = scope.$$item;
-              var newValue = scope.$$model.editedValue;
-              if (listGroupEditorCtrl.$updateValue(oldValue, newValue)) {
+            scope.$inlineEdition = {
+              cancel: function () {
                 endEditing();
-              } else {
-                angular.element(element.children()[0]).addClass('has-error');
+              },
+              update: function () {
+                var oldValue = scope.$$item;
+                var newValue = scope.$$model.editedValue;
+                if (listGroupEditorCtrl.updateItem(oldValue, newValue)) {
+                  endEditing();
+                } else {
+                  listGroupComponentFactory.addHasError(element.children()[0]);
+                }
               }
             };
-            var sizeClassname = listInputGroupItemCtrl.resolveSizeClassname(attrs.size);
+            var sizeClassname = listGroupComponentFactory.resolveSizeClassName(attrs.size);
             if (sizeClassname) {
               element.addClass(sizeClassname);
             }
@@ -472,60 +572,61 @@
               element.append(newElm);
             }
             function beginEditing() {
-              $log.debug('start editing...');
               if (!editing) {
                 scope.$apply(function () {
                   editing = true;
                   scope.$$model.editedValue = scope.$$item;
                   var tpl = listGroupEditorCtrl.getEditTemplate();
-                  var editElm = $compile(tpl)(scope.$new());
+                  var editElm = $compile(tpl)(scope);
                   var readElm = angular.element(element.children()[0]);
                   readElm.addClass(hiddenElementClassname);
-                  element.prepend(editElm);
-                  $timeout(function () {
-                    var elts = angular.element(editElm).find('input');
-                    if (elts && elts[0]) {
-                      elts[0].focus();
-                      elts[0].select();
-                    }
+                  $animate.enter(editElm, element).then(function () {
+                    $timeout(function () {
+                      var elts = angular.element(editElm).find('input');
+                      if (elts && elts[0]) {
+                        elts[0].focus();
+                        elts[0].select();
+                      }
+                    });
                   });
                 });
               }
             }
             function endEditing() {
+              var promise = null;
               if (editing) {
                 var readElm = angular.element(element.children()[1]);
                 var editElm = angular.element(element.children()[0]);
-                editElm.remove();
-                readElm.removeClass(hiddenElementClassname);
-                editing = false;
-                scope.$$model.editedValue = null;
+                promise = $animate.leave(editElm);
+                promise.then(function () {
+                  readElm.removeClass(hiddenElementClassname);
+                  editing = false;
+                  scope.$$model.editedValue = null;
+                });
               }
+              return promise;
             }
-            var actions = listGroupEditorCtrl.$$getActions();
-            angular.forEach(actions, function (action) {
-              var inputGroup = angular.element('<div class="input-group-btn"></div>');
-              var btn = angular.element('<button class="btn btn-default"></button>');
-              if (listGroupEditorCtrl.isInlineEditionMode()) {
-                btn.bind('click', function () {
-                  beginEditing();
-                });
-              } else {
-                var fn = $parse(action.fn);
-                btn.bind('click', function () {
-                  scope.$apply(function () {
-                    fn(scope.$parent.$parent.$parent, { $item: scope.$$item });
-                  });
-                });
-              }
-              var icon = angular.element('<span class="glyphicon"></span>');
-              if (action.icon) {
-                icon.addClass(action.icon);
-              }
-              btn.append(icon);
-              inputGroup.append(btn);
-              element.append(inputGroup);
-            });
+            function buildActions(actions, inlineEditionMode) {
+              angular.forEach(actions, function (action) {
+                var inputGroup = listGroupComponentFactory.createInputGroup();
+                var btn = listGroupComponentFactory.createButton(action.icon);
+                var onClickFn = null;
+                if (inlineEditionMode) {
+                  onClickFn = beginEditing;
+                } else {
+                  var fn = $parse(action.fn);
+                  onClickFn = function () {
+                    scope.$apply(function () {
+                      fn(scope.$parent.$parent, { $item: scope.$$item });
+                    });
+                  };
+                }
+                btn.bind('click', onClickFn);
+                inputGroup.append(btn);
+                element.append(inputGroup);
+              });
+            }
+            buildActions(listGroupEditorCtrl.$$getActions(), listGroupEditorCtrl.isInlineEditionMode());
           };
         }
       };
@@ -555,8 +656,8 @@
         'fn': '$cancel(item)'
       }
     };
-  var ListGroupEditorCtrl = function ($scope, $parse, $filter, comparatorFactory, $templateCache) {
-    new ListGroupCtrl($scope, $parse, $filter, comparatorFactory);
+  var ListGroupEditorCtrl = function ($scope, $parse, $filter, $templateCache, listGroupComponentFactory) {
+    new ListGroupCtrl($scope, $parse, $filter);
     this.template;
     this.editTemplate;
     this.$$actions = [];
@@ -582,16 +683,31 @@
     /**
      * 
      */
-    this.$updateValue = function (oldValue, newValue) {
+    this.updateItem = function (oldValue, newValue) {
       var updated = false;
       if (this.isNewValue(newValue)) {
         for (var i = 0, len = $scope.items.length; i < len; i++) {
           if ($scope.items[i] === oldValue) {
             $scope.items[i] = newValue;
+            updated = true;
           }
         }
       }
       return updated;
+    };
+    /**
+     * Add a new item to the list of items
+     * 
+     * @param item
+     *                item to add to the list of items
+     */
+    this.addItem = function (value) {
+      var added = false;
+      if (this.isNewValue(value)) {
+        $scope.items.push(value);
+        added = true;
+      }
+      return added;
     };
     this.isNewValue = function (newValue) {
       return angular.isString(newValue) && $scope.items.indexOf(newValue) == -1;
@@ -623,6 +739,12 @@
         this.$$actions.push(action);
       }
     };
+    $scope.isInlineEditionMode = function () {
+      return $scope.editable == 'inline';
+    };
+    $scope.hasPanelHeading = function () {
+      return angular.isDefined($scope.title) || $scope.isInlineEditionMode();
+    };
   };
   angularListGroupDirectives.directive('listGroupEditor', [
     '$parse',
@@ -631,7 +753,9 @@
     '$q',
     '$http',
     '$templateCache',
-    function ($parse, $compile, $interpolate, $q, $http, $templateCache) {
+    'listGroupComponentFactory',
+    'listGroupPanelWrapper',
+    function ($parse, $compile, $interpolate, $q, $http, $templateCache, componentFactory, panelWrapper) {
       return {
         restrict: 'EA',
         terminal: true,
@@ -639,17 +763,11 @@
         template: function (elem, attrs) {
           return $templateCache.get('panel-list-group.html');
         },
-        controller: [
-          '$scope',
-          '$parse',
-          '$filter',
-          'comparatorFactory',
-          '$templateCache',
-          ListGroupEditorCtrl
-        ],
+        controller: ListGroupEditorCtrl,
         scope: {
           items: '=',
           selectable: '@',
+          onSelectionChange: '&',
           filterable: '@',
           selectionChange: '@',
           contextualClass: '@',
@@ -672,12 +790,45 @@
               return 'panel-toolbar ' + fn();
             };
           }
-          var itemElt = angular.element('<list-input-group-item ng-repeat="$$item in items"></list-input-group-item>');
-          if (scope.size) {
-            itemElt.attr('size', scope.size);
-          }
+          var itemElt = angular.element('<list-input-group-item ng-repeat="$$item in items" class="list-input-group-item"></list-input-group-item>');
+          var attNames = [
+              'size',
+              'selectable'
+            ];
+          angular.forEach(attNames, function (attName) {
+            if (scope[attName]) {
+              itemElt.attr(attName, scope[attName]);
+            }
+          });
+          // if (scope.size) {
+          // itemElt.attr('size', scope.size);
+          // }
           element.append(itemElt);
           $compile(element)(scope);
+          scope.$$model = { editedValue: null };
+          scope.$inlineEdition = {
+            cancel: function () {
+              panelWrapper.wrap(element).removeInlineCreateForm();
+            },
+            onCreate: function () {
+              if (!componentFactory.hasBody(element)) {
+                var body = componentFactory.createPanelBody();
+                body.addClass('inline-create-form');
+                var comp = $compile(ctrl.getEditTemplate())(scope);
+                body.append(comp);
+                panelWrapper.wrap(element).appendInlineCreateForm(body).focusInlineCreateForm();
+              }
+            },
+            update: function () {
+              var wrapper = panelWrapper.wrap(element);
+              if (ctrl.addItem(scope.$$model.editedValue)) {
+                scope.$$model.editedValue = null;
+                wrapper.removeInlineCreateForm();
+              } else {
+                wrapper.setInlineCreateFormOnError();
+              }
+            }
+          };
         }
       };
     }
@@ -686,8 +837,10 @@
     '$templateCache',
     function ($templateCache) {
       $templateCache.put('checkbox-input-group-addon.html', '<span class="input-group-addon"><input type="checkbox" ng-model="$$model.selected"></span>');
-      $templateCache.put('edit-inline-input.tpl.html', '<div class="input-group"><input type="text" class="form-control" ng-model="$$model.editedValue"><span class="input-group-btn"><button class="btn btn-default" type="button" ng-click="$update()"><span class="glyphicon glyphicon-ok"></span></button> <button class="btn btn-default" type="button" ng-click="$cancel()"><span class="glyphicon glyphicon-remove"></span></button></span></div>');
-      $templateCache.put('panel-list-group.html', '<div class="panel" ng-class="$resolvePanelClasses()" ng-cloak=""><div class="panel-heading" ng-if="title || editable == \'inline\'" ng-class="{\'panel-heading-no-body\' : !$isFilterable()}"><h4 class="panel-title"><span ng-bind="title"></span><div class="btn-group btn-group-sm" ng-if="editable == \'inline\'"><button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></button></div></h4></div><div class="panel-body" ng-if="$isFilterable()"><div class="input-group" ng-if="!filter.autoFilter"><input type="text" class="form-control" placeholder="{{filter.placeholder}}" ng-model="filter.text"><div class="input-group-btn"><button class="btn btn-default" ng-click="$filter()" ng-disabled="!filter"><i class="glyphicon glyphicon-search"></i></button></div></div><input type="text" class="form-control" placeholder="{{filter.placeholder}}" ng-model="filter.text" ng-if="filter.autoFilter"></div><div class="panel-footer" ng-if="$displayFooter()" ng-bind-html="footer"></div></div>');
+      $templateCache.put('edit-inline-input.tpl.html', '<div class="input-group"><input type="text" class="form-control" ng-model="$$model.editedValue"><span class="input-group-btn"><button class="btn btn-default" type="button" ng-click="$inlineEdition.update()"><span class="glyphicon glyphicon-ok"></span></button> <button class="btn btn-default" type="button" ng-click="$inlineEdition.cancel()"><span class="glyphicon glyphicon-remove"></span></button></span></div>');
+      $templateCache.put('filter.tpl.html', '<div class="input-group"><div input-filter=""></div><div class="input-group-btn"><button class="btn btn-default" ng-click="$filter()" ng-disabled="!filter"><i class="glyphicon glyphicon-search"></i></button></div></div>');
+      $templateCache.put('input-filter.tpl.html', '<input type="text" class="form-control" placeholder="{{filter.placeholder}}" ng-model="filter.text">');
+      $templateCache.put('panel-list-group.html', '<div class="panel" ng-class="$resolvePanelClasses()" ng-cloak=""><div class="panel-heading" ng-if="hasPanelHeading" ng-class="{\'panel-heading-no-body\' : !$isFilterable()}"><h4 class="panel-title"><span ng-bind="title"></span><div class="btn-group btn-group-sm" ng-if="editable == \'inline\'"><button class="btn btn-default" ng-click="$inlineEdition.onCreate()"><span class="glyphicon glyphicon-plus"></span></button></div></h4></div><div class="panel-body" ng-if="$isFilterable()"><div class="input-group" ng-if="!filter.autoFilter"><input type="text" class="form-control" placeholder="{{filter.placeholder}}" ng-model="filter.text"><div class="input-group-btn"><button class="btn btn-default" ng-click="$filter()" ng-disabled="!filter"><i class="glyphicon glyphicon-search"></i></button></div></div><input type="text" class="form-control" placeholder="{{filter.placeholder}}" ng-model="filter.text" ng-if="filter.autoFilter"></div><div class="panel-footer" ng-if="$displayFooter()" ng-bind-html="footer"></div></div>');
     }
   ]);
 }(window, document));

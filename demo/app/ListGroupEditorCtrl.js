@@ -17,7 +17,7 @@ demo
 
 			    $scope.msg02 = '&nbsp;';
 
-			    $scope.template = '<div class="row"><div class="col-xs-1">{{item.nb}}</div><div class="col-xs-10">{{item.title}}</div><div class="col-xs-1">{{item.time}}</div></div>';
+			    $scope.template = '<div class="row"><div class="col-xs-1">{{$$item.nb}}</div><div class="col-xs-10">{{$$item.title}}</div><div class="col-xs-1">{{$$item.time}}</div></div>';
 
 			    $scope.tracks = [
 
@@ -90,12 +90,12 @@ demo
 				$log.debug('ListGroupEditorCtrl::play => ' + angular.toJson($item));
 				$scope.msg02 = $scope.$message('play', angular.toJson($item));
 			    }
-			    
+
 			    $scope.pause = function($item) {
 				$log.debug('ListGroupEditorCtrl::pause => ' + angular.toJson($item));
 				$scope.msg02 = $scope.$message('pause', angular.toJson($item));
 			    }
-			    
+
 			    $scope.stop = function($item) {
 				$log.debug('ListGroupEditorCtrl::stop => ' + angular.toJson($item));
 				$scope.msg02 = $scope.$message('stop', angular.toJson($item));
@@ -108,6 +108,12 @@ demo
 				text += $item
 				text += '\'';
 				return text;
+			    }
+
+			    $scope.selection01;
+
+			    $scope.selectionChangeHandler01 = function(items) {
+				$scope.selection01 = items;
 			    }
 
 			} ]);

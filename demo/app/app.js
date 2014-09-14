@@ -33,6 +33,9 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' 
 	    }).when('/listgroupeditor/inline', {
 		templateUrl : 'partials/listgroupeditor/inline.html',
 		controller : 'ListGroupEditorCtrl'
+	    }).when('/listgroupeditor/selectable', {
+		templateUrl : 'partials/listgroupeditor/selectable.html',
+		controller : 'ListGroupEditorCtrl'
 	    }).otherwise({
 		redirectTo : '/listgroup/basic'
 	    });
@@ -77,6 +80,9 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' 
 	}, {
 	    'title' : 'Inline editing',
 	    'path' : '/listgroupeditor/inline'
+	}, {
+	    'title' : 'Selectable',
+	    'path' : '/listgroupeditor/selectable'
 	} ]
     } ];
 

@@ -1,10 +1,12 @@
 <div class="input-group">
 	<input type="text" class="form-control" ng-model="$$model.editedValue">
 	<span class="input-group-btn">
-		<button class="btn btn-default" type="button" ng-click="$update()">
+		<button class="btn btn-default" type="button"
+			ng-click="$inlineEdition.update()">
 			<span class="glyphicon glyphicon-ok"></span>
 		</button>
-		<button class="btn btn-default" type="button" ng-click="$cancel()">
+		<button class="btn btn-default" type="button"
+			ng-click="$inlineEdition.cancel()">
 			<span class="glyphicon glyphicon-remove"></span>
 		</button>
 	</span>

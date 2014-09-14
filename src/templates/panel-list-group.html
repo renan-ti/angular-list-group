@@ -1,11 +1,11 @@
 <div class="panel" ng-class="$resolvePanelClasses()" ng-cloak>
 
-	<div class="panel-heading" ng-if="title || editable == 'inline'"
+	<div class="panel-heading" ng-if="hasPanelHeading"
 		ng-class="{'panel-heading-no-body' : !$isFilterable()}">
 		<h4 class="panel-title">
 			<span ng-bind="title"></span>
 			<div class="btn-group btn-group-sm" ng-if="editable == 'inline'">
-				<button class="btn btn-default">
+				<button class="btn btn-default" ng-click="$inlineEdition.onCreate()">
 					<span class="glyphicon glyphicon-plus"></span>
 				</button>
 			</div>
@@ -23,7 +23,6 @@
 				</button>
 			</div>
 		</div>
-
 		<input type="text" class="form-control"
 			placeholder="{{filter.placeholder}}" ng-model="filter.text"
 			ng-if="filter.autoFilter">

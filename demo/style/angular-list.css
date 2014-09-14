@@ -45,6 +45,15 @@
 	border-left-width: 0px !important;
 }
 
+.panel>.list-input-group-item >.input-group-addon {
+	border-radius : 0px;
+}
+
+.panel>.list-input-group-item >.input-group-addon:last-child {
+	border-bottom-left-radius:4px;
+}
+
+
 .panel>.list-group-item>.form-control,.panel>.list-group-item>.input-group-btn,.panel>.list-group-item>.input-group-btn>.btn
 	{
 	background-color: inherit;
@@ -68,4 +77,32 @@
 	position: absolute;
 	right: 5px;
 	top: 5px;
+}
+
+.input-group.ng-enter {
+	opacity : 0;
+	animation: fadeIn 0.25s;
+}
+
+.input-group.ng-leave {
+	animation: fadeOut 0.25s;
+}
+
+
+ .list-input-group-item.ng-enter {
+	opacity : 0;
+	animation: fadeIn 0.5s;
+}
+
+.inline-create-form.ng-leave, .list-input-group-item.ng-leave {
+	animation: fadeOut 0.5s;
+}
+
+.inline-create-form.ng-enter {
+	opacity : 0;
+	animation: fadeInDown 1s;
+}
+
+.inline-create-form.ng-leave {
+	animation: fadeOutDown 0.5s;
 }
