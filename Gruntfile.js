@@ -39,13 +39,9 @@ module.exports = function(grunt) {
 		    },
 		    stripBanners : true
 		},
-		src : [ '<%= src %>/*.js', 
-		        '<%= src%>/filter/*.js',
-		        '<%= src%>/service/*.js', 
-		        '<%= src %>/directive/list-group.js',
-		        '<%= src %>/directive/list-input-group-item.js',
-		        '<%= src %>/directive/list-group-editor.js',
-			'<%= build %>/templates.js' ],
+		src : [ '<%= src %>/*.js', '<%= src%>/filter/*.js', '<%= src%>/service/*.js',
+			'<%= src %>/directive/list-group.js', '<%= src %>/directive/list-input-group-item.js',
+			'<%= src %>/directive/list-group-editor.js', '<%= build %>/templates.js' ],
 		dest : '<%= dist %>/<%= pkg.name %>.js',
 	    },
 	    banner : {
@@ -113,13 +109,18 @@ module.exports = function(grunt) {
 		title : 'API Documentation'
 	    }
 	},
-	connect : {
+	karma : {
+	    unit : {
+		configFile : 'karma.conf.js'
+	    }
+	},
+	'gh-pages' : {
 	    options : {
-		keepalive : true
+		base : 'demo',
+		message : 'Auto-generated commit'
 	    },
-	    server : {}
-	}
-
+	    src : [ '**' ]
+	},
     });
 
     grunt.loadNpmTasks('grunt-angular-templates');
@@ -129,11 +130,15 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-ngdocs');
-    grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-gh-pages');
+    grunt.loadNpmTasks('grunt-karma');
 
     // grunt.registerTask('build', [ 'ngtemplates', 'concat:dist', 'ngmin:dist',
     // 'uglify:dist', 'concat:banner', 'clean:build' ]);
     grunt.registerTask('build', [ 'ngtemplates', 'concat:dist', 'ngmin:dist', 'clean:build' ]);
 
     grunt.registerTask('docs', [ 'clean:docs', 'ngdocs' ]);
+    grunt.registerTask('deploy-demo', [ 'gh-pages' ]);
+
+    grunt.registerTask('test', [ 'karma' ]);
 };
