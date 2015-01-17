@@ -1,0 +1,26 @@
+{
+  "name": "angular-list-group-demo",
+  "description": "Demo App for AngularListGroup",
+  "version": "0.0.1",
+  "keywords": [
+    "angular",
+    "bootstrap",
+    "list group"
+  ],
+  "homepage": "http://gnavarro77.github.io/angular-list-group",
+  "author": {
+    "name": "Gilles Navarro",
+    "url": "https://github.com/gnavarro77"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gnavarro77/angular-list-group.git"
+  },
+  "dependencies": {
+    "angular": "~1.3.9",
+    "angular-animate": "~1.3.9",
+    "angular-route": "~1.3.9",
+    "angular-sanitize": "~1.3.9",
+    "bootstrap-css": "~3.2.0"
+  }
+}
