@@ -1,0 +1,55 @@
+<div class="col-md-4">
+	<pre>
+&#60;list-group 
+	items="colors" 
+	selectable="true"
+	selection-change="selectionChangeHandler01(item)"> 
+&#60;/list-group>	
+</pre>
+	<list-group items="colors" selectable="true"
+		selection-change="selectionChangeHandler01(item)"> </list-group>
+	<div>
+		<label>Selected item</label> : <span ng-bind="selection01"></span>
+	</div>
+</div>
+
+<div class="col-md-4">
+	<pre>
+&#60;list-group 
+	items="colors" 
+	selectable="single"
+	selection-change="selectionChangeHandler02(item)"> 
+&#60;/list-group>	
+</pre>
+	<list-group items="colors" selectable="single"
+		selection-change="selectionChangeHandler02(item)"> </list-group>
+	<div>
+		<label>Selected item</label> : <span ng-bind="selection02"></span>
+	</div>
+</div>
+
+<div class="col-md-4">
+	<pre>
+&#60;list-group 
+	items="colors" 
+	selectable="multiple"
+	selection-change="selectionChangeHandler03(items)"> 
+&#60;/list-group>	
+</pre>
+	<list-group items="colors" selectable="multiple"
+		selection-change="selectionChangeHandler03(items)"> </list-group>
+	<div>
+		<label>Selected item</label> : <span ng-bind="selection03"></span>
+	</div>
+</div>
+
+<!-- <div class="col-md-4"> -->
+<!-- 	<form class="form-horizontal" role="form"> -->
+<!-- 		<div class="form-group"> -->
+<!-- 			<label class="col-sm-4 control-label">Selected Item</label> -->
+<!-- 			<div class="col-sm-8"> -->
+<!-- 				<p class="form-control-static" ng-bind="selectedItem"></p> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 	</form> -->
+<!-- </div> -->
