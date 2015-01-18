@@ -1,4 +1,4 @@
-# Angular List Group - [AngularJS](http://angularjs.org/) directives based upon and around [Bootstrap](http://getbootstrap.com) list group component
+# Angular List Group - [AngularJS](http://angularjs.org/) directives based upon and around [Bootstrap](http://getbootstrap.com) [list group](http://getbootstrap.com/components/#list-group) component
 
 ***
 
