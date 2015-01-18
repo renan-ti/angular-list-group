@@ -1,4 +1,4 @@
-var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' ]).config(
+var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'listGroup' ]).config(
 	[ '$routeProvider', '$sceDelegateProvider', function($routeProvider, $sceDelegateProvider) {
 
 	    $routeProvider.when('/item', {
@@ -95,4 +95,15 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' 
 
     $scope.item = "Gustave Courbet";
 
+} ]);
+
+demo.directive('prism', [ function() {
+    return {
+	restrict : 'A',
+	link : function($scope, element, attrs) {
+	    element.ready(function() {
+		Prism.highlightElement(element[0]);
+	    });
+	}
+    }
 } ]);

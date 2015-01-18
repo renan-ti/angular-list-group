@@ -17,6 +17,26 @@ demo
 
 			    $scope.colors = [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet' ];
 
+			    $scope.colors2 = [ {
+				'name' : 'Red',
+				'hex' : '#FF0000'
+			    }, {
+				'name' : 'Orange',
+				'hex' : '#FF7F00'
+			    } ];
+
+			    $scope.colors3 = [ {
+				'label' : 'Red',
+				'hex' : '#FF0000'
+			    }, {
+				'label' : 'Orange',
+				'hex' : '#FF7F00'
+			    } ];
+
+			    $scope.myLabelFn = function(item) {
+				return item.name + ' (' + item.hex + ')';
+			    }
+
 			    $scope.paintings = [
 				    {
 					'title' : 'Blue Dancers, c.1899',
