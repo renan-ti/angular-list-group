@@ -118,7 +118,7 @@ module.exports = function(grunt) {
 		base : 'demo',
 		message : 'Auto-generated commit'
 	    },
-	    src : [ '**' ]
+	    src : [ 'index.html', 'app/**', 'bower_components/**', 'partials/**', 'style/**' ]
 	},
     });
 
