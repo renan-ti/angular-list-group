@@ -1,4 +1,4 @@
-var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'angularListGroup' ]).config(
+var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'listGroup' ]).config(
 	[ '$routeProvider', '$sceDelegateProvider', function($routeProvider, $sceDelegateProvider) {
 
 	    $routeProvider.when('/item', {

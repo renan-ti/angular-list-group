@@ -21,7 +21,7 @@ module.exports = function(grunt) {
 		src : '*.html',
 		dest : '<%= build %>/templates.js',
 		options : {
-		    module : 'angularListGroup',
+		    module : 'listGroup',
 		    htmlmin : {
 			collapseWhitespace : true,
 			collapseBooleanAttributes : true
@@ -40,8 +40,7 @@ module.exports = function(grunt) {
 		    stripBanners : true
 		},
 		src : [ '<%= src %>/*.js', '<%= src%>/filter/*.js', '<%= src%>/service/*.js',
-			'<%= src %>/directive/list-group.js', '<%= src %>/directive/list-input-group-item.js',
-			'<%= src %>/directive/list-group-editor.js', '<%= build %>/templates.js' ],
+			'<%= src %>/directive/*.js', '<%= build %>/templates.js' ],
 		dest : '<%= dist %>/<%= pkg.name %>.js',
 	    },
 	    banner : {
@@ -60,7 +59,7 @@ module.exports = function(grunt) {
 	    dist : {
 		files : [ {
 		    src : '<%= dist %>/<%= pkg.name %>.js',
-		    dest : '<%= dist %>/<%= pkg.name %>.js'
+		    dest : '<%= dist %>/<%= pkg.name %>.min.js'
 		} ]
 	    }
 	},
@@ -88,7 +87,7 @@ module.exports = function(grunt) {
 		    expand : true,
 		    cwd : '<%= dist %>',
 		    src : [ '<%= pkg.name %>.js', '<%= pkg.name %>.min.js' ],
-		    dest : 'demo'
+		    dest : 'demo/bower_components/<%= pkg.name %>/<%= dist %>'
 		} ]
 	    }
 	},
@@ -138,6 +137,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', [ 'ngtemplates', 'concat:dist', 'ngmin:dist', 'clean:build' ]);
 
     grunt.registerTask('docs', [ 'clean:docs', 'ngdocs' ]);
+    grunt.registerTask('build:demo', [ 'build', 'copy:demo' ]);
     grunt.registerTask('deploy-demo', [ 'gh-pages' ]);
 
     grunt.registerTask('test', [ 'karma' ]);

@@ -1,17 +1,116 @@
 <div class="row">
-
-</div>
-
-<div class="row">
 	<div class="col-md-3">
-
+		<div class="well">
+			In its most basic usage the
+			<code>listGroup</code>
+			directive simply renders the specified
+			<code>items</code>
+			as a Boostrap
+			<code>list group</code>
+			component.
+		</div>
+		<h3>Controller</h3>
+		<pre>
+			<code class="language-javascript" prism>
+$scope.colors=[ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet' ];
+			</code>
+		</pre>
+		<h3>Markup</h3>
 		<pre>
 			<code class="language-markup" prism>
 &#60;list-group items="colors">&#60;/list-group>	
 			</code>
 </pre>
-		
 		<list-group items="colors"> </list-group>
 	</div>
+
+	<div class="col-md-3">
+		<div class="well">
+			In case the backing Controller are objects, the default behaviour is
+			to delegate the burden of the serialization to
+			<code>angularJS</code>
+		</div>
+		<h3>Controller</h3>
+		<pre>
+			<code class="language-javascript" prism>
+$scope.colors2 = [ {
+	'name' : 'Red',
+	'hex' : '#FF0000'
+   }, {
+	'name' : 'Orange',
+	'hex' : '#FF7F00'
+   } ];
+			</code>
+		</pre>
+		<h3>Markup</h3>
+		<pre>
+			<code class="language-markup" prism>
+&#60;list-group items="colors2">&#60;/list-group>	
+			</code>
+</pre>
+		<list-group items="colors2"> </list-group>
+	</div>
+
+	<div class="col-md-3">
+		<div class="well">
+			If objects have a property named
+			<code>label</code>
+			then the value of this property will be used to render the
+			<code>items</code>
+		</div>
+		<h3>Controller</h3>
+		<pre>
+			<code class="language-javascript" prism>
+$scope.colors3 = [ {
+	'label' : 'Red',
+	'hex' : '#FF0000'
+   }, {
+	'label' : 'Orange',
+	'hex' : '#FF7F00'
+   } ];
+			</code>
+		</pre>
+		<h3>Markup</h3>
+		<pre>
+			<code class="language-markup" prism>
+&#60;list-group items="colors3">&#60;/list-group>	
+			</code>
+</pre>
+		<list-group items="colors3"> </list-group>
+	</div>
+
+	<div class="col-md-3">
+		<div class="well">
+			If none of this fits your needs, you can render
+			<code>items</code>
+			on your own by setting a
+			<code>label-fn</code>
+		</div>
+		<h3>Controller</h3>
+		<pre>
+			<code class="language-javascript" prism>
+$scope.colors2 = [ {
+	'name' : 'Red',
+	'hex' : '#FF0000'
+   }, {
+	'name' : 'Orange',
+	'hex' : '#FF7F00'
+   } ];
+   
+$scope.myLabelFn = function(item) {
+	return item.name + ' (' + item.hex + ')';
+}   
+			</code>
+		</pre>
+		<h3>Markup</h3>
+		<pre>
+			<code class="language-markup" prism>
+&#60;list-group items="colors2" 
+	label-fn="myLabelFn(item)">&#60;/list-group>	
+			</code>
+</pre>
+		<list-group items="colors2" label-fn="myLabelFn(item)"> </list-group>
+	</div>
+
 </div>
 
