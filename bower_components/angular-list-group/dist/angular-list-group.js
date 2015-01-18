@@ -624,6 +624,34 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 
 });
 var ListGroupCtrl = [ '$scope', '$attrs', '$parse', function($scope, $attrs, $parse) {
+
+    $scope.$selectedItems = [];
+
+    $scope.select = function(item) {
+	// if (!$scope.$isDisabled(item)) {
+	var idx = -1;
+	if ((idx = $scope.isSelected(item)) > -1) {
+	    $scope.$selectedItems.splice(idx, 1);
+	} else {
+	    if (!($attrs.selectable === 'multiple')) {
+		$scope.$selectedItems.length = 0;
+	    }
+	    $scope.$selectedItems.push(item);
+	}
+	// }
+    }
+
+    $scope.isSelected = function(item) {
+	var idx = -1;
+	for ( var i = 0, len = $scope.$selectedItems.length; i < len; i++) {
+	    if (item === $scope.$selectedItems[i]) {
+		idx = i;
+		break;
+	    }
+	}
+	return idx;
+    };
+
     $scope.resolveLabel = function(item) {
 	var label = item;
 
@@ -637,6 +665,17 @@ var ListGroupCtrl = [ '$scope', '$attrs', '$parse', function($scope, $attrs, $pa
 	}
 	return label;
     }
+
+    var removeSelectedItemsListener = $scope.$watchCollection('$selectedItems', function(newValue, oldValue) {
+	if ($scope.selectedItems) {
+	    $scope.selectedItems = newValue;
+	}
+    });
+
+    $scope.$on('$destroy', function() {
+	removeSelectedItemsListener();
+    });
+
 } ];
 
 angularListGroupDirectives.directive('listGroup', [ '$templateCache', function($templateCache) {
@@ -644,12 +683,16 @@ angularListGroupDirectives.directive('listGroup', [ '$templateCache', function($
 	restrict : 'EA',
 	replace : true,
 	template : function(elem, attrs) {
-	    var tpl = $templateCache.get('list-group.tpl.html');
-	    return tpl;
+	    var templateName = 'list-group.tpl.html';
+	    if ('selectable' in attrs) {
+		templateName = 'linked-list-group.tpl.html';
+	    }
+	    return $templateCache.get(templateName);
 	},
 	controller : ListGroupCtrl,
 	scope : {
-	    items : '='
+	    items : '=',
+	    selectedItems : '='
 	}
     };
 } ]);
@@ -671,6 +714,11 @@ $templateCache.put('checkbox-input-group-addon.html',
 
   $templateCache.put('input-filter.tpl.html',
     "<input type=\"text\" class=\"form-control\" placeholder=\"{{filter.placeholder}}\" ng-model=\"filter.text\">"
+  );
+
+
+  $templateCache.put('linked-list-group.tpl.html',
+    "<div class=\"list-group\"><a ng-href=\"\" class=\"list-group-item\" ng-repeat=\"item in items\" ng-class=\"{active : (isSelected(item) != -1), disabled : isDisabled(item) }\" ng-click=\"select(item)\">{{resolveLabel(item)}}</a></div>"
   );
 
 

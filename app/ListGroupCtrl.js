@@ -36,6 +36,8 @@ demo
 			    $scope.myLabelFn = function(item) {
 				return item.name + ' (' + item.hex + ')';
 			    }
+			    
+			    $scope.mySelectedItems = [];
 
 			    $scope.paintings = [
 				    {
