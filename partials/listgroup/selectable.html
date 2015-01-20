@@ -80,3 +80,46 @@ $scope.mySelectedItems = [];
 		<div class="panel-body">{{mySelectedItems}}</div>
 	</div>
 </div>
+
+<div class="col-md-3">
+	<div class="well">
+		If you want you control over wich
+		<code>item</code>
+		is to be selected use
+		<code>before-selection-change</code>
+	</div>
+	<h3>Controller</h3>
+	<pre>
+		<code class="language-javascript" prism>
+$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];
+
+// Selection of the 'Red' item is not allowed
+$scope.beforeSelectionChangeHandler = function(item) {
+	return item != 'Red';
+}
+		</code>
+	</pre>
+	<h3>Markup</h3>
+	<pre>
+	<code class="language-markup" prism>
+&#60;list-group items="colors" selectable="multiple"
+	selected-items="mySelectedItems01"
+	before-selection-change="beforeSelectionChangeHandler(item)">
+&#60;/list-group>	
+	</code>
+	</pre>
+
+	<list-group items="colors" selectable="multiple"
+		selected-items="mySelectedItems01"
+		before-selection-change="beforeSelectionChangeHandler(item)">
+	</list-group>
+
+	<div class="panel panel-info">
+		<div class="panel-heading">
+			<h3 class="panel-title">Selected items</h3>
+		</div>
+		<div class="panel-body">{{mySelectedItems01}}</div>
+	</div>
+
+</div>

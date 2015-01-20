@@ -36,8 +36,14 @@ demo
 			    $scope.myLabelFn = function(item) {
 				return item.name + ' (' + item.hex + ')';
 			    }
-			    
+
 			    $scope.mySelectedItems = [];
+			    $scope.mySelectedItems01 = [];
+
+			    // Selection of the 'Red' item is not allowed
+			    $scope.beforeSelectionChangeHandler = function(item) {
+				return item != 'Red';
+			    }
 
 			    $scope.paintings = [
 				    {
