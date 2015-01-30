@@ -3,8 +3,10 @@ demo
 		'ListGroupCtrl',
 		[
 			'$scope',
+			'$q',
+			'$timeout',
 			'$sce',
-			function($scope, $sce) {
+			function($scope, $q, $timeout, $sce) {
 
 			    /**
 			     * 
@@ -39,10 +41,20 @@ demo
 
 			    $scope.mySelectedItems = [];
 			    $scope.mySelectedItems01 = [];
+			    $scope.mySelectedItems02 = [];
 
 			    // Selection of the 'Red' item is not allowed
 			    $scope.beforeSelectionChangeHandler = function(item) {
 				return item != 'Red';
+			    }
+
+			    $scope.beforeSelectionChangeAsyncHandler = function(item) {
+				var deferred = $q.defer();
+				var promise = deferred.promise;
+				$timeout(function() {
+				    deferred.resolve(true);
+				}, 500);
+				return promise;
 			    }
 
 			    $scope.paintings = [

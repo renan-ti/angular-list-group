@@ -23,7 +23,15 @@ var ListGroupCtrl = [
 			    "'beforeSelectionChange' returned undefined as value! Check the binding or the returned value");
 		}
 		if (output) {
-		    $scope.$selectItem(item);
+		    if (angular.isFunction(output.then)) {
+			output.then(function(returnedValue) {
+			    if (returnedValue === true) {
+				$scope.$selectItem(item);
+			    }
+			});
+		    } else {
+			$scope.$selectItem(item);
+		    }
 		}
 		// }
 	    }

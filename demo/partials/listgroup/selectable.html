@@ -83,10 +83,15 @@ $scope.mySelectedItems = [];
 
 <div class="col-md-3">
 	<div class="well">
-		If you want you control over wich
+		If you want control over
 		<code>item</code>
-		is to be selected use
+		selection, use
 		<code>before-selection-change</code>
+		. </br>Return
+		<code>false</code>
+		to prevent from selecting,
+		<code>true</code>
+		otherwise
 	</div>
 	<h3>Controller</h3>
 	<pre>
@@ -121,5 +126,53 @@ $scope.beforeSelectionChangeHandler = function(item) {
 		</div>
 		<div class="panel-body">{{mySelectedItems01}}</div>
 	</div>
+</div>
 
+<div class="col-md-3">
+	<div class="well">
+		In case you need to perform an async call simply return a
+		<code>promise</code>
+		that evaluates to
+		<code>true</code>
+		or
+		<code>false</code>
+		.
+	</div>
+	<h3>Controller</h3>
+	<pre>
+		<code class="language-javascript" prism>
+$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];
+
+$scope.beforeSelectionChangeAsyncHandler = function(item) {
+	var deferred = $q.defer();
+	var promise = deferred.promise;
+	$timeout(function() {
+	    deferred.resolve(true);
+	}, 500);
+	return promise;
+}			
+		</code>
+	</pre>
+	<h3>Markup</h3>
+	<pre>
+	<code class="language-markup" prism>
+&#60;list-group items="colors" selectable="multiple"
+	selected-items="mySelectedItems02"
+	before-selection-change="beforeSelectionChangeAsyncHandler(item)">
+&#60;/list-group>	
+	</code>
+	</pre>
+
+	<list-group items="colors" selectable="multiple"
+		selected-items="mySelectedItems02"
+		before-selection-change="beforeSelectionChangeAsyncHandler(item)">
+	</list-group>
+	
+	<div class="panel panel-info">
+		<div class="panel-heading">
+			<h3 class="panel-title">Selected items</h3>
+		</div>
+		<div class="panel-body">{{mySelectedItems02}}</div>
+	</div>
 </div>

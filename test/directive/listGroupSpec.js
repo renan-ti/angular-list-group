@@ -115,7 +115,6 @@ describe(
 		    function() {
 			$rootScope.$apply("colors = ['red','green','blue']");
 			$rootScope.beforeSelectionChangeHandler = function(item) {
-			    console.log('****** ' + item);
 			    return item != 'red';
 			}
 			var element = $compile(
@@ -127,5 +126,31 @@ describe(
 			redElt.triggerHandler('click');
 			expect(redElt.hasClass('active')).toBeFalsy();
 		    });
+
+	    it(
+		    'should handle beforeSelectionChange promise',
+		    inject(function($q, $timeout) {
+			var deferred = $q.defer();
+			var promise = deferred.promise;
+
+			$rootScope.$apply("colors = ['red','green','blue']");
+			$rootScope.beforeSelectionChangeHandler = function(item) {
+			    $timeout(function() {
+				deferred.resolve(true);
+			    });
+			    return promise;
+			}
+
+			var element = $compile(
+				'<list-group items="colors" selectable="multiple" before-selection-change="beforeSelectionChangeHandler(item)"> </list-group>')
+				($rootScope);
+			$rootScope.$digest();
+
+			var greenElt = angular.element(element.children()[1]);
+			greenElt.triggerHandler('click');
+			expect(greenElt.hasClass('active')).toBeFalsy();
+			$timeout.flush();
+			expect(greenElt.hasClass('active')).toBeTruthy();
+		    }));
 
 	});
