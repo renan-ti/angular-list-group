@@ -629,6 +629,9 @@ var ListGroupCtrl = [
 	'$parse',
 	function($scope, $attrs, $parse) {
 
+	    var noOp = function(item) {
+	    };
+
 	    var defaultBeforeSelectionChange = function(item) {
 		return true;
 	    };
@@ -637,28 +640,35 @@ var ListGroupCtrl = [
 
 	    $scope.beforeSelectionChange = (!$attrs.beforeSelectionChange) ? defaultBeforeSelectionChange
 		    : $scope.beforeSelectionChange;
+	    $scope.afterSelectionChange = (!$attrs.afterSelectionChange) ? noOp : $scope.afterSelectionChange;
 
 	    $scope.select = function(item) {
-		// if (!$scope.$isDisabled(item)) {
-		var output = $scope.beforeSelectionChange({
-		    item : item
-		});
-		if (angular.isUndefined(output)) {
-		    throw new Error(
-			    "'beforeSelectionChange' returned undefined as value! Check the binding or the returned value");
-		}
-		if (output) {
-		    if (angular.isFunction(output.then)) {
-			output.then(function(returnedValue) {
-			    if (returnedValue === true) {
-				$scope.$selectItem(item);
-			    }
-			});
-		    } else {
-			$scope.$selectItem(item);
+		if (!$scope.isDisabled(item)) {
+		    var output = $scope.beforeSelectionChange({
+			item : item
+		    });
+		    if (angular.isUndefined(output)) {
+			throw new Error(
+				"'beforeSelectionChange' returned undefined as value! Check the binding or the returned value");
+		    }
+		    if (output) {
+			if (angular.isFunction(output.then)) {
+			    output.then(function(returnedValue) {
+				if (returnedValue === true) {
+				    $scope.$selectItem(item);
+				    $scope.afterSelectionChange({
+					item : item
+				    });
+				}
+			    });
+			} else {
+			    $scope.$selectItem(item);
+			    $scope.afterSelectionChange({
+				item : item
+			    });
+			}
 		    }
 		}
-		// }
 	    }
 
 	    $scope.$selectItem = function(item) {
@@ -666,7 +676,7 @@ var ListGroupCtrl = [
 		if ((idx = $scope.isSelected(item)) > -1) {
 		    $scope.$selectedItems.splice(idx, 1);
 		} else {
-		    if (!($attrs.selectable === 'multiple')) {
+		    if (!($attrs.selectable == 'multiple')) {
 			$scope.$selectedItems.length = 0;
 		    }
 		    $scope.$selectedItems.push(item);
@@ -686,7 +696,6 @@ var ListGroupCtrl = [
 
 	    $scope.resolveLabel = function(item) {
 		var label = item;
-
 		if ($attrs.labelFn) {
 		    var fn = $parse($attrs.labelFn);
 		    label = fn($scope.$parent, {
@@ -696,7 +705,27 @@ var ListGroupCtrl = [
 		    label = item.label;
 		}
 		return label;
-	    }
+	    };
+	    /**
+	     * Returns <code>true</code> if the specified item if disabled,
+	     * <code>false</code> otherwise
+	     */
+	    $scope.isDisabled = function(item) {
+		var disabled = false;
+		if ($attrs.disabled) {
+		    if ($scope.disabled === true) {
+			disabled = $scope.disabled;
+		    } else {
+			var fn = $parse($attrs.disabled);
+			if (angular.isFunction(fn)) {
+			    disabled = fn($scope.$parent, {
+				item : item
+			    });
+			}
+		    }
+		}
+		return disabled;
+	    };
 
 	    var removeSelectedItemsListener = $scope.$watchCollection('$selectedItems', function(newValue, oldValue) {
 		if ($scope.selectedItems) {
@@ -725,7 +754,9 @@ angularListGroupDirectives.directive('listGroup', [ '$templateCache', function($
 	scope : {
 	    items : '=',
 	    selectedItems : '=?',
-	    beforeSelectionChange : '&?'
+	    beforeSelectionChange : '&?',
+	    afterSelectionChange : '&?',
+	    disabled : '@?'
 	}
     };
 } ]);
@@ -751,12 +782,12 @@ $templateCache.put('checkbox-input-group-addon.html',
 
 
   $templateCache.put('linked-list-group.tpl.html',
-    "<div class=\"list-group\"><a ng-href=\"\" class=\"list-group-item\" ng-repeat=\"item in items\" ng-class=\"{active : (isSelected(item) != -1), disabled : isDisabled(item) }\" ng-click=\"select(item)\">{{resolveLabel(item)}}</a></div>"
+    "<div class=\"list-group\"><a ng-href=\"\" class=\"list-group-item\" ng-repeat=\"item in items track by $index\" ng-class=\"{active : (isSelected(item) != -1), disabled : isDisabled(item) }\" ng-click=\"select(item)\">{{resolveLabel(item)}}</a></div>"
   );
 
 
   $templateCache.put('list-group.tpl.html',
-    "<ul class=\"list-group\"><li class=\"list-group-item\" data-ng-repeat=\"item in items\">{{resolveLabel(item)}}</li></ul>"
+    "<ul class=\"list-group\"><li class=\"list-group-item\" ng-class=\"resolveItemClass(item)\" data-ng-repeat=\"item in items track by $index\">{{resolveLabel(item)}}</li></ul>"
   );
 
 

@@ -53,11 +53,11 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'listGroup' ]).conf
 	    'title' : 'Selectable',
 	    'path' : '/listgroup/selectable'
 	}, {
-	    'title' : 'Contextual classes',
-	    'path' : '/listgroup/contextualclasses'
-	}, {
 	    'title' : 'Disabled items',
 	    'path' : '/listgroup/disabled'
+	}, {
+	    'title' : 'Contextual classes',
+	    'path' : '/listgroup/contextualclasses'
 	}, {
 	    'title' : 'Filtering',
 	    'path' : '/listgroup/filtering'

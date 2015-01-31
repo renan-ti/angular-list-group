@@ -1,27 +1,57 @@
-<div class="row">
 
-	<div class="col-md-4">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	selectable="true"
-	disabled="true"> 
-&#60;/list-group>	
+<div class="col-md-3">
+	<div class="well">
+		Use attribute
+		<code>disabled</code>
+		to enable/disable
+		<code>items</code>
+	</div>
+	<h3>Controller</h3>
+	<pre>
+<code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];
+
+$scope.disabled = true;</code>
+	</pre>
+	<h3>Markup</h3>
+	<pre>
+<code class="language-markup" prism>	
+&#60;list-group items="colors" selectable="true"
+	disabled="disabled"> 
+&#60;/list-group>
+</code>
 </pre>
-		<list-group items="colors" selectable="true" disabled="true">
-		</list-group>
+
+	<div>
+		<input type="checkbox" ng-model="disabled" /> disabled
 	</div>
 
-	<div class="col-md-4">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	selectable="true"
-	disabled="isDisabled(item)"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" selectable="true"
-			disabled="isDisabled(item)"> </list-group>
-	</div>
-
+	<list-group items="colors" selectable="true" disabled="disabled">
+	</list-group>
 </div>
+
+<div class="col-md-3">
+	<div class="well">
+		Pass in a callback function to control
+		<code>items</code>
+		to be disabled
+	</div>
+	<h3>Controller</h3>
+	<pre>
+<code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];
+
+$scope.disableFnHandler = function(item){
+	return item != 'Orange'; 
+}</code></pre>
+	<h3>Markup</h3>
+	<pre>
+<code class="language-markup" prism>&#60;list-group items="colors" 
+	selectable="true"
+	disabled="disableFnHandler(item)"> 
+&#60;/list-group></code></pre>
+
+	<list-group items="colors" selectable="true"
+		disabled="disableFnHandler(item)"></list-group>
+</div>
+
