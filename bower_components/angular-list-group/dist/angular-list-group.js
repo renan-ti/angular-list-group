@@ -706,6 +706,23 @@ var ListGroupCtrl = [
 		}
 		return label;
 	    };
+
+	    $scope.resolveContextualClass = function(item) {
+		var clazz = $scope.contextualClass;
+		if ($attrs.contextualClass) {
+		    var fn = $parse($attrs.contextualClass);
+		    if (angular.isFunction(fn)) {
+			var val = fn($scope.$parent, {
+			    item : item
+			});
+			if (val) {
+			    clazz = val;
+			}
+		    }
+		}
+		return clazz;
+	    }
+
 	    /**
 	     * Returns <code>true</code> if the specified item if disabled,
 	     * <code>false</code> otherwise
@@ -756,7 +773,8 @@ angularListGroupDirectives.directive('listGroup', [ '$templateCache', function($
 	    selectedItems : '=?',
 	    beforeSelectionChange : '&?',
 	    afterSelectionChange : '&?',
-	    disabled : '@?'
+	    disabled : '@?',
+	    contextualClass : '@?'
 	}
     };
 } ]);
@@ -782,12 +800,12 @@ $templateCache.put('checkbox-input-group-addon.html',
 
 
   $templateCache.put('linked-list-group.tpl.html',
-    "<div class=\"list-group\"><a ng-href=\"\" class=\"list-group-item\" ng-repeat=\"item in items track by $index\" ng-class=\"{active : (isSelected(item) != -1), disabled : isDisabled(item) }\" ng-click=\"select(item)\">{{resolveLabel(item)}}</a></div>"
+    "<div class=\"list-group\"><a ng-href=\"\" class=\"list-group-item {{resolveContextualClass(item)}}\" ng-repeat=\"item in items track by $index\" ng-class=\"{active : (isSelected(item) != -1), disabled : isDisabled(item) }\" ng-click=\"select(item)\">{{resolveLabel(item)}} {{contextualClass}}</a></div>"
   );
 
 
   $templateCache.put('list-group.tpl.html',
-    "<ul class=\"list-group\"><li class=\"list-group-item\" ng-class=\"resolveItemClass(item)\" data-ng-repeat=\"item in items track by $index\">{{resolveLabel(item)}}</li></ul>"
+    "<ul class=\"list-group\"><li class=\"list-group-item {{resolveContextualClass(item)}}\" data-ng-repeat=\"item in items track by $index\">{{resolveLabel(item)}}</li></ul>"
   );
 
 

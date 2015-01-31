@@ -67,6 +67,16 @@ demo
 				return item != 'Orange';
 			    };
 
+			    $scope.myContextualClass = 'list-group-item-warning';
+
+			    $scope.contextualClassFnHandler = function(item) {
+				var clazz = 'list-group-item-success';
+				if (item == 'Orange') {
+				    clazz = 'list-group-item-warning';
+				}
+				return clazz;
+			    };
+
 			    $scope.paintings = [
 				    {
 					'title' : 'Blue Dancers, c.1899',

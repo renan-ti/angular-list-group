@@ -1,111 +1,61 @@
-<div class="row">
-	<div class="col-md-3">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	contextual-class="success"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" contextual-class="success"></list-group>
+<div class="col-md-3">
+	<div class="well">
+		Use attribute
+		<code>contextual-class</code>
+		to add css class to
+		<code>items</code>
 	</div>
+	<h3>Controller</h3>
+<pre><code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];</code>
+	</pre>
+	<h3>Markup</h3>
+	<pre><code class="language-markup" prism>&#60;list-group items="colors"
+	contextual-class="list-group-item-success"> 
+&#60;/list-group></code></pre>
 
-	<div class="col-md-3">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	contextual-class="info"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" contextual-class="info"></list-group>
-	</div>
-
-
-	<div class="col-md-3">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	contextual-class="warning"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" contextual-class="warning"></list-group>
-	</div>
-
-
-	<div class="col-md-3">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	contextual-class="danger"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" contextual-class="danger"></list-group>
-	</div>
-
+	<list-group items="colors" contextual-class="list-group-item-success"></list-group>
 </div>
 
-<div class="row">
-	<div class="col-md-3">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	selectable="true"
-	contextual-class="success"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" selectable="true"
-			contextual-class="success"></list-group>
+<div class="col-md-3">
+	<div class="well">
+		Or if you want the class to be specified from the <code>controller</code>
 	</div>
+	<h3>Controller</h3>
+<pre><code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];
+$scope.myContextualClass='list-group-item-warning';</code></pre>
+	<h3>Markup</h3>
+<pre><code class="language-markup" prism><span ng-non-bindable>&#60;list-group items="colors"
+	contextual-class="{{myContextualClass}}">
+&#60;/list-group></span></code></pre>
 
-	<div class="col-md-3">
-		<pre>
-&#60;list-group 
-	items="colors"
-	selectable="true" 
-	contextual-class="info"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" selectable="true" contextual-class="info"></list-group>
-	</div>
-
-
-	<div class="col-md-3">
-		<pre>
-&#60;list-group 
-	items="colors"
-	selectable="true"
-	contextual-class="warning"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" selectable="true"
-			contextual-class="warning"></list-group>
-	</div>
-
-
-	<div class="col-md-3">
-		<pre>
-&#60;list-group 
-	items="colors"
-	selectable="true"
-	contextual-class="danger"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" selectable="true" contextual-class="danger"></list-group>
-	</div>
-
+	<list-group items="colors" contextual-class="{{myContextualClass}}"></list-group>
 </div>
 
-<div class="row">
-	<div class="col-md-3">
-		<pre>
-&#60;list-group 
-	items="colors"
-	selectable="true"
-	contextual-class="resolveContextualClass($item)"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" selectable="true"
-			contextual-class="resolveContextualClass($item)"></list-group>
+<div class="col-md-3">
+	<div class="well">
+		Pass in a callback function to control
+		which <code>class</code> is to be applied to each <code>item</code>
 	</div>
+	<h3>Controller</h3>
+	<pre>
+<code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];
 
+$scope.contextualClassFnHandler = function(item){
+	var clazz = 'list-group-item-success';
+	if (item == 'Orange') {
+		clazz = 'list-group-item-warning';
+	}
+	return clazz; 
+}</code></pre>
+	<h3>Markup</h3>
+	<pre>
+<code class="language-markup" prism>&#60;list-group items="colors" 
+	contextual-class="contextualClassFnHandler(item)"> 
+&#60;/list-group></code></pre>
 
+	<list-group items="colors"
+		contextual-class="contextualClassFnHandler(item)"></list-group>
 </div>
