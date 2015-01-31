@@ -153,4 +153,61 @@ describe(
 			expect(greenElt.hasClass('active')).toBeTruthy();
 		    }));
 
+	    it(
+		    'should bind afterselectionchange',
+		    function() {
+			var afterSelectionChangeHandlerCalled = false;
+			$rootScope.$apply("colors = ['red','green','blue']");
+			$rootScope.afterSelectionChangeHandler = function(item) {
+			    afterSelectionChangeHandlerCalled = true;
+			}
+
+			var element = $compile(
+				'<list-group items="colors" selectable="multiple" after-selection-change="afterSelectionChangeHandler(item)"> </list-group>')
+				($rootScope);
+			$rootScope.$digest();
+
+			var greenElt = angular.element(element.children()[1]);
+			greenElt.triggerHandler('click');
+			expect(afterSelectionChangeHandlerCalled).toBeTruthy();
+		    });
+
+	    it('should be disabled', function() {
+		$rootScope.$apply("colors = ['red','green','blue']");
+		$rootScope.$apply("disabled = true");
+		var element = $compile(
+			'<list-group items="colors" selectable="multiple" disabled="disabled"> </list-group>')(
+			$rootScope);
+		$rootScope.$digest();
+		var children = element.children();
+		for ( var i = 0; i < children.length; i++) {
+		    var child = angular.element(children[i]);
+		    expect(child.hasClass('disabled')).toBeTruthy();
+		}
+		$rootScope.$apply("disabled = false");
+		$rootScope.$digest();
+		for ( var i = 0; i < children.length; i++) {
+		    var child = angular.element(children[i]);
+		    expect(child.hasClass('disabled')).toBeFalsy();
+		}
+	    });
+
+	    it(
+		    'should bind disabled callback function',
+		    function() {
+			$rootScope.$apply("colors = ['red','green','blue']");
+			$rootScope.disableFnHandler = function(item) {
+			    return item != 'green';
+			};
+			var element = $compile(
+				'<list-group items="colors" selectable="multiple" disabled="disableFnHandler(item)"> </list-group>')
+				($rootScope);
+			$rootScope.$digest();
+
+			expect(angular.element(element.children()[0]).hasClass('disabled')).toBeTruthy();
+			expect(angular.element(element.children()[1]).hasClass('disabled')).toBeFalsy();
+			expect(angular.element(element.children()[2]).hasClass('disabled')).toBeTruthy();
+
+		    });
+
 	});

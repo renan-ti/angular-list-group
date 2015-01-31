@@ -138,7 +138,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('docs', [ 'clean:docs', 'ngdocs' ]);
     grunt.registerTask('build:demo', [ 'build', 'copy:demo' ]);
-    grunt.registerTask('deploy-demo', [ 'gh-pages' ]);
+    grunt.registerTask('deploy:demo', [ 'gh-pages' ]);
 
     grunt.registerTask('test', [ 'karma' ]);
 };

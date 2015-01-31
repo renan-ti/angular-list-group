@@ -57,6 +57,16 @@ demo
 				return promise;
 			    }
 
+			    $scope.message;
+			    $scope.afterSelectionChangeHandler = function(item) {
+				$scope.message = "After selection change, " + angular.toJson(item);
+			    }
+			    $scope.disabled = true;
+
+			    $scope.disableFnHandler = function(item) {
+				return item != 'Orange';
+			    };
+
 			    $scope.paintings = [
 				    {
 					'title' : 'Blue Dancers, c.1899',

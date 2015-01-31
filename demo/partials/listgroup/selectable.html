@@ -10,15 +10,13 @@
 			<code class="language-javascript" prism>
 $scope.colors=[ 'Red', 'Orange', 'Yellow', 
 	'Green', 'Blue', 'Indigo', 'Violet' ];
-			</code>
-		</pre>
+			</code></pre>
 	<h3>Markup</h3>
 	<pre>
 			<code class="language-markup" prism>
 &#60;list-group items="colors" 
 	selectable>&#60;/list-group>	
-			</code>
-</pre>
+			</code></pre>
 	<list-group items="colors" selectable> </list-group>
 </div>
 
@@ -35,8 +33,7 @@ $scope.colors=[ 'Red', 'Orange', 'Yellow',
 			<code class="language-javascript" prism>
 $scope.colors=[ 'Red', 'Orange', 'Yellow', 
 	'Green', 'Blue', 'Indigo', 'Violet' ];
-			</code>
-		</pre>
+			</code></pre>
 	<h3>Markup</h3>
 	<pre>
 			<code class="language-markup" prism>
@@ -60,8 +57,7 @@ $scope.colors=[ 'Red', 'Orange', 'Yellow',
 	'Green', 'Blue', 'Indigo', 'Violet' ];
 
 $scope.mySelectedItems = [];	
-			</code>
-		</pre>
+			</code></pre>
 	<h3>Markup</h3>
 	<pre>
 	<code class="language-markup" prism>
@@ -103,8 +99,7 @@ $scope.colors=[ 'Red', 'Orange', 'Yellow',
 $scope.beforeSelectionChangeHandler = function(item) {
 	return item != 'Red';
 }
-		</code>
-	</pre>
+		</code></pre>
 	<h3>Markup</h3>
 	<pre>
 	<code class="language-markup" prism>
@@ -152,8 +147,7 @@ $scope.beforeSelectionChangeAsyncHandler = function(item) {
 	}, 500);
 	return promise;
 }			
-		</code>
-	</pre>
+		</code></pre>
 	<h3>Markup</h3>
 	<pre>
 	<code class="language-markup" prism>
@@ -168,11 +162,48 @@ $scope.beforeSelectionChangeAsyncHandler = function(item) {
 		selected-items="mySelectedItems02"
 		before-selection-change="beforeSelectionChangeAsyncHandler(item)">
 	</list-group>
-	
+
 	<div class="panel panel-info">
 		<div class="panel-heading">
 			<h3 class="panel-title">Selected items</h3>
 		</div>
 		<div class="panel-body">{{mySelectedItems02}}</div>
 	</div>
+</div>
+
+<div class="col-md-3">
+	<div class="well">
+		Want to do stuff after the selection has changed? Use
+		<code>after-selection-change</code>
+	</div>
+	<h3>Controller</h3>
+	<pre>
+		<code class="language-javascript" prism>
+$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];
+
+$scope.afterSelectionChangeHandler = function(item) {
+	$scope.message = "After selection change, " + angular.toJson(item);
+}		
+		</code></pre>
+	<h3>Markup</h3>
+	<pre>
+	<code class="language-markup" prism>
+&#60;list-group items="colors" selectable="multiple"
+	after-selection-change="afterSelectionChangeHandler(item)">
+&#60;/list-group>	
+	</code>
+	</pre>
+
+	<list-group items="colors" selectable="multiple"
+		after-selection-change="afterSelectionChangeHandler(item)">
+	</list-group>
+
+	<div class="panel panel-info">
+		<div class="panel-heading">
+			<h3 class="panel-title">Message</h3>
+		</div>
+		<div class="panel-body">{{message}}</div>
+	</div>
+
 </div>
