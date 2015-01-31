@@ -81,6 +81,23 @@ var ListGroupCtrl = [
 		}
 		return label;
 	    };
+
+	    $scope.resolveContextualClass = function(item) {
+		var clazz = $scope.contextualClass;
+		if ($attrs.contextualClass) {
+		    var fn = $parse($attrs.contextualClass);
+		    if (angular.isFunction(fn)) {
+			var val = fn($scope.$parent, {
+			    item : item
+			});
+			if (val) {
+			    clazz = val;
+			}
+		    }
+		}
+		return clazz;
+	    }
+
 	    /**
 	     * Returns <code>true</code> if the specified item if disabled,
 	     * <code>false</code> otherwise
@@ -131,7 +148,8 @@ angularListGroupDirectives.directive('listGroup', [ '$templateCache', function($
 	    selectedItems : '=?',
 	    beforeSelectionChange : '&?',
 	    afterSelectionChange : '&?',
-	    disabled : '@?'
+	    disabled : '@?',
+	    contextualClass : '@?'
 	}
     };
 } ]);

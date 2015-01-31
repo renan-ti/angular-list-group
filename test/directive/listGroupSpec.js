@@ -210,4 +210,45 @@ describe(
 
 		    });
 
+	    it('should add contextual class', function() {
+		$rootScope.$apply("colors = ['red','green','blue']");
+		var element = $compile(
+			'<list-group items="colors" contextual-class="list-group-item-success"> </list-group>')(
+			$rootScope);
+		$rootScope.$digest();
+		var children = element.children();
+		for ( var i = 0; i < children.length; i++) {
+		    var child = angular.element(children[i]);
+		    expect(child.hasClass('list-group-item-success')).toBeTruthy();
+		}
+
+		$rootScope.clazz = 'list-group-item-warning';
+		element = $compile('<list-group items="colors" contextual-class="{{clazz}}"> </list-group>')
+			($rootScope);
+		$rootScope.$digest();
+		var children = element.children();
+		for ( var i = 0; i < children.length; i++) {
+		    var child = angular.element(children[i]);
+		    expect(child.hasClass('list-group-item-warning')).toBeTruthy();
+		}
+	    });
+
+	    it('should bind contextual class callback function', function() {
+		$rootScope.$apply("colors = ['red','green','blue']");
+		$rootScope.contextualClassFnHandler = function(item) {
+		    var clazz = 'list-group-item-success';
+		    if (item == 'green') {
+			clazz = 'list-group-item-warning';
+		    }
+		    return clazz;
+		};
+		var element = $compile(
+			'<list-group items="colors" contextual-class="contextualClassFnHandler(item)"></list-group>')(
+			$rootScope);
+		$rootScope.$digest();
+		expect(angular.element(element.children()[0]).hasClass('list-group-item-success')).toBeTruthy();
+		expect(angular.element(element.children()[1]).hasClass('list-group-item-warning')).toBeTruthy();
+		expect(angular.element(element.children()[2]).hasClass('list-group-item-success')).toBeTruthy();
+	    });
+
 	});

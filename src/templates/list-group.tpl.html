@@ -1,5 +1,5 @@
 <ul class="list-group">
-	<li class="list-group-item" ng-class="resolveItemClass(item)"
+	<li class="list-group-item {{resolveContextualClass(item)}}"
 		data-ng-repeat="item in items track by $index">
 		{{resolveLabel(item)}}</li>
 </ul>

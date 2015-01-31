@@ -1,7 +1,7 @@
 <div class="list-group">
 	<a ng-href 
-		class="list-group-item" 
+		class="list-group-item {{resolveContextualClass(item)}}" 
 		ng-repeat="item in items track by $index"
 		ng-class="{active : (isSelected(item) != -1), disabled : isDisabled(item) }"
-		ng-click="select(item)">{{resolveLabel(item)}}</a>
+		ng-click="select(item)">{{resolveLabel(item)}} {{contextualClass}}</a>
 </div>
