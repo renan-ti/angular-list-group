@@ -1,132 +1,75 @@
-<div class="row">
-	<div class="col-md-4">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	filterable="true"
-	selectable="true"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" filterable="true" selectable="true"></list-group>
+<div class="col-md-3">
+	<div class="well">
+		To enable the list filtering add a
+		<code>filterable</code>
+		attribute
 	</div>
-
-	<div class="col-md-4">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	filterable="{
-		placeholder:'Filter colors...'
-	}"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors"
-			filterable="{placeholder:'Filter colors...'}"></list-group>
-	</div>
-
-	<div class="col-md-4">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	filterable="{
-		autoFilter : false
-	}"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" filterable="{
-		autoFilter : false
-	}"></list-group>
-	</div>
+	<h3>Controller</h3>
+<pre><code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];</code></pre>	
+	<h3>Markup</h3>
+<pre><code class="language-markup" prism>&#60;list-group items="colors" 
+	selectable="true" filterable> 
+&#60;/list-group></code></pre>
+	<list-group items="colors" filterable="true" selectable="true"></list-group>
 </div>
 
-<div class="row">
-	<div class="col-md-4">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	filterable="{
-		operator : 'eq'
-	}"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" filterable="{
-		operator : 'eq'
-	}"></list-group>
+<div class="col-md-3">
+	<div class="well">
+		Add a placeholder to the input field
 	</div>
-	<div class="col-md-4">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	filterable="{
-		operator : 'eq',
-		ignoreCase : true
-	}"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors"
-			filterable="{
-		operator : 'eq',
-		ignoreCase : true
-	}"></list-group>
-	</div>
-	<div class="col-md-4">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	filterable="{
-		operator : 'neq',
-		ignoreCase : true
-	}"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors"
-			filterable="{
-		operator : 'neq',
-		ignoreCase : true
-	}"></list-group>
-	</div>
+	<h3>Controller</h3>
+<pre><code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];
+
+$scope.filterable = {
+	placeholder : 'Filter colors...'
+};</code></pre>		
+	<h3>Markup</h3>
+<pre><code class="language-markup" prism>&#60;list-group items="colors" 
+	filterable="filterable"> 
+&#60;/list-group></code></pre>
+	
+	<list-group items="colors" selectable="true"
+		filterable="filterable"></list-group>
 </div>
 
-<div class="row">
-	<div class="col-md-4">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	filterable="{
-		operator : 'startswith'
-	}"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors"
-			filterable="{
-		operator : 'startswith'
-	}"></list-group>
+<div class="col-md-3">
+	<div class="well">
+		If you want to trigger filter yourself, give <code>filterable auto</code> property a <code>false</code> value
 	</div>
+	<h3>Controller</h3>
+<pre><code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];
 
-	<div class="col-md-4">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	filterable="{
-		operator : 'endswith'
-	}"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" filterable="{
-		operator : 'endswith'
-	}"></list-group>
-	</div>
+$scope.filterable02 = {
+	auto : false
+};</code></pre>	
+<pre><code class="language-markup" prism>&#60;list-group items="colors" 
+	filterable="filterable02"> 
+&#60;/list-group></code></pre>
 
-	<div class="col-md-4">
-		<pre>
-&#60;list-group 
-	items="colors" 
-	filterable="{
-		operator : 'contains'
-	}"> 
-&#60;/list-group>	
-</pre>
-		<list-group items="colors" filterable="{
-		operator : 'contains'
-	}"></list-group>
+	<list-group items="colors" selectable="true"
+		filterable="filterable02"></list-group>
+</div>
+
+<div class="col-md-3">
+	<div class="well">
+		Override default comparator <code>contains</code> giving <code>filterable comparator</code> property value one 
+		of <code>eq</code>, <code>neq</code>, <code>startsWith</code> or <code>endsWith</code>
 	</div>
+<h3>Controller</h3>
+<pre><code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];
+
+$scope.filterable03 = {
+	comparator : 'startsWith'
+};</code></pre>		
+	<h3>Markup</h3>
+<pre><code class="language-markup" prism>&#60;list-group items="colors" 
+	filterable="filterable03"> 
+&#60;/list-group></code></pre>
+	
+	<list-group items="colors"
+		filterable="filterable03"></list-group>
 </div>

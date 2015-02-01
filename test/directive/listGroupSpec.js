@@ -9,6 +9,7 @@ describe(
 	    beforeEach(module('listGroup'));
 	    beforeEach(module("list-group.tpl.html"));
 	    beforeEach(module("linked-list-group.tpl.html"));
+	    beforeEach(module("filterable-list-group.tpl.html"));
 
 	    beforeEach(inject(function(_$compile_, _$rootScope_) {
 		$compile = _$compile_;
@@ -92,8 +93,8 @@ describe(
 		    'should bind selectedItems',
 		    function() {
 			$rootScope.$apply("colors = ['red','green','blue']");
-			$rootScope.$apply("selectedItems = []");
-
+			$rootScope.selectedItems = [];
+			
 			var element = $compile(
 				"<list-group items='colors' selectable='multiple' selected-items='selectedItems'></list-group>")
 				($rootScope);
@@ -102,10 +103,8 @@ describe(
 			var redElt = angular.element(element.children()[0]);
 			var greenElt = angular.element(element.children()[1]);
 			var blueElt = angular.element(element.children()[2]);
-
 			greenElt.triggerHandler('click');
 			blueElt.triggerHandler('click');
-
 			expect($rootScope.selectedItems.length).toBe(2);
 			expect($rootScope.selectedItems).toEqual([ 'green', 'blue' ]);
 		    });
@@ -249,6 +248,28 @@ describe(
 		expect(angular.element(element.children()[0]).hasClass('list-group-item-success')).toBeTruthy();
 		expect(angular.element(element.children()[1]).hasClass('list-group-item-warning')).toBeTruthy();
 		expect(angular.element(element.children()[2]).hasClass('list-group-item-success')).toBeTruthy();
+	    });
+
+	    it('should add filtering capabilities', function() {
+		$rootScope.$apply("colors = ['red','green','blue']");
+		var element = $compile('<list-group items="colors" filterable></list-group>')($rootScope);
+		$rootScope.$digest();
+		expect(element.hasClass('panel')).toBeTruthy();
+		var listGroupElts = element.find('.list-group');
+		expect(listGroupElts.length).toBe(1);
+	    });
+
+	    it('should add placeholder to filter input field', function() {
+		$rootScope.$apply("colors = ['red','green','blue']");
+		$rootScope.filterable = {
+		    placeholder : 'my placeholder'
+		}
+		var element = $compile(
+			'<list-group items="colors" selectable="true" filterable="filterable"></list-group>')(
+			$rootScope);
+		$rootScope.$digest();
+		var input = element.find('input.form-control')[0];
+		expect($(input).attr('placeholder')).toBe($rootScope.filterable.placeholder);
 	    });
 
 	});

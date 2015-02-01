@@ -15,7 +15,6 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 		 */
 		$scope.$onSelectionChange = function() {
 		    var selected = $scope.$$model.selected;
-		    console.log('selected => ' + selected);
 		};
 
 		$scope.selectionChangeHandler = null;
@@ -40,8 +39,6 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 	controller : ListInputGroupItemCtrl,
 	compile : function(element, attrs) {
 	    return function(scope, element, attrs, ctrls, transcludeFn) {
-		console.log('listInputGroupItem::compile::pre');
-
 		var hiddenElementClassname = 'list-input-group-item-control-hidden';
 		var editing = false;
 

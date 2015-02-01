@@ -8,15 +8,13 @@ module.exports = function(config) {
 	},
 
 	ngHtml2JsPreprocessor : {
-	    stripPrefix : 'src/templates/',
-//	    prependPrefix : 'templates',
-//	    moduleName : 'angularShiro.templates'
+	    stripPrefix : 'src/templates/'
 	},
 
 	files : [ 
+	        'bower_components/jquery/dist/jquery.min.js',
 	        'bower_components/angular/angular.min.js',
 		'bower_components/angular-mocks/angular-mocks.js',
-		'bower_components/jquery/dist/jquery.min.js',
 		
 		'src/templates/**/*.html',
 		'src/namespace.js',
