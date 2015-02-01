@@ -77,6 +77,18 @@ demo
 				return clazz;
 			    };
 
+			    $scope.filterable = {
+				placeholder : 'Filter colors...'
+			    };
+
+			    $scope.filterable02 = {
+				auto : false
+			    };
+			    
+			    $scope.filterable03 = {
+				comparator : 'startsWith'
+			    };
+
 			    $scope.paintings = [
 				    {
 					'title' : 'Blue Dancers, c.1899',

@@ -17,6 +17,91 @@ angularListGroupFilters.filter('listGroupItemContextualClass', function() {
 	return clazz;
     };
 });
+
+angularListGroupFilters.filter('startsWith', function($filter) {
+    return function(str, starts, ignoreCase) {
+	var comparator = function(str, starts) {
+	    if (starts === '') {
+		return true;
+	    }
+	    if (str == null || starts == null) {
+		return false;
+	    }
+	    str = String(str);
+	    starts = String(starts);
+	    return str.length >= starts.length && str.slice(0, starts.length) === starts;
+	}
+	return $filter('compare')(str, starts, comparator, ignoreCase);
+    }
+});
+angularListGroupFilters.filter('eq', function($filter) {
+    return function(str, text, ignoreCase) {
+	var comparator = function(str, text) {
+	    return angular.equals(str, text);
+	};
+	return $filter('compare')(str, text, comparator, ignoreCase);
+    }
+});
+angularListGroupFilters.filter('neq', function($filter) {
+    return function(str, text, ignoreCase) {
+	var comparator = function(str, text) {
+	    return !angular.equals(obj, text)
+	}
+	return $filter('compare')(str, text, comparator, ignoreCase);
+    }
+});
+
+angularListGroupFilters.filter('endsWith', function($filter) {
+    return function(str, text, ignoreCase) {
+	var comparator = function(str, ends) {
+	    if (ends === '') {
+		return true;
+	    }
+	    if (str == null || ends == null) {
+		return false;
+	    }
+	    str = String(str);
+	    ends = String(ends);
+	    return str.length >= ends.length && str.slice(str.length - ends.length) === ends;
+	};
+	return $filter('compare')(str, ends, comparator, ignoreCase);
+    }
+});
+angularListGroupFilters.filter('contains', function($filter) {
+    return function(str, contains, ignoreCase) {
+	var comparator = function(str, contains) {
+	    return str.indexOf(contains) > -1;
+	}
+	return $filter('compare')(str, contains, comparator, ignoreCase);
+    }
+});
+
+angularListGroupFilters.filter('compare', function() {
+    return function(obj, text, comparator, ignoreCase) {
+	if (text === '')
+	    return true;
+	if (obj == null || text == null)
+	    return false;
+
+	var match = false;
+	if (obj && text && typeof obj === 'object' && typeof text === 'object') {
+	    for ( var objKey in obj) {
+		if (objKey.charAt(0) !== '$' && hasOwnProperty.call(obj, objKey)
+			&& comparator(obj[objKey], text[objKey])) {
+		    match = true;
+		    break;
+		}
+	    }
+	} else {
+	    if (ignoreCase) {
+		text = ('' + text).toLowerCase();
+		obj = ('' + obj).toLowerCase();
+	    }
+	    match = comparator(obj, text);
+	}
+	return match;
+    }
+});
 angularListGroupServices.factory('comparatorFactory', [
 	'$parse',
 	function($parse) {
@@ -481,7 +566,6 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 		 */
 		$scope.$onSelectionChange = function() {
 		    var selected = $scope.$$model.selected;
-		    console.log('selected => ' + selected);
 		};
 
 		$scope.selectionChangeHandler = null;
@@ -506,8 +590,6 @@ angularListGroupDirectives.directive('listInputGroupItem', function($compile, $p
 	controller : ListInputGroupItemCtrl,
 	compile : function(element, attrs) {
 	    return function(scope, element, attrs, ctrls, transcludeFn) {
-		console.log('listInputGroupItem::compile::pre');
-
 		var hiddenElementClassname = 'list-input-group-item-control-hidden';
 		var editing = false;
 
@@ -627,7 +709,10 @@ var ListGroupCtrl = [
 	'$scope',
 	'$attrs',
 	'$parse',
-	function($scope, $attrs, $parse) {
+	'$filter',
+	function($scope, $attrs, $parse, $filter) {
+
+	    var self = this;
 
 	    var noOp = function(item) {
 	    };
@@ -636,15 +721,42 @@ var ListGroupCtrl = [
 		return true;
 	    };
 
-	    $scope.$selectedItems = [];
+	    this.$$items = [];
+	    angular.extend(this.$$items, $scope.items);
 
-	    $scope.beforeSelectionChange = (!$attrs.beforeSelectionChange) ? defaultBeforeSelectionChange
+	    this.$$selectedItems = [];
+
+	    this.filter = {
+		text : '',
+		comparator : 'contains',
+		ignoreCase : true,
+		placeholder : '',
+		auto : true
+	    };
+
+	    if ($attrs.filterable && angular.isObject($scope.filterable)) {
+		angular.extend(this.filter, $scope.filterable);
+	    }
+
+	    this.beforeSelectionChange = (!$attrs.beforeSelectionChange) ? defaultBeforeSelectionChange
 		    : $scope.beforeSelectionChange;
-	    $scope.afterSelectionChange = (!$attrs.afterSelectionChange) ? noOp : $scope.afterSelectionChange;
+	    this.afterSelectionChange = (!$attrs.afterSelectionChange) ? noOp : $scope.afterSelectionChange;
 
-	    $scope.select = function(item) {
-		if (!$scope.isDisabled(item)) {
-		    var output = $scope.beforeSelectionChange({
+	    this.$selectItem = function(item) {
+		var idx = -1;
+		if ((idx = this.isSelected(item)) > -1) {
+		    this.$$selectedItems.splice(idx, 1);
+		} else {
+		    if (!($attrs.selectable == 'multiple')) {
+			this.$$selectedItems.length = 0;
+		    }
+		    this.$$selectedItems.push(item);
+		}
+	    };
+
+	    this.select = function(item) {
+		if (!this.isDisabled(item)) {
+		    var output = this.beforeSelectionChange({
 			item : item
 		    });
 		    if (angular.isUndefined(output)) {
@@ -654,16 +766,17 @@ var ListGroupCtrl = [
 		    if (output) {
 			if (angular.isFunction(output.then)) {
 			    output.then(function(returnedValue) {
+
 				if (returnedValue === true) {
-				    $scope.$selectItem(item);
-				    $scope.afterSelectionChange({
+				    self.$selectItem(item);
+				    self.afterSelectionChange({
 					item : item
 				    });
 				}
 			    });
-			} else {
-			    $scope.$selectItem(item);
-			    $scope.afterSelectionChange({
+			} else if (output === true) {
+			    this.$selectItem(item);
+			    this.afterSelectionChange({
 				item : item
 			    });
 			}
@@ -671,22 +784,10 @@ var ListGroupCtrl = [
 		}
 	    }
 
-	    $scope.$selectItem = function(item) {
+	    this.isSelected = function(item) {
 		var idx = -1;
-		if ((idx = $scope.isSelected(item)) > -1) {
-		    $scope.$selectedItems.splice(idx, 1);
-		} else {
-		    if (!($attrs.selectable == 'multiple')) {
-			$scope.$selectedItems.length = 0;
-		    }
-		    $scope.$selectedItems.push(item);
-		}
-	    }
-
-	    $scope.isSelected = function(item) {
-		var idx = -1;
-		for ( var i = 0, len = $scope.$selectedItems.length; i < len; i++) {
-		    if (item === $scope.$selectedItems[i]) {
+		for ( var i = 0, len = this.$$selectedItems.length; i < len; i++) {
+		    if (item === this.$$selectedItems[i]) {
 			idx = i;
 			break;
 		    }
@@ -694,7 +795,7 @@ var ListGroupCtrl = [
 		return idx;
 	    };
 
-	    $scope.resolveLabel = function(item) {
+	    this.resolveLabel = function(item) {
 		var label = item;
 		if ($attrs.labelFn) {
 		    var fn = $parse($attrs.labelFn);
@@ -707,7 +808,7 @@ var ListGroupCtrl = [
 		return label;
 	    };
 
-	    $scope.resolveContextualClass = function(item) {
+	    this.resolveContextualClass = function(item) {
 		var clazz = $scope.contextualClass;
 		if ($attrs.contextualClass) {
 		    var fn = $parse($attrs.contextualClass);
@@ -727,7 +828,7 @@ var ListGroupCtrl = [
 	     * Returns <code>true</code> if the specified item if disabled,
 	     * <code>false</code> otherwise
 	     */
-	    $scope.isDisabled = function(item) {
+	    this.isDisabled = function(item) {
 		var disabled = false;
 		if ($attrs.disabled) {
 		    if ($scope.disabled === true) {
@@ -744,7 +845,28 @@ var ListGroupCtrl = [
 		return disabled;
 	    };
 
-	    var removeSelectedItemsListener = $scope.$watchCollection('$selectedItems', function(newValue, oldValue) {
+	    /**
+	     * 
+	     */
+	    this.executeFilter = function() {
+		this.$$items = $filter('filter')($scope.items, this.filter.text, this.filter.comparator);
+	    };
+
+	    this.clearFilter = function() {
+		this.filter.text = '';
+		this.$$items = $scope.items;
+	    }
+
+	    $scope.compare = function(actual, expected) {
+		var match = true;
+		if (self.filter.auto === true) {
+		    match = $filter(self.filter.comparator)(actual, expected, self.filter.ignoreCase);
+		}
+		return match;
+	    };
+
+	    var removeSelectedItemsListener = $scope.$watchCollection('listGroupCtrl.$$selectedItems', function(
+		    newValue, oldValue) {
 		if ($scope.selectedItems) {
 		    $scope.selectedItems = newValue;
 		}
@@ -765,21 +887,51 @@ angularListGroupDirectives.directive('listGroup', [ '$templateCache', function($
 	    if ('selectable' in attrs) {
 		templateName = 'linked-list-group.tpl.html';
 	    }
+	    if ('filterable' in attrs) {
+		templateName = 'filterable-list-group.tpl.html';
+	    }
 	    return $templateCache.get(templateName);
 	},
 	controller : ListGroupCtrl,
+	controllerAs : 'listGroupCtrl',
 	scope : {
 	    items : '=',
 	    selectedItems : '=?',
 	    beforeSelectionChange : '&?',
 	    afterSelectionChange : '&?',
 	    disabled : '@?',
-	    contextualClass : '@?'
+	    contextualClass : '@?',
+	    filterable : '=?',
+	    selectable : '@?'
 	}
     };
 } ]);
+
+angularListGroupDirectives.directive('listGroupHtml', function() {
+    return {
+	restrict : 'EA',
+	replace : true,
+	scope : false,
+	templateUrl : 'list-group.tpl.html'
+    }
+});
+
+angularListGroupDirectives.directive('linkedListGroupHtml', function() {
+    return {
+	restrict : 'EA',
+	replace : true,
+	scope : false,
+	templateUrl : 'linked-list-group.tpl.html'
+    }
+});
+
 angular.module('listGroup').run(['$templateCache', function($templateCache) {
-$templateCache.put('checkbox-input-group-addon.html',
+$templateCache.put('Copy%20of%20filterable-list-group.tpl.html',
+    "<div class=\"panel\" ng-class=\"$resolvePanelClasses()\" ng-cloak=\"\"><div class=\"panel-heading\" ng-if=\"hasPanelHeading\" ng-class=\"{'panel-heading-no-body' : !$isFilterable()}\"><h4 class=\"panel-title\"><span ng-bind=\"title\"></span><div class=\"btn-group btn-group-sm\" ng-if=\"editable == 'inline'\"><button class=\"btn btn-default\" ng-click=\"$inlineEdition.onCreate()\"><span class=\"glyphicon glyphicon-plus\"></span></button></div></h4></div><div class=\"panel-body\" ng-if=\"$isFilterable()\"><div class=\"input-group\" ng-if=\"!filter.autoFilter\"><input type=\"text\" class=\"form-control\" placeholder=\"{{filter.placeholder}}\" ng-model=\"filter.text\"><div class=\"input-group-btn\"><button class=\"btn btn-default\" ng-click=\"$filter()\" ng-disabled=\"!filter\"><i class=\"glyphicon glyphicon-search\"></i></button></div></div><input type=\"text\" class=\"form-control\" placeholder=\"{{filter.placeholder}}\" ng-model=\"filter.text\" ng-if=\"filter.autoFilter\"></div><div class=\"panel-footer\" ng-if=\"$displayFooter()\" ng-bind-html=\"footer\"></div></div>"
+  );
+
+
+  $templateCache.put('checkbox-input-group-addon.html',
     "<span class=\"input-group-addon\"><input type=\"checkbox\" ng-model=\"$$model.selected\"></span>"
   );
 
@@ -794,23 +946,23 @@ $templateCache.put('checkbox-input-group-addon.html',
   );
 
 
+  $templateCache.put('filterable-list-group.tpl.html',
+    "<div class=\"panel panel-default\" ng-cloak=\"\"><!-- \t<div class=\"panel-heading\" ng-if=\"hasPanelHeading\" --><!-- \t\tng-class=\"{'panel-heading-no-body' : !$isFilterable()}\"> --><!-- \t\t<h4 class=\"panel-title\"> --><!-- \t\t\t<span ng-bind=\"title\"></span> --><!-- \t\t\t<div class=\"btn-group btn-group-sm\" ng-if=\"editable == 'inline'\"> --><!-- \t\t\t\t<button class=\"btn btn-default\" ng-click=\"$inlineEdition.onCreate()\"> --><!-- \t\t\t\t\t<span class=\"glyphicon glyphicon-plus\"></span> --><!-- \t\t\t\t</button> --><!-- \t\t\t</div> --><!-- \t\t</h4> --><!-- \t</div> --><div class=\"panel-body\"><div class=\"input-group\" ng-if=\"listGroupCtrl.filter.auto === false\"><input type=\"text\" class=\"form-control\" placeholder=\"{{listGroupCtrl.filter.placeholder}}\" ng-model=\"listGroupCtrl.filter.text\"><div class=\"input-group-btn\"><button class=\"btn btn-default\" ng-click=\"listGroupCtrl.clearFilter(listGroupCtrl.filter.text)\" ng-disabled=\"!listGroupCtrl.filter.text\"><i class=\"glyphicon glyphicon-remove\"></i></button> <button class=\"btn btn-default\" ng-click=\"listGroupCtrl.executeFilter(listGroupCtrl.filter.text)\" ng-disabled=\"!listGroupCtrl.filter.text\"><i class=\"glyphicon glyphicon-search\"></i></button></div></div><input type=\"text\" class=\"form-control\" ng-model=\"listGroupCtrl.filter.text\" placeholder=\"{{listGroupCtrl.filter.placeholder}}\" ng-if=\"listGroupCtrl.filter.auto === true\"></div><list-group-html ng-if=\"!selectable\"></list-group-html><linked-list-group-html ng-if=\"selectable\"></linked-list-group-html><!-- \t<div class=\"panel-footer\" ng-if=\"$displayFooter()\" --><!-- \t\tng-bind-html=\"footer\"></div> --></div>"
+  );
+
+
   $templateCache.put('input-filter.tpl.html',
     "<input type=\"text\" class=\"form-control\" placeholder=\"{{filter.placeholder}}\" ng-model=\"filter.text\">"
   );
 
 
   $templateCache.put('linked-list-group.tpl.html',
-    "<div class=\"list-group\"><a ng-href=\"\" class=\"list-group-item {{resolveContextualClass(item)}}\" ng-repeat=\"item in items track by $index\" ng-class=\"{active : (isSelected(item) != -1), disabled : isDisabled(item) }\" ng-click=\"select(item)\">{{resolveLabel(item)}} {{contextualClass}}</a></div>"
+    "<div class=\"list-group\"><a ng-href=\"\" class=\"list-group-item {{listGroupCtrl.resolveContextualClass(item)}}\" ng-repeat=\"item in listGroupCtrl.$$items | filter:listGroupCtrl.filter.text:compare track by $index\" ng-class=\"{active : (listGroupCtrl.isSelected(item) != -1), disabled : listGroupCtrl.isDisabled(item) }\" ng-click=\"listGroupCtrl.select(item)\">{{listGroupCtrl.resolveLabel(item)}}</a></div>"
   );
 
 
   $templateCache.put('list-group.tpl.html',
-    "<ul class=\"list-group\"><li class=\"list-group-item {{resolveContextualClass(item)}}\" data-ng-repeat=\"item in items track by $index\">{{resolveLabel(item)}}</li></ul>"
-  );
-
-
-  $templateCache.put('panel-list-group.html',
-    "<div class=\"panel\" ng-class=\"$resolvePanelClasses()\" ng-cloak=\"\"><div class=\"panel-heading\" ng-if=\"hasPanelHeading\" ng-class=\"{'panel-heading-no-body' : !$isFilterable()}\"><h4 class=\"panel-title\"><span ng-bind=\"title\"></span><div class=\"btn-group btn-group-sm\" ng-if=\"editable == 'inline'\"><button class=\"btn btn-default\" ng-click=\"$inlineEdition.onCreate()\"><span class=\"glyphicon glyphicon-plus\"></span></button></div></h4></div><div class=\"panel-body\" ng-if=\"$isFilterable()\"><div class=\"input-group\" ng-if=\"!filter.autoFilter\"><input type=\"text\" class=\"form-control\" placeholder=\"{{filter.placeholder}}\" ng-model=\"filter.text\"><div class=\"input-group-btn\"><button class=\"btn btn-default\" ng-click=\"$filter()\" ng-disabled=\"!filter\"><i class=\"glyphicon glyphicon-search\"></i></button></div></div><input type=\"text\" class=\"form-control\" placeholder=\"{{filter.placeholder}}\" ng-model=\"filter.text\" ng-if=\"filter.autoFilter\"></div><div class=\"panel-footer\" ng-if=\"$displayFooter()\" ng-bind-html=\"footer\"></div></div>"
+    "<ul class=\"list-group\"><li class=\"list-group-item {{listGroupCtrl.resolveContextualClass(item)}}\" ng-repeat=\"item in listGroupCtrl.$$items | filter:listGroupCtrl.filter.text:compare track by $index\">{{listGroupCtrl.resolveLabel(item)}}</li></ul>"
   );
 
 }]);
