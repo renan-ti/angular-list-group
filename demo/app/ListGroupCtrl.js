@@ -84,9 +84,14 @@ demo
 			    $scope.filterable02 = {
 				auto : false
 			    };
-			    
+
 			    $scope.filterable03 = {
 				comparator : 'startsWith'
+			    };
+
+			    $scope.filterable04 = {
+				comparator : 'startsWith',
+				ignoreCase : false
 			    };
 
 			    $scope.paintings = [
