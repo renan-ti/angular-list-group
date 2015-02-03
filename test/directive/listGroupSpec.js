@@ -9,7 +9,8 @@ describe(
 	    beforeEach(module('listGroup'));
 	    beforeEach(module("list-group.tpl.html"));
 	    beforeEach(module("linked-list-group.tpl.html"));
-	    beforeEach(module("filterable-list-group.tpl.html"));
+	    beforeEach(module("panel-list-group.tpl.html"));
+	    beforeEach(module("panel-list-group-title.tpl.html"));
 
 	    beforeEach(inject(function(_$compile_, _$rootScope_) {
 		$compile = _$compile_;
@@ -94,7 +95,7 @@ describe(
 		    function() {
 			$rootScope.$apply("colors = ['red','green','blue']");
 			$rootScope.selectedItems = [];
-			
+
 			var element = $compile(
 				"<list-group items='colors' selectable='multiple' selected-items='selectedItems'></list-group>")
 				($rootScope);
@@ -270,6 +271,58 @@ describe(
 		$rootScope.$digest();
 		var input = element.find('input.form-control')[0];
 		expect($(input).attr('placeholder')).toBe($rootScope.filterable.placeholder);
+	    });
+
+	    var tpl = '<h4 ng-bind="item.title"></h4><p ng-bind="item.text"></p>';
+
+	    it('should use custom template', function() {
+		$rootScope.items = [ {
+		    title : 'my title',
+		    text : 'my text'
+		} ];
+		$rootScope.template = tpl;
+		var element = $compile('<list-group items="items" template="template"></list-group>')($rootScope);
+		$rootScope.$digest();
+		angular.forEach(element.find('.list-group-item'), function(elt) {
+		    var children = $(elt).children();
+		    expect(children.length).toBe(2);
+		    expect($(children[0]).prop("tagName")).toBe('H4');
+		    expect($(children[0]).text()).toBe($rootScope.items[0].title);
+		    expect($(children[1]).prop("tagName")).toBe('P');
+		    expect($(children[1]).text()).toBe($rootScope.items[0].text);
+		});
+	    });
+
+	    it('should bind tempalte url', inject(function($httpBackend) {
+
+		$httpBackend.when('GET', '/my-template.html').respond(tpl);
+
+		$rootScope.items = [ {
+		    title : 'my title',
+		    text : 'my text'
+		} ];
+		var element = $compile('<list-group items="items" template-url="\'/my-template.html\'"></list-group>')(
+			$rootScope);
+		$rootScope.$digest();
+		$httpBackend.flush();
+
+		angular.forEach(element.find('.list-group-item'), function(elt) {
+		    var children = $(elt).children();
+		    expect(children.length).toBe(2);
+		    expect($(children[0]).prop("tagName")).toBe('H4');
+		    expect($(children[0]).text()).toBe($rootScope.items[0].title);
+		    expect($(children[1]).prop("tagName")).toBe('P');
+		    expect($(children[1]).text()).toBe($rootScope.items[0].text);
+		});
+	    }));
+
+	    it('should add heading', function() {
+		$rootScope.$apply("colors = ['red','green','blue']");
+		$rootScope.title = 'my title';
+		var element = $compile('<list-group items="items" header="title"></list-group>')($rootScope);
+		$rootScope.$digest();
+		expect($(element.find('.panel-title').first()).text()).toBe($rootScope.title);
+		expect(element.find('input').length).toBe(0);
 	    });
 
 	});

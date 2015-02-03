@@ -3,9 +3,11 @@ var ListGroupCtrl = [
 	'$attrs',
 	'$parse',
 	'$filter',
-	function($scope, $attrs, $parse, $filter) {
+	'$sce',
+	'$compile',
+	function($scope, $attrs, $parse, $filter, $sce, $compile) {
 
-	    var self = this;
+	    var ctrl = this;
 
 	    var noOp = function(item) {
 	    };
@@ -14,12 +16,12 @@ var ListGroupCtrl = [
 		return true;
 	    };
 
-	    this.$$items = [];
-	    angular.extend(this.$$items, $scope.items);
+	    ctrl.$$items = [];
+	    angular.extend(ctrl.$$items, $scope.items);
 
-	    this.$$selectedItems = [];
+	    ctrl.$$selectedItems = [];
 
-	    this.filter = {
+	    ctrl.filter = {
 		text : '',
 		comparator : 'contains',
 		ignoreCase : true,
@@ -28,28 +30,28 @@ var ListGroupCtrl = [
 	    };
 
 	    if ($attrs.filterable && angular.isObject($scope.filterable)) {
-		angular.extend(this.filter, $scope.filterable);
+		angular.extend(ctrl.filter, $scope.filterable);
 	    }
 
-	    this.beforeSelectionChange = (!$attrs.beforeSelectionChange) ? defaultBeforeSelectionChange
+	    ctrl.beforeSelectionChange = (!$attrs.beforeSelectionChange) ? defaultBeforeSelectionChange
 		    : $scope.beforeSelectionChange;
-	    this.afterSelectionChange = (!$attrs.afterSelectionChange) ? noOp : $scope.afterSelectionChange;
+	    ctrl.afterSelectionChange = (!$attrs.afterSelectionChange) ? noOp : $scope.afterSelectionChange;
 
-	    this.$selectItem = function(item) {
+	    ctrl.$selectItem = function(item) {
 		var idx = -1;
-		if ((idx = this.isSelected(item)) > -1) {
-		    this.$$selectedItems.splice(idx, 1);
+		if ((idx = ctrl.isSelected(item)) > -1) {
+		    ctrl.$$selectedItems.splice(idx, 1);
 		} else {
 		    if (!($attrs.selectable == 'multiple')) {
-			this.$$selectedItems.length = 0;
+			ctrl.$$selectedItems.length = 0;
 		    }
-		    this.$$selectedItems.push(item);
+		    ctrl.$$selectedItems.push(item);
 		}
 	    };
 
-	    this.select = function(item) {
-		if (!this.isDisabled(item)) {
-		    var output = this.beforeSelectionChange({
+	    ctrl.select = function(item) {
+		if (!ctrl.isDisabled(item)) {
+		    var output = ctrl.beforeSelectionChange({
 			item : item
 		    });
 		    if (angular.isUndefined(output)) {
@@ -61,15 +63,15 @@ var ListGroupCtrl = [
 			    output.then(function(returnedValue) {
 
 				if (returnedValue === true) {
-				    self.$selectItem(item);
-				    self.afterSelectionChange({
+				    ctrl.$selectItem(item);
+				    ctrl.afterSelectionChange({
 					item : item
 				    });
 				}
 			    });
 			} else if (output === true) {
-			    this.$selectItem(item);
-			    this.afterSelectionChange({
+			    ctrl.$selectItem(item);
+			    ctrl.afterSelectionChange({
 				item : item
 			    });
 			}
@@ -77,10 +79,10 @@ var ListGroupCtrl = [
 		}
 	    }
 
-	    this.isSelected = function(item) {
+	    ctrl.isSelected = function(item) {
 		var idx = -1;
-		for ( var i = 0, len = this.$$selectedItems.length; i < len; i++) {
-		    if (item === this.$$selectedItems[i]) {
+		for ( var i = 0, len = ctrl.$$selectedItems.length; i < len; i++) {
+		    if (item === ctrl.$$selectedItems[i]) {
 			idx = i;
 			break;
 		    }
@@ -88,7 +90,7 @@ var ListGroupCtrl = [
 		return idx;
 	    };
 
-	    this.resolveLabel = function(item) {
+	    ctrl.resolveLabel = function(item) {
 		var label = item;
 		if ($attrs.labelFn) {
 		    var fn = $parse($attrs.labelFn);
@@ -97,11 +99,13 @@ var ListGroupCtrl = [
 		    });
 		} else if (item.label) {
 		    label = item.label;
+		} else if (angular.isObject(item)) {
+		    label = angular.toJson(item);
 		}
 		return label;
 	    };
 
-	    this.resolveContextualClass = function(item) {
+	    ctrl.resolveContextualClass = function(item) {
 		var clazz = $scope.contextualClass;
 		if ($attrs.contextualClass) {
 		    var fn = $parse($attrs.contextualClass);
@@ -121,7 +125,7 @@ var ListGroupCtrl = [
 	     * Returns <code>true</code> if the specified item if disabled,
 	     * <code>false</code> otherwise
 	     */
-	    this.isDisabled = function(item) {
+	    ctrl.isDisabled = function(item) {
 		var disabled = false;
 		if ($attrs.disabled) {
 		    if ($scope.disabled === true) {
@@ -141,19 +145,19 @@ var ListGroupCtrl = [
 	    /**
 	     * 
 	     */
-	    this.executeFilter = function() {
-		this.$$items = $filter('filter')($scope.items, this.filter.text, this.filter.comparator);
+	    ctrl.executeFilter = function() {
+		ctrl.$$items = $filter('filter')($scope.items, ctrl.filter.text, ctrl.filter.comparator);
 	    };
 
-	    this.clearFilter = function() {
-		this.filter.text = '';
-		this.$$items = $scope.items;
+	    ctrl.clearFilter = function() {
+		ctrl.filter.text = '';
+		ctrl.$$items = $scope.items;
 	    }
 
 	    $scope.compare = function(actual, expected) {
 		var match = true;
-		if (self.filter.auto === true) {
-		    match = $filter(self.filter.comparator)(actual, expected, self.filter.ignoreCase);
+		if (ctrl.filter.auto === true) {
+		    match = $filter(ctrl.filter.comparator)(actual, expected, ctrl.filter.ignoreCase);
 		}
 		return match;
 	    };
@@ -180,8 +184,8 @@ angularListGroupDirectives.directive('listGroup', [ '$templateCache', function($
 	    if ('selectable' in attrs) {
 		templateName = 'linked-list-group.tpl.html';
 	    }
-	    if ('filterable' in attrs) {
-		templateName = 'filterable-list-group.tpl.html';
+	    if ('filterable' in attrs || 'header' in attrs) {
+		templateName = 'panel-list-group.tpl.html';
 	    }
 	    return $templateCache.get(templateName);
 	},
@@ -195,10 +199,37 @@ angularListGroupDirectives.directive('listGroup', [ '$templateCache', function($
 	    disabled : '@?',
 	    contextualClass : '@?',
 	    filterable : '=?',
-	    selectable : '@?'
+	    selectable : '@?',
+	    template : '=?',
+	    templateUrl : '=?',
+	    header : '=?'
 	}
     };
 } ]);
+
+angularListGroupDirectives.directive('listGroupItemContent', [ '$compile', '$templateRequest',
+	function($compile, $templateRequest) {
+	    return {
+		restrict : 'EA',
+		replace : true,
+		scope : false,
+		require : '^listGroup',
+		compile : function(tElement, tAtrrs) {
+		    return function(scope, element, attrs, listGroupCtrl) {
+			var html;
+			if (scope.templateUrl) {
+			    $templateRequest(scope.templateUrl).then(function(html) {
+				element.replaceWith($compile(html)(scope));
+			    });
+			} else if (scope.template) {
+			    element.replaceWith($compile(scope.template)(scope));
+			} else {
+			    element.replaceWith(listGroupCtrl.resolveLabel(scope.item));
+			}
+		    }
+		}
+	    }
+	} ]);
 
 angularListGroupDirectives.directive('listGroupHtml', function() {
     return {
@@ -215,5 +246,21 @@ angularListGroupDirectives.directive('linkedListGroupHtml', function() {
 	replace : true,
 	scope : false,
 	templateUrl : 'linked-list-group.tpl.html'
+    }
+});
+
+angularListGroupDirectives.directive('panelListGroupTitle', function() {
+    return {
+	restrict : 'EA',
+	replace : true,
+	scope : false,
+	templateUrl : 'panel-list-group-title.tpl.html',
+	compile : function(tElement, tAtrrs) {
+	    return function(scope, element, attrs, listGroupCtrl) {
+		if (angular.isString(scope.header)) {
+		    scope.title = scope.header;
+		}
+	    }
+	}
     }
 });
