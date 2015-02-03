@@ -27,7 +27,7 @@ $scope.filterable = {
 };</code></pre>		
 	<h3>Markup</h3>
 <pre><code class="language-markup" prism>&#60;list-group items="colors" 
-	filterable="filterable"> 
+	selectable="true" filterable="filterable"> 
 &#60;/list-group></code></pre>
 	
 	<list-group items="colors" selectable="true"
@@ -46,7 +46,7 @@ $scope.filterable02 = {
 	auto : false
 };</code></pre>	
 <pre><code class="language-markup" prism>&#60;list-group items="colors" 
-	filterable="filterable02"> 
+	selectable="true" filterable="filterable02"> 
 &#60;/list-group></code></pre>
 
 	<list-group items="colors" selectable="true"
@@ -72,4 +72,26 @@ $scope.filterable03 = {
 	
 	<list-group items="colors"
 		filterable="filterable03"></list-group>
+</div>
+
+<div class="col-md-3">
+	<div class="well">
+		If you are case sensitive set property <code>ignoreCase</code> to <code>false</code> on your <code>filterable</code> object 
+	</div>
+<h3>Controller</h3>
+<pre><code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];
+
+$scope.filterable04 = {
+	comparator : 'startsWith',
+	ignoreCase : false
+};</code></pre>		
+	<h3>Markup</h3>
+<pre><code class="language-markup" prism>&#60;list-group items="colors" 
+	filterable="filterable04"> 
+&#60;/list-group></code></pre>
+	
+	<list-group items="colors"
+		filterable="filterable04"></list-group>
+</div>	
 </div>

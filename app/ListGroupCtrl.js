@@ -84,9 +84,14 @@ demo
 			    $scope.filterable02 = {
 				auto : false
 			    };
-			    
+
 			    $scope.filterable03 = {
 				comparator : 'startsWith'
+			    };
+
+			    $scope.filterable04 = {
+				comparator : 'startsWith',
+				ignoreCase : false
 			    };
 
 			    $scope.paintings = [
@@ -151,12 +156,10 @@ demo
 					'url' : 'http://www.alfredsisley.org/La-Grande-Rue-Argenteuil.jpg'
 				    } ];
 
-			    $scope.paintingTemplate = '<div class="row"><div class="col-md-4"><div class="thumbnail"><img ng-src="{{item.url}}" height="100%"></img></div></div><div class="col-md-8"><h4 class="list-group-item-heading">{{item.title}}</h4> <p class="list-group-item-text">{{item.paintedBy}}</p><p class="list-group-item-text">{{item.year}}</p></div></div>';
-
-			    $scope.getPaintingTemplate = function() {
-				return $scope.paintingTemplate;
-			    }
-
+			    $scope.paintingTpl = '<div class="row painting-item"><div class="pull-left"><a href="#" class="thumbnail"><img ng-src="{{item.url}}"></img></a></div><div class="pull-left"><h4 class="list-group-item-heading">{{item.title}}</h4> <p class="list-group-item-text">{{item.paintedBy}}</p><p class="list-group-item-text">{{item.year}}</p></div></div>';
+			    
+			    $scope.templateUrl = 'partials/painting-list-item.tpl.html';
+			    
 			    $scope.selectionChangeHandler01 = function(items) {
 				$scope.selection01 = items;
 			    };

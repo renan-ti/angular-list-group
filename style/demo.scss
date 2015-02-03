@@ -3,6 +3,8 @@ $color2: #D4D16A;
 $color3: #807C15;
 $color4: #555200;
 
+$grey:#DDDDDD;
+
 body {
 	padding-top: 50px;
 }
@@ -25,32 +27,52 @@ body {
 		padding: 20px;
 		overflow-x: hidden;
 		overflow-y: auto;
-		background-color: #f5f5f5;
 		border-right: 1px solid #eee;
-		background-color: $color2;
+		border-right:solid 1px $grey;
 	}
  
 .nav-sidebar {
-	margin-right: -21px; /* 20px padding + 1px border */
-	margin-bottom: 20px;
+
+	margin-right: -21px;
 	margin-left: -20px;
-}
-
-.nav-sidebar > li >a {
-	padding-right: 20px;
-	padding-left: 20px;
-	color:$color4;
-}
-
-.nav-sidebar>li>a:hover {
-	color: $color3;
-	background-color: $color1;
-}
-
- .nav-sidebar>.active>a, .nav-sidebar>.active>a:hover,.nav-sidebar>.active>a:focus
-	{
-	color: $color2;
-	background-color: $color4;
+	
+	.menu-category {
+	
+		background-color:$color4;
+		color:$color2;
+		font-weight:bolder;
+		font-size:larger;
+		
+		div {
+			padding-right: 20px;
+			padding-left: 20px;
+			padding-top: 10px;
+			padding-bottom: 10px;
+		}
+	}
+	
+	li {
+		border-bottom:solid 1px $grey;
+		
+		a {
+			padding-right: 20px;
+			padding-left: 20px;
+			color:$color4;
+		}
+		
+		a:hover {
+			color: $color4;
+			background-color: $color2;
+		}
+		
+	}
+	
+	.active {
+		a, a:hover, a:focus {
+			color: $color4;
+			background-color: $color2;
+		}
+	}
 }
 
 .main {
@@ -59,4 +81,22 @@ body {
 
 .menu-item span {
 	margin-left: 20px;
+}
+
+.thumbnail {
+	
+	img {
+		width : 80px;
+	}
+	
+}
+
+.painting-item {
+	
+	div:first-child {
+		margin-right:10px;
+		margin-left:10px;
+		vertical-align:middle;
+	}
+	
 }

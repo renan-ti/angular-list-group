@@ -31,7 +31,7 @@
 		<div class="row">
 			<div class="col-sm-3 col-md-2 sidebar">
 				<ul class="nav nav-sidebar" ng-repeat="menu in menus">
-					<li><a ng-href><span ng-bind="menu.title"></span></a></li>
+					<li class="menu-category"><div ng-bind="menu.title"></div></li>
 					<li class="menu-item"
 						ng-class="{'active' : selectedMenuItem === item}"
 						ng-repeat="item in menu.items" ng-click="selectMenuItem(item)">

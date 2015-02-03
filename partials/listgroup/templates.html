@@ -1,22 +1,50 @@
 <div class="col-md-6">
-	<pre>
-&#60;list-group 
-	items="paintings"
-	selectable="true"
-	template="paintingTemplate"> 
-&#60;/list-group>	
-</pre>
+	<div class="well">
+	Add custom <code>HTML</code> using <code>template</code> attribute	
+	</div>
+	<h3>Controller</h3>
+<pre><code class="language-javascript" prism><span ng-non-bindable>$scope.paintings = [{
+	'title' : 'Blue Dancers, c.1899',
+	'paintedBy' : 'Edgar Degas',
+	'location' : 'Pushkin Museum, Moscow, Russia',
+	'year' : 1899,
+	'dimensions' : '25.59 inch wide x 25.59 inch high',
+	'url' : 'http://www.edgar-degas.org/Blue-Dancers,-c.1899.jpg'},
+   ...
+];
+
+$scope.paintingTpl = '&#60;div class="row painting-item">&#60;div class="pull-left">&#60;a href="#" class="thumbnail">&#60;img ng-src="{{item.url}}">&#60;/img>&#60;/a>&#60;/div>&#60;div class="pull-left">&#60;h4 class="list-group-item-heading">{{item.title}}&#60;/h4> &#60;p class="list-group-item-text">{{item.paintedBy}}&#60;/p>&#60;p class="list-group-item-text">{{item.year}}&#60;/p>&#60;/div>&#60;/div>';</span></code></pre>		
+	<h3>Markup</h3>
+<pre><code class="language-markup" prism>&#60;list-group items="paintings"
+	selectable="true" template="paintingTpl">&#60;/list-group></code></pre>
+	
 	<list-group items="paintings" selectable="true"
-		template="paintingTemplate"></list-group>
+		template="paintingTpl"></list-group>
 </div>
 
 <div class="col-md-6">
-	<pre>
-&#60;list-group 
-	items="paintings"
-	template-url="'partials/painting-list.tpl.html'"> 
-&#60;/list-group>	
-</pre>
+	<div class="well">
+	Or load <code>HTML</code> from <code>URL</code> using <code>template-url</code> attribute	
+	</div>
+<pre><code class="language-javascript" prism><span ng-non-bindable>$scope.paintings = [{
+	'title' : 'Blue Dancers, c.1899',
+	'paintedBy' : 'Edgar Degas',
+	'location' : 'Pushkin Museum, Moscow, Russia',
+	'year' : 1899,
+	'dimensions' : '25.59 inch wide x 25.59 inch high',
+	'url' : 'http://www.edgar-degas.org/Blue-Dancers,-c.1899.jpg'},
+   ...
+];
+
+ $scope.templateUrl = 'partials/painting-list-item.tpl.html';</span></code></pre>
+ 	<h3>Markup</h3>	
+<pre><code class="language-markup" prism>&#60;list-group items="paintings"
+		template-url="'partials/painting-list-item.tpl.html'">&#60;/list-group>
+
+// or
+
+&#60;list-group items="paintings"
+	template-url="templateUrl">&#60;/list-group></code></pre>
 	<list-group items="paintings"
-		template-url="'partials/painting-list.tpl.html'"></list-group>
+		template-url="templateUrl"></list-group>
 </div>
