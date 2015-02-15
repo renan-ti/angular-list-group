@@ -1,97 +1,46 @@
 <div class="row">
-	<div class="col-md-12">
-		<div class="alert alert-info" role="alert" ng-bind-html="msg"></div>
-	</div>
-</div>
-
-<div class="row">
-	<div class="col-md-4">
-		<div>
-			<p>
-				Use
-				<code>deletable</code>
-				attribute to add a delete action button
-			</p>
-			<p>
-				Use
-				<code>on-delete</code>
-				attribute to specify a callback function.
-
-			</p>
-			<p>
-				<mark>
-					Note argument function name
-					<code>$item</code>
-				</mark>
-			</p>
+	<div class="col-md-3">
+		<div class="well">
+			<p>Use <code>list-group-editor</code> directive <strong>add</strong>, <strong>edit</strong> or <strong>delete</strong> <code>items</code></p>
 		</div>
-
-		<pre>
-&#60;list-group-editor 
-	title="Built-in delete action" 
-	items="colors"
-	deletable="true"
-	on-delete="deleteItem($item)"
-	panel="success"
-	size="small"> 
-&#60;/list-group-editor>	
-</pre>
-		<list-group-editor title="Built-in delete action" items="colors"
-			deletable="true" on-delete="deleteItem($item)" panel="success"
-			contextual-class="success" size="small"></list-group-editor>
+		<h3>Controller</h3>
+<pre><code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];</code></pre>
+		<h3>Markup</h3>
+<pre><code class="language-markup" prism>&#60;list-group-editor items="colors" /></code></pre>
+<list-group-editor items="colors" />
 	</div>
 
-	<div class="col-md-4">
-		<div>
-			<p>
-				Use
-				<code>editable</code>
-				attribute to add an edit action button
-			</p>
-			<p>
-				Use
-				<code>on-edit</code>
-				attribute to specify a callback function.
-
-			</p>
-			<p>
-				<mark>
-					Note argument function name
-					<code>$item</code>
-				</mark>
-			</p>
+	<div class="col-md-3">
+		<div class="well">
+			<p>If <code>items</code> are not to be deleted, set <code>deletable</code> attribute value to <code>false</code></p>
+			<p>Similarly, use <code>editable</code> attribute for not editable <code>items</code></p>
 		</div>
-
-		<pre>
-&#60;list-group
-	title="Built-in edit action"
-	items="colors02"
-	editable="true"
-	on-edit="editItem($item)"> 
-&#60;/list-group>	
-</pre>
-		<list-group-editor title="Built-in edit action" items="colors02"
-			editable="true" on-edit="editItem($item)"></list-group-editor>
+		<h3>Controller</h3>
+<pre><code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];</code></pre>
+		<h3>Markup</h3>
+<pre><code class="language-markup" prism>&#60;list-group-editor items="colors"
+	deletable="false" /></code></pre>
+<list-group-editor items="colors" deletable="false" />
 	</div>
 
-	<div class="col-md-4">
-		<div>
-			<p>Add both built-in actions edit and delete</p>
+	<div class="col-md-3">
+		<div class="well">
+			<p>Pass in a callback function to control which <code>items</code> are to be deletable</p>
 		</div>
-		<pre>
-&#60;list-group
-	title="Built-in edit and delete actions"
-	items="colors03"
-	deletable="true""
-	on-delete="deleteItem($item)"
-	editable="true"
-	on-edit="editItem($item)"
-	size="large"> 
-&#60;/list-group>	
-</pre>
-		<list-group-editor title="Built-in edit and delete actions"
-			items="colors03" deletable="true" on-delete="deleteItem($item)"
-			editable="true" on-edit="editItem($item)" size="large"></list-group-editor>
+		<h3>Controller</h3>
+<pre><code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+	'Green', 'Blue', 'Indigo', 'Violet' ];
+
+// Make 'Orange' and 'Blue' items not deletable
+$scope.myDeletableHandler = function(item) {
+	return item != 'Orange' && item != 'Blue';
+};</code></pre>
+		<h3>Markup</h3>
+<pre><code class="language-markup" prism>&#60;list-group-editor items="colors"
+	deletable="myDeletableHandler($item)" /></code></pre>
+<list-group-editor items="colors" deletable="myDeletableHandler($item)" />
 	</div>
 
 </div>
