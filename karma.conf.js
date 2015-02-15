@@ -14,13 +14,15 @@ module.exports = function(config) {
 	files : [ 
 	        'bower_components/jquery/dist/jquery.min.js',
 	        'bower_components/angular/angular.min.js',
+	        'bower_components/angular-sanitize/angular-sanitize.min.js',
 		'bower_components/angular-mocks/angular-mocks.js',
 		
 		'src/templates/**/*.html',
 		'src/namespace.js',
 		'src/service/**/*.js',
 		'src/filter/**/*.js',
-		'src/directive/listGroup.js', 
+		'src/directive/listGroup.js',
+		'src/directive/listGroupEditor.js', 
 		'test/**/*Spec.js' ],
 
 	reporters : [ 'progress' ],

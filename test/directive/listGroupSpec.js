@@ -11,6 +11,7 @@ describe(
 	    beforeEach(module("linked-list-group.tpl.html"));
 	    beforeEach(module("panel-list-group.tpl.html"));
 	    beforeEach(module("panel-list-group-title.tpl.html"));
+	    beforeEach(module("list-group-filter.tpl.html"));
 
 	    beforeEach(inject(function(_$compile_, _$rootScope_) {
 		$compile = _$compile_;

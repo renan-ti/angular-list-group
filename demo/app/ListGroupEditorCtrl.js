@@ -9,6 +9,10 @@ demo
 
 			    $scope.colors = [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet' ];
 
+			    $scope.myDeletableHandler = function(item) {
+				return item != 'Orange' && item != 'Blue';
+			    };
+
 			    $scope.colors02 = angular.copy($scope.colors, $scope.colors03);
 
 			    $scope.colors03 = angular.copy($scope.colors, $scope.colors03);

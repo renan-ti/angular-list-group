@@ -4,6 +4,6 @@
 		ng-repeat="item in listGroupCtrl.$$items | filter:listGroupCtrl.filter.text:compare track by $index"
 		ng-class="{active : (listGroupCtrl.isSelected(item) != -1), disabled : listGroupCtrl.isDisabled(item) }"
 		ng-click="listGroupCtrl.select(item)">
-		<list-group-item-content item="item"></list-group-item-content>
+		<list-group-item-content ></list-group-item-content>
 	</a>
 </div>

@@ -20,7 +20,6 @@ angularListGroupServices.factory('listGroupPanelWrapper', [ '$templateCache', '$
 				var container = angular.element('<div></div>');
 				child.after(container);
 				$animate.enter(comp, container).then(function() {
-				    console.log("sdlkmfjqsmlkfjdsqlfj");
 				});
 				break;
 			    }

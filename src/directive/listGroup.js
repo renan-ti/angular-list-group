@@ -9,9 +9,6 @@ var ListGroupCtrl = [
 
 	    var ctrl = this;
 
-	    var noOp = function(item) {
-	    };
-
 	    var defaultBeforeSelectionChange = function(item) {
 		return true;
 	    };
@@ -35,7 +32,7 @@ var ListGroupCtrl = [
 
 	    ctrl.beforeSelectionChange = (!$attrs.beforeSelectionChange) ? defaultBeforeSelectionChange
 		    : $scope.beforeSelectionChange;
-	    ctrl.afterSelectionChange = (!$attrs.afterSelectionChange) ? noOp : $scope.afterSelectionChange;
+	    ctrl.afterSelectionChange = (!$attrs.afterSelectionChange) ? angular.noop : $scope.afterSelectionChange;
 
 	    ctrl.$selectItem = function(item) {
 		var idx = -1;
@@ -88,21 +85,6 @@ var ListGroupCtrl = [
 		    }
 		}
 		return idx;
-	    };
-
-	    ctrl.resolveLabel = function(item) {
-		var label = item;
-		if ($attrs.labelFn) {
-		    var fn = $parse($attrs.labelFn);
-		    label = fn($scope.$parent, {
-			item : item
-		    });
-		} else if (item.label) {
-		    label = item.label;
-		} else if (angular.isObject(item)) {
-		    label = angular.toJson(item);
-		}
-		return label;
 	    };
 
 	    ctrl.resolveContextualClass = function(item) {
@@ -193,6 +175,7 @@ angularListGroupDirectives.directive('listGroup', [ '$templateCache', function($
 	controllerAs : 'listGroupCtrl',
 	scope : {
 	    items : '=',
+	    labelFn : '@?',
 	    selectedItems : '=?',
 	    beforeSelectionChange : '&?',
 	    afterSelectionChange : '&?',
@@ -212,10 +195,35 @@ angularListGroupDirectives.directive('listGroupItemContent', [ '$compile', '$tem
 	    return {
 		restrict : 'EA',
 		replace : true,
-		scope : false,
-		require : '^listGroup',
+		scope : true,
+		controller : function($scope, $attrs, $parse) {
+		    var ctrl = this;
+
+		    ctrl.resolveLabel = function(item) {
+			var label = item;
+			if ($scope.labelFn) {
+			    var fn = $parse($scope.labelFn);
+			    // item ng-repeat scope
+			    var targetScope = $scope.$parent;
+			    // listGroup directive scope
+			    targetScope = targetScope.$parent;
+			    // Client Ctrl scope
+			    targetScope = targetScope.$parent;
+			    label = fn(targetScope, {
+				item : item
+			    });
+
+			} else if (item.label) {
+			    label = item.label;
+			} else if (angular.isObject(item)) {
+			    label = angular.toJson(item);
+			}
+			return label;
+		    };
+		},
+		controllerAs : 'ctrl',
 		compile : function(tElement, tAtrrs) {
-		    return function(scope, element, attrs, listGroupCtrl) {
+		    return function(scope, element, attrs, ctrl) {
 			var html;
 			if (scope.templateUrl) {
 			    $templateRequest(scope.templateUrl).then(function(html) {
@@ -224,7 +232,7 @@ angularListGroupDirectives.directive('listGroupItemContent', [ '$compile', '$tem
 			} else if (scope.template) {
 			    element.replaceWith($compile(scope.template)(scope));
 			} else {
-			    element.replaceWith(listGroupCtrl.resolveLabel(scope.item));
+			    element.replaceWith(ctrl.resolveLabel(scope.item));
 			}
 		    }
 		}
@@ -235,6 +243,7 @@ angularListGroupDirectives.directive('listGroupHtml', function() {
     return {
 	restrict : 'EA',
 	replace : true,
+	terminal : true,
 	scope : false,
 	templateUrl : 'list-group.tpl.html'
     }
@@ -244,8 +253,19 @@ angularListGroupDirectives.directive('linkedListGroupHtml', function() {
     return {
 	restrict : 'EA',
 	replace : true,
+	terminal : true,
 	scope : false,
 	templateUrl : 'linked-list-group.tpl.html'
+    }
+});
+
+angularListGroupDirectives.directive('listGroupFilter', function() {
+    return {
+	restrict : 'EA',
+	replace : true,
+	terminal : true,
+	scope : false,
+	templateUrl : 'list-group-filter.tpl.html'
     }
 });
 
@@ -253,6 +273,7 @@ angularListGroupDirectives.directive('panelListGroupTitle', function() {
     return {
 	restrict : 'EA',
 	replace : true,
+	terminal : true,
 	scope : false,
 	templateUrl : 'panel-list-group-title.tpl.html',
 	compile : function(tElement, tAtrrs) {

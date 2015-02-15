@@ -106,3 +106,38 @@
 .inline-create-form.ng-leave {
 	animation: fadeOutDown 0.5s;
 }
+
+
+.list-group-input-group .list-group-item {
+	padding: 0px !important;
+}
+
+.list-group-input-group .list-group-item .input-group {
+	border-collapse: collapse;
+}
+
+.list-group-input-group .list-group-item .input-group .form-control-static {
+	padding-top: 0px !important;
+	padding-right: 0px !important;
+	padding-bottom: 0px !important;
+	padding-left: 15px !important;
+	display: table-cell !important;
+	vertical-align: middle;
+}
+
+
+.list-group-input-group .list-group-item .input-group-btn .btn {
+	border-top-width: 0px;
+	border-bottom-width: 0px;
+	border-right-width:0px;
+	border-radius: 0px;
+}
+
+
+.list-group-input-group .list-group-item:FIRST-CHILD .input-group-btn .btn {
+	border-top-right-radius : 4px !important;
+}
+
+.panel .panel-heading .panel-title a:hover {
+	cursor: pointer;	
+}
