@@ -1,5 +1,13 @@
 (function(window, document) {
 'use strict';
+function isPromise(obj) {
+    var promise = false;
+    if (obj && obj.then && angular.isFunction(obj.then)) {
+	promise = true;
+    }
+    return promise;
+}
+
 var angularListGroupServices = angular.module('angularListGroup.services', []);
 var angularListGroupDirectives = angular.module('angularListGroup.directives', []);
 var angularListGroupFilters = angular.module('angularListGroup.filters', []);
@@ -515,7 +523,6 @@ angularListGroupDirectives.directive('listGroupItemContent', [ '$compile', '$tem
 		scope : true,
 		controller : function($scope, $attrs, $parse) {
 		    var ctrl = this;
-
 		    ctrl.resolveLabel = function(item) {
 			var label = item;
 			if ($scope.labelFn) {
@@ -603,8 +610,8 @@ angularListGroupDirectives.directive('panelListGroupTitle', function() {
     }
 });
 
-var ListGroupEditorCtrl = [ '$scope', '$attrs', '$parse', '$filter', '$sce', '$compile', '$injector',
-	function($scope, $attrs, $parse, $filter, $sce, $compile, $injector) {
+var ListGroupEditorCtrl = [ '$scope', '$attrs', '$parse', '$filter', '$sce', '$compile', '$injector', '$timeout',
+	function($scope, $attrs, $parse, $filter, $sce, $compile, $injector, $timeout) {
 
 	    var ctrl = this;
 
@@ -619,22 +626,22 @@ var ListGroupEditorCtrl = [ '$scope', '$attrs', '$parse', '$filter', '$sce', '$c
 
 	    angular.extend(ctrl, listGroupCtrl);
 
-	    /**
-	     * 
-	     */
-	    var defaultDeleteFn = function(item) {
-
-	    };
-
 	    var editAction = {
 		icon : 'fa-pencil-square-o',
-		fn : angular.noop,
-		disabled : angular.noop
+		fn : function(item) {
+		    ctrl.$$onEdit(item);
+		},
+		disabled : angular.noop,
+		builtin : true
 	    };
+
 	    var deleteAction = {
 		icon : 'fa-trash-o',
-		fn : angular.noop,
-		disabled : angular.noop
+		fn : function(item) {
+		    ctrl.$$onDelete(item);
+		},
+		disabled : angular.noop,
+		builtin : true
 	    };
 
 	    ctrl.title = $sce.trustAsHtml('&nbsp');
@@ -650,9 +657,65 @@ var ListGroupEditorCtrl = [ '$scope', '$attrs', '$parse', '$filter', '$sce', '$c
 		deleteAction.disabled = $parse($attrs.deletable);
 	    }
 
+	    ctrl.$$invokeAction = function(action, item) {
+		if (action.builtin) {
+		    action.fn(item);
+		} else {
+		    action.fn($scope.parent, {
+			item : item
+		    });
+		}
+	    }
+
+	    ctrl.$$onAdd = function() {
+		if ('onAdd' in $attrs) {
+		    var output = $scope.onAdd();
+		    if (isPromise(output)) {
+			output.then(function(newItem) {
+			    ctrl.$$items.push(newItem);
+			});
+		    }
+		}
+	    }
+
+	    ctrl.$$onDelete = function(item) {
+		if ('onDelete' in $attrs) {
+		    var output = $scope.onDelete({
+			item : item
+		    });
+		    if (isPromise(output)) {
+			output.then(function(itemToRemove) {
+			    var idx = ctrl.$$items.indexOf(itemToRemove);
+			    if (idx > -1) {
+				ctrl.$$items.splice(idx, 1);
+			    }
+			});
+		    }
+		}
+	    }
+
+	    ctrl.$$onEdit = function(item) {
+		if ('onEdit' in $attrs) {
+		    var output = $scope.onEdit({
+			item : angular.copy(item)
+		    });
+		    if (isPromise(output)) {
+			output.then(function(editedItem) {
+			    var idx = ctrl.$$items.indexOf(item);
+			    if (idx > -1) {
+				ctrl.$$items[idx] = editedItem;
+				$timeout(function() {
+				    $scope.$digest();
+				})
+			    }
+			});
+		    }
+		}
+	    }
+
 	    ctrl.isActionDisabled = function(item, action) {
 		var returnedValue = action.disabled($scope.$parent, {
-		    $item : item
+		    item : item
 		});
 		return returnedValue === false;
 	    }
@@ -678,7 +741,10 @@ angularListGroupDirectives.directive('listGroupEditor', [ '$templateCache', func
 	    selectable : '@?',
 	    template : '=?',
 	    templateUrl : '=?',
-	    header : '=?'
+	    header : '=?',
+	    onAdd : '&?',
+	    onDelete : '&?',
+	    onEdit : '&?'
 	}
     };
 } ]);
@@ -704,7 +770,7 @@ $templateCache.put('edit-inline-input.tpl.html',
 
 
   $templateCache.put('panel-editable-list-group.tpl.html',
-    "<div class=\"panel panel-default\" ng-cloak=\"\"><div class=\"panel-heading\"><h3 class=\"panel-title\"><span ng-bind-html=\"::ctrl.title\"></span> <a ng-click=\"ctrl.onAdd()\"><i class=\"fa fa-plus-square-o pull-right\"></i></a></h3></div><div class=\"panel-body\" ng-if=\"filterable\"><list-group-filter></list-group-filter></div><ul class=\"list-group list-group-input-group\"><li class=\"list-group-item\" ng-repeat=\"item in ctrl.$$items | filter:ctrl.filter.text:compare track by $index\"><div class=\"input-group\"><!--       <input type=\"text\" class=\"form-control\" placeholder=\"Search for...\"> --><div class=\"form-control-static\"><list-group-item-content></list-group-item-content></div><span class=\"input-group-btn\"><button class=\"btn btn-default\" type=\"button\" ng-disabled=\"ctrl.isActionDisabled(item, action)\" ng-repeat=\"action in ctrl.$$actions track by $index\"><i class=\"fa {{::action.icon}}\"></i></button></span></div></li></ul></div>"
+    "<div class=\"panel panel-default\" ng-cloak=\"\"><div class=\"panel-heading\"><h3 class=\"panel-title\"><span ng-bind-html=\"::ctrl.title\"></span> <a ng-click=\"ctrl.$$onAdd()\"><i class=\"fa fa-plus-square-o pull-right\"></i></a></h3></div><div class=\"panel-body\" ng-if=\"filterable\"><list-group-filter></list-group-filter></div><ul class=\"list-group list-group-input-group\"><li class=\"list-group-item\" ng-repeat=\"item in ctrl.$$items | filter:ctrl.filter.text:compare\"><div class=\"input-group\"><!--       <input type=\"text\" class=\"form-control\" placeholder=\"Search for...\"> --><div class=\"form-control-static\"><list-group-item-content></list-group-item-content></div><span class=\"input-group-btn\"><button class=\"btn btn-default\" type=\"button\" ng-disabled=\"ctrl.isActionDisabled(item, action)\" ng-repeat=\"action in ctrl.$$actions track by $index\" ng-click=\"ctrl.$$invokeAction(action, item)\"><i class=\"fa {{::action.icon}}\"></i></button></span></div></li></ul></div>"
   );
 
 

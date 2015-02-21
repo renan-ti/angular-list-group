@@ -1,5 +1,4 @@
-<div class="row">
-	<div class="col-md-3">
+	<div class="col-md-4">
 		<div class="well">
 			<p>Use <code>list-group-editor</code> directive <strong>add</strong>, <strong>edit</strong> or <strong>delete</strong> <code>items</code></p>
 		</div>
@@ -11,7 +10,7 @@
 <list-group-editor items="colors" />
 	</div>
 
-	<div class="col-md-3">
+	<div class="col-md-4">
 		<div class="well">
 			<p>If <code>items</code> are not to be deleted, set <code>deletable</code> attribute value to <code>false</code></p>
 			<p>Similarly, use <code>editable</code> attribute for not editable <code>items</code></p>
@@ -25,7 +24,7 @@
 <list-group-editor items="colors" deletable="false" />
 	</div>
 
-	<div class="col-md-3">
+	<div class="col-md-4">
 		<div class="well">
 			<p>Pass in a callback function to control which <code>items</code> are to be deletable</p>
 		</div>
@@ -42,5 +41,67 @@ $scope.myDeletableHandler = function(item) {
 	deletable="myDeletableHandler($item)" /></code></pre>
 <list-group-editor items="colors" deletable="myDeletableHandler($item)" />
 	</div>
-
+	
+	<div class="col-md-4">
+		<div class="well">
+			<p>Add event hanlders using <code>on-add</code>, <code>on-edit</code> and <code>on-delete</code> attributes</p>
+		</div>
+		<h3>Controller</h3>
+		<pre><code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+'Green', 'Blue', 'Indigo', 'Violet' ];
+$scope.onAddEventHandler = function(){
+	$scope.eventHandlerMessage = 'Add event handler \'onAddEventHandler()\' has been invoked';
+}
+$scope.onEditEventHandler = function(item) {
+	$scope.eventHandlerMessage = 'Edit event handler \'onEditEventHandler(' + item + ')\' has been invoked';
+}
+$scope.onDeleteEventHandler = function(item) {
+	$scope.eventHandlerMessage = 'Delete event handler \'onDeleteEventHandler(' + item + ')\' has been invoked';
+}</code></pre>
+		<h3>Markup</h3>
+<pre><code class="language-markup" prism>&#60;list-group-editor items="colors"
+	on-add="onAddEventHandler()"
+	on-edit="onEditEventHandler(item)"
+	on-delete="onDeleteEventHandler(item)" /></code></pre>
+		
+		<list-group-editor items="colors" 
+			on-add="onAddEventHandler()"
+			on-edit="onEditEventHandler(item)"
+			on-delete="onDeleteEventHandler(item)"></list-group-editor>
+		
+		<div class="well" ng-bind="eventHandlerMessage" ng-if="eventHandlerMessage">
+		</div>
+	</div>
+	
+<div class="col-md-4">
+	<div class="well">
+		<p>Make your event handlers return a <code>promise</code> for <code>angular-list-editor</code> to take into account the action</p>
+	</div>
+	<h3>Controller</h3>
+		<pre><code class="language-javascript" prism>$scope.colors=[ 'Red', 'Orange', 'Yellow', 
+'Green', 'Blue', 'Indigo', 'Violet' ];
+ $scope.onAddEventHandler2 = function(){
+	var deferred = $q.defer();
+	deferred.resolve('purple');
+	return deferred.promise;
+};
+$scope.onEditEventHandler2 = function(item) {
+	var deferred = $q.defer();
+	deferred.resolve(item + ' (edited)');
+	return deferred.promise;
+};
+$scope.onDeleteEventHandler2 = function(item) {
+	var deferred = $q.defer();
+	deferred.resolve(item);
+	return deferred.promise;
+};</code></pre>
+	<h3>Markup</h3>
+<pre><code class="language-markup" prism>&#60;list-group-editor items="colors"
+	on-add="onAddEventHandler2()"
+	on-edit="onEditEventHandler2(item)"
+	on-delete="onDeleteEventHandler2(item)" /></code></pre>	
+	<list-group-editor items="colors" 
+			on-add="onAddEventHandler2()"
+			on-edit="onEditEventHandler2(item)"
+			on-delete="onDeleteEventHandler2(item)"></list-group-editor>
 </div>
