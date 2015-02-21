@@ -1,5 +1,5 @@
-<div class="row">
-	<div class="col-md-3">
+<div class="row">	
+	<div class="col-md-4">
 		<div class="well">
 			In its most basic usage the
 			<code>listGroup</code>
@@ -17,7 +17,7 @@
 		<list-group items="colors"> </list-group>
 	</div>
 
-	<div class="col-md-3">
+	<div class="col-md-4">
 		<div class="well">
 			In case <code>items</code> are objects, they are rendered applying <code>angular.toJson()</code> to each <code>item</code>
 		</div>
@@ -34,7 +34,7 @@
 		<list-group items="colors2"> </list-group>
 	</div>
 
-	<div class="col-md-3">
+	<div class="col-md-4">
 		<div class="well">
 			If objects have a property named
 			<code>label</code>
@@ -53,8 +53,9 @@
 <pre><code class="language-markup" prism>&#60;list-group items="colors3">&#60;/list-group></code></pre>
 		<list-group items="colors3"> </list-group>
 	</div>
-
-	<div class="col-md-3">
+</div>
+<div class="row">
+	<div class="col-md-4">
 		<div class="well">
 			If none of this fits your needs, you can render
 			<code>items</code>
@@ -78,6 +79,4 @@ $scope.myLabelFn = function(item) {
 	label-fn="myLabelFn(item)">&#60;/list-group></code></pre>
 		<list-group items="colors2" label-fn="myLabelFn(item)"> </list-group>
 	</div>
-
 </div>
-

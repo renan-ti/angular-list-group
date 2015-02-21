@@ -198,7 +198,6 @@ angularListGroupDirectives.directive('listGroupItemContent', [ '$compile', '$tem
 		scope : true,
 		controller : function($scope, $attrs, $parse) {
 		    var ctrl = this;
-
 		    ctrl.resolveLabel = function(item) {
 			var label = item;
 			if ($scope.labelFn) {

@@ -1,4 +1,5 @@
-<div class="col-md-3">
+<div class="row">
+<div class="col-md-4">
 	<div class="well">
 		To enable the list filtering add a
 		<code>filterable</code>
@@ -14,7 +15,7 @@
 	<list-group items="colors" filterable="true" selectable="true"></list-group>
 </div>
 
-<div class="col-md-3">
+<div class="col-md-4">
 	<div class="well">
 		Add a placeholder to the input field
 	</div>
@@ -34,7 +35,7 @@ $scope.filterable = {
 		filterable="filterable"></list-group>
 </div>
 
-<div class="col-md-3">
+<div class="col-md-4">
 	<div class="well">
 		If you want to trigger filter yourself, give <code>filterable auto</code> property a <code>false</code> value
 	</div>
@@ -52,8 +53,10 @@ $scope.filterable02 = {
 	<list-group items="colors" selectable="true"
 		filterable="filterable02"></list-group>
 </div>
+</div>
 
-<div class="col-md-3">
+<div class="row">
+<div class="col-md-4">
 	<div class="well">
 		Override default comparator <code>contains</code> giving <code>filterable comparator</code> property value one 
 		of <code>eq</code>, <code>neq</code>, <code>startsWith</code> or <code>endsWith</code>
@@ -74,7 +77,7 @@ $scope.filterable03 = {
 		filterable="filterable03"></list-group>
 </div>
 
-<div class="col-md-3">
+<div class="col-md-4">
 	<div class="well">
 		If you are case sensitive set property <code>ignoreCase</code> to <code>false</code> on your <code>filterable</code> object 
 	</div>
