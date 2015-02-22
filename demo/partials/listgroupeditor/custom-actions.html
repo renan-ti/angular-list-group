@@ -1,43 +1,33 @@
-<div class="row">
-	<div class="col-md-12">
-		<div class="alert alert-info" role="alert" ng-bind-html="msg02"></div>
+<div class="col-md-6">
+	<div class="well">
+		<p>Built-in actions are no good to your needs. Specify your own actions using <code>item-actions</code> attribute.</p>
 	</div>
-</div>
-<div class="row">
-
-	<div class="col-md-12">
-		<div>
-			<p>
-				Use
-				<code>deletable</code>
-				attribute to add a delete action button
-			</p>
-			<p>
-				Use
-				<code>on-delete</code>
-				attribute to specify a callback function.
-
-			</p>
-			<p>
-				<mark>
-					Note argument function name
-					<code>$item</code>
-				</mark>
-			</p>
-		</div>
-
-		<pre>
-&#60;list-group-editor title="Tracks" items="tracks" template="template"
-	actions='[{"id":"play","icon":"glyphicon-play", "fn":"play($item)"},
-			{"id":"pause","icon":"glyphicon-pause", "fn":"pause($item)"},
-			{"id":"stop","icon":"glyphicon-stop", "fn":"stop($item)"}]'>
-&#60;/list-group-editor>	
-</pre>
-		<list-group-editor title="Tracks" items="tracks"
-			template="template"
-			actions='[{"id":"play","icon":"glyphicon-play", "fn":"play($item)"},
-					{"id":"pause","icon":"glyphicon-pause", "fn":"pause($item)"},
-					{"id":"stop","icon":"glyphicon-stop", "fn":"stop($item)"}]'></list-group-editor>
-	</div>
-
+	<h3>Controller</h3>
+<pre><code class="language-javascript" prism><span ng-non-bindable>$scope.trackListTitle = 'Jasques Brel, Quand on n\'a que l\'amour (1957)';
+$scope.trackTpl = '&#60;div class="col-xs-1 text-right">{{item.nb}}&#60;/div>&#60;div class="col-xs-9">{{item.title}}&#60;/div>&#60;div class="col-xs-2 text-left">{{item.time}}&#60;/div>';
+$scope.tracks = [ {'nb' : 1,'title' : "Quand on n'a que l'amour",'time' : '2:23'},
+	{'nb' : 2,'title' : "Qu'avons-nous fait, bonnes gens ?",'time' : '1:46'},...];
+$scope.itemActions = [ 
+{
+	icon : 'fa-play',
+	fn : function(item) {
+		$scope.trackMessage = "Play, " + angular.toJson(item);
+	}
+}, {
+	icon : 'fa-pause',
+	fn : function(item) {
+		$scope.trackMessage = "Pause, " + angular.toJson(item);
+	}
+}, {
+	icon : 'fa-stop',
+	fn : function(item) {
+		$scope.trackMessage = "Stop, " + angular.toJson(item);
+	}
+} ];</span></code></pre>	
+<h3>Markup</h3>
+<pre><code class="language-markup" prism>&#60;list-group-editor title="trackListTitle" template="trackTpl" items="tracks">
+&#60;/list-group-editor></code></pre>
+	<list-group-editor title="trackListTitle"  items="tracks" template="trackTpl"
+		item-actions="itemActions"></list-group-editor>
+	<div class="well" ng-bind="trackMessage" ng-if="trackMessage"></div>
 </div>

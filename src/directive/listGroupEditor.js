@@ -28,31 +28,27 @@ var ListGroupEditorCtrl = [ '$scope', '$attrs', '$parse', '$filter', '$sce', '$c
 		fn : function(item) {
 		    ctrl.$$onDelete(item);
 		},
-		disabled : angular.noop,
-		builtin : true
+		disabled : angular.noop
 	    };
 
-	    ctrl.title = $sce.trustAsHtml('&nbsp');
+	    var title = $attrs.title ? $parse($attrs.title)($scope.$parent) : '&nbsp;';
+	    ctrl.title = $sce.trustAsHtml(title);
 
-	    ctrl.$$actions = [];
+	    ctrl.$$itemActions = [];
 
-	    if (!$attrs.editable || ($attrs.editable !== 'false')) {
-		ctrl.$$actions.push(editAction);
-	    }
-
-	    if (!$attrs.deletable || ($attrs.deletable !== 'false')) {
-		ctrl.$$actions.push(deleteAction);
-		deleteAction.disabled = $parse($attrs.deletable);
-	    }
-
-	    ctrl.$$invokeAction = function(action, item) {
-		if (action.builtin) {
-		    action.fn(item);
-		} else {
-		    action.fn($scope.parent, {
-			item : item
-		    });
+	    if ('itemActions' in $attrs) {
+		ctrl.$$itemActions = $scope.itemActions;
+	    } else {
+		if (!$attrs.editable || ($attrs.editable !== 'false')) {
+		    ctrl.$$itemActions.push(editAction);
 		}
+		if (!$attrs.deletable || ($attrs.deletable !== 'false')) {
+		    ctrl.$$itemActions.push(deleteAction);
+		    deleteAction.disabled = $parse($attrs.deletable);
+		}
+	    }
+	    ctrl.$$invokeAction = function(action, item) {
+		 action.fn(item);
 	    }
 
 	    ctrl.$$onAdd = function() {
@@ -102,9 +98,12 @@ var ListGroupEditorCtrl = [ '$scope', '$attrs', '$parse', '$filter', '$sce', '$c
 	    }
 
 	    ctrl.isActionDisabled = function(item, action) {
-		var returnedValue = action.disabled($scope.$parent, {
-		    item : item
-		});
+		var returnedValue = undefined;
+		if (action.disabled) {
+		    returnedValue = action.disabled($scope.$parent, {
+			item : item
+		    });
+		}
 		return returnedValue === false;
 	    }
 
@@ -132,7 +131,8 @@ angularListGroupDirectives.directive('listGroupEditor', [ '$templateCache', func
 	    header : '=?',
 	    onAdd : '&?',
 	    onDelete : '&?',
-	    onEdit : '&?'
+	    onEdit : '&?',
+	    itemActions : '=?'
 	}
     };
 } ]);

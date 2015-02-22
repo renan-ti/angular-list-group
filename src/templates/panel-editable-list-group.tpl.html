@@ -19,7 +19,7 @@
 				<span class="input-group-btn">
 					<button class="btn btn-default" type="button"
 						ng-disabled="ctrl.isActionDisabled(item, action)"
-						ng-repeat="action in ctrl.$$actions track by $index"
+						ng-repeat="action in ctrl.$$itemActions track by $index"
 						ng-click="ctrl.$$invokeAction(action, item)">
 						<i class="fa {{::action.icon}}"></i>
 					</button>

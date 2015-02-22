@@ -2,30 +2,38 @@
 
 function ListGroupEditorWidget(root) {
 
-    this.root = root;
+    this.root = angular.element(root);
 
     this.listGroup = angular.element(root).find('.list-group').first();
 
+    this.getTitle = function() {
+	return $.trim(this.root.find('.panel-title span').text());
+    };
+    
+    this.triggerOnClickEvent = function(elt) {
+	angular.element(elt).triggerHandler('click');
+    }
+    
     this.triggerOnAddEvent = function() {
 	var a = angular.element(root).find('a').triggerHandler('click');
-    }
+    };
     this.triggerOnEditEvent = function(elt) {
 	this.getEditAction(elt).triggerHandler('click');
-    }
+    };
     this.triggerOnDeleteEvent = function(elt) {
 	this.getDeleteAction(elt).triggerHandler('click');
-    }
+    };
     this.getItems = function() {
 	return this.listGroup.children();
-    }
+    };
 
     this.countItems = function() {
 	return this.getItems().length;
-    }
+    };
 
     this.countChildren = function(elt) {
 	return angular.element(elt).children().length;
-    }
+    };
 
     this.getActions = function(elt) {
 	var actions = [];
@@ -34,7 +42,7 @@ function ListGroupEditorWidget(root) {
 	    actions = buttonGroupElt.children();
 	}
 	return actions;
-    }
+    };
     this.countActions = function(elt) {
 	return this.getActions(elt).length;
     }
@@ -79,6 +87,16 @@ describe('listGroupEditor', function() {
 	    expect(widget.countActions(itemElt)).toBe(2);
 	});
 
+    });
+
+    it('should bind title', function() {
+	var title = 'my title';
+	$rootScope.$apply("colors = ['red','green','blue']");
+	$rootScope.title = title;
+	var element = $compile("<list-group-editor items='colors' title='title' />")($rootScope);
+	$rootScope.$digest();
+	var widget = new ListGroupEditorWidget(element);
+	expect(widget.getTitle()).toBe(title);
     });
 
     it('should remove delete button when deletable is false', function() {
@@ -208,5 +226,54 @@ describe('listGroupEditor', function() {
 	widget.triggerOnEditEvent(redItem);
 	expect($.trim(widget.getItems().first().text())).toBe('orange');
     }));
+
+    it('should bind custom item actions', function() {
+	$rootScope.$apply("colors = ['red','green','blue']");
+	var arg = null;
+	function Player() {
+	    this.play = function(item) {
+		console.log('play => ' + item);
+		arg = item;
+	    };
+	    this.stop = function(item) {
+		arg = item;
+	    };
+	    this.pause = function(item) {
+		arg = item;
+	    };
+	}
+	var player = new Player();
+	spyOn(player, 'play').and.callThrough();
+	spyOn(player, 'stop').and.callThrough();
+	spyOn(player, 'pause').and.callThrough();
+	
+	$rootScope.itemActions = [ {
+	    icon : 'glyphicon-play',
+	    fn : player.play
+	}, {
+	    icon : 'glyphicon-pause',
+	    fn : player.pause
+	}, {
+	    icon : 'glyphicon-stop',
+	    fn : player.stop
+	} ];
+
+	var element = $compile("<list-group-editor items='colors' item-actions='itemActions'  />")($rootScope);
+	$rootScope.$digest();
+	var widget = new ListGroupEditorWidget(element);
+	angular.forEach(widget.getItems(), function(item) {
+	    expect(widget.countActions(item)).toBe(3);
+	});
+	var firstItem = widget.getItems().first();
+	var elements = widget.getActions(firstItem);
+	angular.forEach(elements, function(elt){
+	    widget.triggerOnClickEvent(elt);
+	});
+	expect(player.play).toHaveBeenCalled();
+	expect(player.stop).toHaveBeenCalled();
+	expect(player.pause).toHaveBeenCalled();
+	
+	//expect(arg).toBe('red');
+    });
 
 });
