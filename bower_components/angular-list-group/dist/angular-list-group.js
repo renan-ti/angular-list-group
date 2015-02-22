@@ -640,31 +640,27 @@ var ListGroupEditorCtrl = [ '$scope', '$attrs', '$parse', '$filter', '$sce', '$c
 		fn : function(item) {
 		    ctrl.$$onDelete(item);
 		},
-		disabled : angular.noop,
-		builtin : true
+		disabled : angular.noop
 	    };
 
-	    ctrl.title = $sce.trustAsHtml('&nbsp');
+	    var title = $attrs.title ? $parse($attrs.title)($scope.$parent) : '&nbsp;';
+	    ctrl.title = $sce.trustAsHtml(title);
 
-	    ctrl.$$actions = [];
+	    ctrl.$$itemActions = [];
 
-	    if (!$attrs.editable || ($attrs.editable !== 'false')) {
-		ctrl.$$actions.push(editAction);
-	    }
-
-	    if (!$attrs.deletable || ($attrs.deletable !== 'false')) {
-		ctrl.$$actions.push(deleteAction);
-		deleteAction.disabled = $parse($attrs.deletable);
-	    }
-
-	    ctrl.$$invokeAction = function(action, item) {
-		if (action.builtin) {
-		    action.fn(item);
-		} else {
-		    action.fn($scope.parent, {
-			item : item
-		    });
+	    if ('itemActions' in $attrs) {
+		ctrl.$$itemActions = $scope.itemActions;
+	    } else {
+		if (!$attrs.editable || ($attrs.editable !== 'false')) {
+		    ctrl.$$itemActions.push(editAction);
 		}
+		if (!$attrs.deletable || ($attrs.deletable !== 'false')) {
+		    ctrl.$$itemActions.push(deleteAction);
+		    deleteAction.disabled = $parse($attrs.deletable);
+		}
+	    }
+	    ctrl.$$invokeAction = function(action, item) {
+		 action.fn(item);
 	    }
 
 	    ctrl.$$onAdd = function() {
@@ -714,9 +710,12 @@ var ListGroupEditorCtrl = [ '$scope', '$attrs', '$parse', '$filter', '$sce', '$c
 	    }
 
 	    ctrl.isActionDisabled = function(item, action) {
-		var returnedValue = action.disabled($scope.$parent, {
-		    item : item
-		});
+		var returnedValue = undefined;
+		if (action.disabled) {
+		    returnedValue = action.disabled($scope.$parent, {
+			item : item
+		    });
+		}
 		return returnedValue === false;
 	    }
 
@@ -744,7 +743,8 @@ angularListGroupDirectives.directive('listGroupEditor', [ '$templateCache', func
 	    header : '=?',
 	    onAdd : '&?',
 	    onDelete : '&?',
-	    onEdit : '&?'
+	    onEdit : '&?',
+	    itemActions : '=?'
 	}
     };
 } ]);
@@ -770,7 +770,7 @@ $templateCache.put('edit-inline-input.tpl.html',
 
 
   $templateCache.put('panel-editable-list-group.tpl.html',
-    "<div class=\"panel panel-default\" ng-cloak=\"\"><div class=\"panel-heading\"><h3 class=\"panel-title\"><span ng-bind-html=\"::ctrl.title\"></span> <a ng-click=\"ctrl.$$onAdd()\"><i class=\"fa fa-plus-square-o pull-right\"></i></a></h3></div><div class=\"panel-body\" ng-if=\"filterable\"><list-group-filter></list-group-filter></div><ul class=\"list-group list-group-input-group\"><li class=\"list-group-item\" ng-repeat=\"item in ctrl.$$items | filter:ctrl.filter.text:compare\"><div class=\"input-group\"><!--       <input type=\"text\" class=\"form-control\" placeholder=\"Search for...\"> --><div class=\"form-control-static\"><list-group-item-content></list-group-item-content></div><span class=\"input-group-btn\"><button class=\"btn btn-default\" type=\"button\" ng-disabled=\"ctrl.isActionDisabled(item, action)\" ng-repeat=\"action in ctrl.$$actions track by $index\" ng-click=\"ctrl.$$invokeAction(action, item)\"><i class=\"fa {{::action.icon}}\"></i></button></span></div></li></ul></div>"
+    "<div class=\"panel panel-default\" ng-cloak=\"\"><div class=\"panel-heading\"><h3 class=\"panel-title\"><span ng-bind-html=\"::ctrl.title\"></span> <a ng-click=\"ctrl.$$onAdd()\"><i class=\"fa fa-plus-square-o pull-right\"></i></a></h3></div><div class=\"panel-body\" ng-if=\"filterable\"><list-group-filter></list-group-filter></div><ul class=\"list-group list-group-input-group\"><li class=\"list-group-item\" ng-repeat=\"item in ctrl.$$items | filter:ctrl.filter.text:compare\"><div class=\"input-group\"><!--       <input type=\"text\" class=\"form-control\" placeholder=\"Search for...\"> --><div class=\"form-control-static\"><list-group-item-content></list-group-item-content></div><span class=\"input-group-btn\"><button class=\"btn btn-default\" type=\"button\" ng-disabled=\"ctrl.isActionDisabled(item, action)\" ng-repeat=\"action in ctrl.$$itemActions track by $index\" ng-click=\"ctrl.$$invokeAction(action, item)\"><i class=\"fa {{::action.icon}}\"></i></button></span></div></li></ul></div>"
   );
 
 

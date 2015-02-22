@@ -77,13 +77,16 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'listGroup' ]).conf
 	    'title' : 'Custom actions',
 	    'path' : '/listgroupeditor/actions/custom'
 
-	}, {
-	    'title' : 'Inline editing',
-	    'path' : '/listgroupeditor/inline'
-	}, {
-	    'title' : 'Selectable',
-	    'path' : '/listgroupeditor/selectable'
-	} ]
+	}
+//	, {
+//	    'title' : 'Inline editing',
+//	    'path' : '/listgroupeditor/inline'
+//	}
+//	, {
+//	    'title' : 'Selectable',
+//	    'path' : '/listgroupeditor/selectable'
+//	} 
+	]
     } ];
 
     $scope.selectedMenuItem;
