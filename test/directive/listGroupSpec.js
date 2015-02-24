@@ -156,7 +156,7 @@ describe(
 
 	    it(
 		    'should bind afterselectionchange',
-		    function() {
+		    inject(function($timeout) {
 			var afterSelectionChangeHandlerCalled = false;
 			$rootScope.$apply("colors = ['red','green','blue']");
 			$rootScope.afterSelectionChangeHandler = function(item) {
@@ -167,11 +167,11 @@ describe(
 				'<list-group items="colors" selectable="multiple" after-selection-change="afterSelectionChangeHandler(item)"> </list-group>')
 				($rootScope);
 			$rootScope.$digest();
-
 			var greenElt = angular.element(element.children()[1]);
 			greenElt.triggerHandler('click');
+			$timeout.flush();
 			expect(afterSelectionChangeHandlerCalled).toBeTruthy();
-		    });
+		    }));
 
 	    it('should be disabled', function() {
 		$rootScope.$apply("colors = ['red','green','blue']");

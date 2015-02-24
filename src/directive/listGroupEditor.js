@@ -9,7 +9,8 @@ var ListGroupEditorCtrl = [ '$scope', '$attrs', '$parse', '$filter', '$sce', '$c
 		$parse : $parse,
 		$filter : $filter,
 		$sce : $sce,
-		$compile : $compile
+		$compile : $compile,
+		$timeout : $timeout
 	    });
 
 	    angular.extend(ctrl, listGroupCtrl);

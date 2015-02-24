@@ -1,5 +1,5 @@
-.panel>.panel-heading {
-	
+.panel .panel-heading .panel-title a:hover {
+	cursor: pointer;
 }
 
 .panel>.list-group-item {
@@ -41,18 +41,13 @@
 	/* 	border-bottom-width: 0px !important; */
 }
 
-.panel>.list-input-group-item>.input-group-btn:not(:last-child )>.btn {
+.panel>.list-input-group-item>.input-group-btn:not (:last-child )>.btn {
 	border-left-width: 0px !important;
 }
 
-.panel>.list-input-group-item >.input-group-addon {
-	border-radius : 0px;
+.panel>.list-input-group-item>.input-group-addon:last-child {
+	border-bottom-left-radius: 4px;
 }
-
-.panel>.list-input-group-item >.input-group-addon:last-child {
-	border-bottom-left-radius:4px;
-}
-
 
 .panel>.list-group-item>.form-control,.panel>.list-group-item>.input-group-btn,.panel>.list-group-item>.input-group-btn>.btn
 	{
@@ -80,7 +75,7 @@
 }
 
 .input-group.ng-enter {
-	opacity : 0;
+	opacity: 0;
 	animation: fadeIn 0.25s;
 }
 
@@ -88,25 +83,23 @@
 	animation: fadeOut 0.25s;
 }
 
-
- .list-input-group-item.ng-enter {
-	opacity : 0;
+.list-input-group-item.ng-enter {
+	opacity: 0;
 	animation: fadeIn 0.5s;
 }
 
-.inline-create-form.ng-leave, .list-input-group-item.ng-leave {
+.inline-create-form.ng-leave,.list-input-group-item.ng-leave {
 	animation: fadeOut 0.5s;
 }
 
 .inline-create-form.ng-enter {
-	opacity : 0;
+	opacity: 0;
 	animation: fadeInDown 1s;
 }
 
 .inline-create-form.ng-leave {
 	animation: fadeOutDown 0.5s;
 }
-
 
 .list-group-input-group .list-group-item {
 	padding: 0px !important;
@@ -116,7 +109,8 @@
 	border-collapse: collapse;
 }
 
-.list-group-input-group .list-group-item .input-group .form-control-static {
+.list-group-input-group .list-group-item .input-group .form-control-static
+	{
 	padding-top: 0px !important;
 	padding-right: 0px !important;
 	padding-bottom: 0px !important;
@@ -125,19 +119,24 @@
 	vertical-align: middle;
 }
 
-
 .list-group-input-group .list-group-item .input-group-btn .btn {
 	border-top-width: 0px;
 	border-bottom-width: 0px;
-	border-right-width:0px;
+	border-right-width: 0px;
 	border-radius: 0px;
 }
 
-
-.list-group-input-group .list-group-item:FIRST-CHILD .input-group-btn .btn {
-	border-top-right-radius : 4px !important;
+.list-group-input-group .list-group-item:FIRST-CHILD .input-group-btn .btn
+	{
+	border-top-right-radius: 4px !important;
 }
 
-.panel .panel-heading .panel-title a:hover {
-	cursor: pointer;	
+.lit-group-editor .input-group.active,.lit-group-editor .input-group.active:hover,.lit-group-editor .input-group.active:focus
+	{
+	background-image: linear-gradient(to bottom, #428bca 0%, #3278b3 100%);
+	background-repeat: repeat-x;
+	border-color: #3278b3;
+	text-shadow: 0 -1px 0 #3071a9;
+	color: #fff;
+    z-index: 2;
 }

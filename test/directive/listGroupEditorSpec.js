@@ -232,7 +232,6 @@ describe('listGroupEditor', function() {
 	var arg = null;
 	function Player() {
 	    this.play = function(item) {
-		console.log('play => ' + item);
 		arg = item;
 	    };
 	    this.stop = function(item) {

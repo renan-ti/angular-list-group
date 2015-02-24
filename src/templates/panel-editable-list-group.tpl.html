@@ -1,7 +1,8 @@
-<div class="panel panel-default" ng-cloak>
+<div class="panel panel-default lit-group-editor" ng-cloak>
 	<div class="panel-heading">
 		<h3 class="panel-title">
-			<span ng-bind-html="::ctrl.title"></span> <a ng-click="ctrl.$$onAdd()"><i
+			<span ng-bind-html="::ctrl.title"></span> <a
+				ng-click="ctrl.$$onAdd()"><i
 				class="fa fa-plus-square-o pull-right"></i></a>
 		</h3>
 	</div>
@@ -11,8 +12,9 @@
 	<ul class="list-group list-group-input-group">
 		<li class="list-group-item"
 			ng-repeat="item in ctrl.$$items | filter:ctrl.filter.text:compare">
-			<div class="input-group">
-				<!--       <input type="text" class="form-control" placeholder="Search for..."> -->
+			<div class="input-group"
+				ng-class="{active : (ctrl.isSelected(item) != -1), disabled : ctrl.isDisabled(item) }"
+				ng-click="ctrl.select(item)">
 				<div class="form-control-static">
 					<list-group-item-content></list-group-item-content>
 				</div>

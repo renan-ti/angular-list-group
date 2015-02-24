@@ -1,24 +1,24 @@
 <div >
-	<div class="input-group" ng-if="listGroupCtrl.filter.auto === false">
+	<div class="input-group" ng-if="ctrl.filter.auto === false">
 		<input type="text" class="form-control"
-			placeholder="{{listGroupCtrl.filter.placeholder}}"
-			ng-model="listGroupCtrl.filter.text"></input>
+			placeholder="{{ctrl.filter.placeholder}}"
+			ng-model="ctrl.filter.text"></input>
 		<div class="input-group-btn">
 			<button class="btn btn-default"
-				ng-click="listGroupCtrl.clearFilter(listGroupCtrl.filter.text)"
-				ng-disabled="!listGroupCtrl.filter.text">
+				ng-click="ctrl.clearFilter(ctrl.filter.text)"
+				ng-disabled="!ctrl.filter.text">
 				<i class="glyphicon glyphicon-remove"></i>
 			</button>
 			<button class="btn btn-default"
-				ng-click="listGroupCtrl.executeFilter(listGroupCtrl.filter.text)"
-				ng-disabled="!listGroupCtrl.filter.text">
+				ng-click="ctrl.executeFilter(ctrl.filter.text)"
+				ng-disabled="!ctrl.filter.text">
 				<i class="glyphicon glyphicon-search"></i>
 			</button>
 		</div>
 	</div>
 
 	<input type="text" class="form-control"
-		ng-model="listGroupCtrl.filter.text"
-		placeholder="{{listGroupCtrl.filter.placeholder}}"
-		ng-if="listGroupCtrl.filter.auto === true"></input>
+		ng-model="ctrl.filter.text"
+		placeholder="{{ctrl.filter.placeholder}}"
+		ng-if="ctrl.filter.auto === true"></input>
 </div>

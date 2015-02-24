@@ -82,10 +82,10 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'listGroup' ]).conf
 //	    'title' : 'Inline editing',
 //	    'path' : '/listgroupeditor/inline'
 //	}
-//	, {
-//	    'title' : 'Selectable',
-//	    'path' : '/listgroupeditor/selectable'
-//	} 
+	, {
+	    'title' : 'Selectable',
+	    'path' : '/listgroupeditor/selectable'
+	} 
 	]
     } ];
 

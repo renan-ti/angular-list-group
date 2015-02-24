@@ -105,4 +105,20 @@ demo
 				    $scope.trackMessage = "Stop, " + angular.toJson(item);
 				}
 			    } ];
+			    
+			    
+			    $scope.logs = [];
+			    $scope.selectedItems = [];
+			    $scope.beforeSelectionChangeHandler = function(item) {
+				$scope.logs.push('beforeSelectionChangeHandler(' + item + ')');
+				return true;
+			    }
+			    $scope.afterSelectionChangeHandler = function(item) {
+				$scope.logs.push('afterSelectionChangeHandler(' + item + ')');
+			    }
+			    $scope.$watchCollection('selectedItems',function (newVal, oldVal) {
+				$scope.logs.push(angular.toJson(newVal));
+			    });
+			    
+			    
 			} ]);

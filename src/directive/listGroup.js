@@ -5,7 +5,8 @@ var ListGroupCtrl = [
 	'$filter',
 	'$sce',
 	'$compile',
-	function($scope, $attrs, $parse, $filter, $sce, $compile) {
+	'$timeout',
+	function($scope, $attrs, $parse, $filter, $sce, $compile, $timeout) {
 
 	    var ctrl = this;
 
@@ -58,19 +59,22 @@ var ListGroupCtrl = [
 		    if (output) {
 			if (angular.isFunction(output.then)) {
 			    output.then(function(returnedValue) {
-
 				if (returnedValue === true) {
 				    ctrl.$selectItem(item);
-				    ctrl.afterSelectionChange({
-					item : item
-				    });
+				    $timeout(function() {
+					ctrl.afterSelectionChange({
+					    item : item
+					})
+				    }, 50, true);
 				}
 			    });
 			} else if (output === true) {
 			    ctrl.$selectItem(item);
-			    ctrl.afterSelectionChange({
-				item : item
-			    });
+			    $timeout(function() {
+				ctrl.afterSelectionChange({
+				    item : item
+				})
+			    }, 50, true);
 			}
 		    }
 		}
@@ -144,9 +148,9 @@ var ListGroupCtrl = [
 		return match;
 	    };
 
-	    var removeSelectedItemsListener = $scope.$watchCollection('listGroupCtrl.$$selectedItems', function(
-		    newValue, oldValue) {
-		if ($scope.selectedItems) {
+	    var removeSelectedItemsListener = $scope.$watchCollection('ctrl.$$selectedItems', function(newValue,
+		    oldValue) {
+		if ('selectedItems' in $attrs) {
 		    $scope.selectedItems = newValue;
 		}
 	    });
@@ -172,7 +176,7 @@ angularListGroupDirectives.directive('listGroup', [ '$templateCache', function($
 	    return $templateCache.get(templateName);
 	},
 	controller : ListGroupCtrl,
-	controllerAs : 'listGroupCtrl',
+	controllerAs : 'ctrl',
 	scope : {
 	    items : '=',
 	    labelFn : '@?',
