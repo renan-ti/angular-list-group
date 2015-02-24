@@ -1,45 +1,36 @@
-<div class="row">
-	<div class="col-md-12">
-		<div class="alert alert-info" role="alert">{{colors | json}}</div>
+<div class="col-md-6">
+	<div class="well">
+		<p>Select as with <code>list-group</code>.</p>
+		<p>(<code>selectable=[multiple]</code>, <code>selected-items</code>, <code>before-selection-change</code>, <code>after-selection-change</code>)</p>
 	</div>
-</div>
-<div class="row">
-	<div class="col-md-4">
-		<div>
-			<p>
-				Use
-				<code>deletable</code>
-				attribute to add a delete action button
-			</p>
-			<p>
-				Use
-				<code>on-delete</code>
-				attribute to specify a callback function.
-
-			</p>
-			<p>
-				<mark>
-					Note argument function name
-					<code>$item</code>
-				</mark>
-			</p>
+	<h3>Controller</h3>
+<pre><code class="language-javascript" prism>
+$scope.colors=[ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet' ];
+$scope.logs = [];
+$scope.selectedItems = [];
+$scope.beforeSelectionChangeHandler = function(item) {
+	$scope.logs.push('beforeSelectionChangeHandler(' + item + ')');
+	return true;
+};
+$scope.afterSelectionChangeHandler = function(item) {
+	$scope.logs.push('afterSelectionChangeHandler(' + item + ')');
+};
+$scope.$watchCollection('selectedItems',function (newVal, oldVal) {
+	$scope.logs.push(angular.toJson(newVal));
+});</code></pre>
+<h3>Markup</h3>
+<pre><code class="language-markup" prism>&#60;list-group-editor items="colors" selectable="multiple"
+	selected-items="selectedItems"
+	before-selection-change="beforeSelectionChangeHandler(item)"
+	after-selection-change="afterSelectionChangeHandler(item)">
+&#60;/list-group-editor></code></pre>		
+	<list-group-editor items="colors" selectable="multiple" 
+		selected-items="selectedItems"
+		before-selection-change="beforeSelectionChangeHandler(item)"
+		after-selection-change="afterSelectionChangeHandler(item)"></list-group-editor>
+	<div class="well">
+		<div ng-repeat="log in logs track by $index">
+			<span ng-bind="log"></span>
 		</div>
-
-		<pre>
-&#60;list-group-editor 
-	title="Inline editing" 
-	items="colors"
-	editable="inline"> 
-&#60;/list-group-editor>	
-</pre>
-		<list-group-editor title="Select items" items="colors"
-			selectable="true"
-			on-selection-change="selectionChangeHandler01(item)" editable="true">
-		</list-group-editor>
-
-		<div>
-			<label>Selected item</label> : <span ng-bind="selection01"></span>
-		</div>
-	</div>
-
+	</div>		
 </div>

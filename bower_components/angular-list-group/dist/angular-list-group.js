@@ -110,219 +110,6 @@ angularListGroupFilters.filter('compare', function() {
 	return match;
     }
 });
-angularListGroupServices.factory('comparatorFactory', [
-	'$parse',
-	function($parse) {
-
-	    var $$startsWith = function(str, starts) {
-		if (starts === '')
-		    return true;
-		if (str == null || starts == null)
-		    return false;
-		str = String(str);
-		starts = String(starts);
-		return str.length >= starts.length && str.slice(0, starts.length) === starts;
-	    };
-
-	    var $$endsWith = function(str, ends) {
-		if (ends === '')
-		    return true;
-		if (str == null || ends == null)
-		    return false;
-		str = String(str);
-		ends = String(ends);
-		return str.length >= ends.length && str.slice(str.length - ends.length) === ends;
-	    };
-
-	    var factory = {};
-
-	    /**
-	     * 
-	     */
-	    factory.eq = function(obj, text) {
-		factory.eq.ignoreCase;
-		return factory.$compare(obj, text, function(obj, text) {
-		    return angular.equals(obj, text);
-		}, factory.eq.ignoreCase);
-	    };
-	    /**
-	     * 
-	     */
-	    factory.neq = function(obj, text) {
-		if (text === '')
-		    return true;
-		if (obj == null || text == null)
-		    return false;
-		return !factory.eq(obj, text);
-	    };
-	    /**
-	     * 
-	     */
-	    factory.startswith = function(obj, text) {
-		factory.startswith.ignoreCase;
-		return factory.$compare(obj, text, $$startsWith, factory.startswith.ignoreCase);
-	    };
-	    /**
-	     * 
-	     */
-	    factory.endswith = function(obj, text) {
-		factory.endswith.ignoreCase;
-		return factory.$compare(obj, text, $$endsWith, factory.endswith.ignoreCase);
-	    };
-	    /**
-	     * 
-	     */
-	    factory.contains = function(obj, text) {
-		factory.contains.ignoreCase;
-		return factory.$compare(obj, text, function(str, text) {
-		    return str.indexOf(text) > -1;
-		}, factory.contains.ignoreCase);
-	    };
-
-	    /**
-	     * 
-	     */
-	    factory.$compare = function(obj, text, comparator, ignoreCase) {
-		if (text === '')
-		    return true;
-		if (obj == null || text == null)
-		    return false;
-
-		var match = false;
-		if (obj && text && typeof obj === 'object' && typeof text === 'object') {
-		    for ( var objKey in obj) {
-			if (objKey.charAt(0) !== '$' && hasOwnProperty.call(obj, objKey)
-				&& comparator(obj[objKey], text[objKey])) {
-			    match = true;
-			    break;
-			}
-		    }
-		} else {
-		    if (ignoreCase) {
-			text = ('' + text).toLowerCase();
-			obj = ('' + obj).toLowerCase();
-		    }
-		    match = comparator(obj, text);
-		}
-		return match;
-	    }
-
-	    return factory;
-	} ]);
-angularListGroupServices.factory('listGroupComponentFactory', function($templateCache) {
-
-    var SIZE_CLASSNAME_MAP = {
-	'small' : 'input-group-sm',
-	'large' : 'input-group-lg'
-    };
-
-    return {
-	resolveSizeClassName : function(size) {
-	    var classname;
-	    if (angular.isDefined(SIZE_CLASSNAME_MAP[size])) {
-		classname = SIZE_CLASSNAME_MAP[size];
-	    }
-	    return classname;
-	},
-	createPanelBody : function() {
-	    return angular.element('<div class="panel-body"></div>');
-	},
-	createInputGroup : function() {
-	    return angular.element('<div class="input-group-btn"></div>');
-	},
-	createButton : function(glyphiconClassName) {
-	    var btn = angular.element('<button class="btn btn-default"></button>');
-	    var icon = this.createIcon(glyphiconClassName);
-	    if (icon != null) {
-		btn.append(icon);
-	    }
-	    return btn;
-	},
-	createIcon : function(glyphiconClassName) {
-	    var elt = null;
-	    if (angular.isDefined(glyphiconClassName)) {
-		elt = angular.element('<span class="glyphicon ' + glyphiconClassName + '"></span>');
-	    }
-	    return elt;
-	},
-	addHasError : function(elt) {
-	    angular.element(elt).addClass('has-error');
-	},
-	/**
-	 * Returns <code>true</code> if the panel element has a body,
-	 * <code>false</code> otherwise
-	 * 
-	 * @param panel
-	 * @returns <code>true</code> if the panel element has a body,
-	 *          <code>false</code> otherwise
-	 */
-	hasBody : function(panel) {
-	    var hasBody = false;
-	    var children = panel.children();
-	    for ( var i = 0; i < children.length; i++) {
-		var child = children[i];
-		if (hasBody = angular.element(child).hasClass("panel-body")) {
-		    break;
-		}
-	    }
-	    return hasBody;
-	}
-    }
-
-});
-angularListGroupServices.factory('listGroupPanelWrapper', [ '$templateCache', '$animate',
-	function($templateCache, $animate) {
-
-	    return {
-		$$panel : null,
-		$$inlineEditionform : null,
-
-		wrap : function(elt) {
-		    this.$$panel = elt;
-		    return this;
-		},
-
-		appendInlineCreateForm : function(comp) {
-		    if (!this.$$inlineEditionform) {
-			this.$$inlineEditionform = comp;
-			var children = angular.element(this.$$panel).children();
-			for ( var i = 0; i < children.length; i++) {
-			    var child = angular.element(children[i]);
-			    if (child.hasClass('panel-heading') || child.hasClass('panel-body')) {
-				var container = angular.element('<div></div>');
-				child.after(container);
-				$animate.enter(comp, container).then(function() {
-				});
-				break;
-			    }
-			}
-		    }
-		    return this;
-		},
-		removeInlineCreateForm : function() {
-		    var removed = false;
-		    var that = this;
-		    if (this.$$inlineEditionform != null) {
-			var container = this.$$inlineEditionform.parent();
-			$animate.leave(this.$$inlineEditionform).then(function() {
-			    container.remove();
-			    that.$$inlineEditionform = null;
-			});
-		    }
-		    return removed;
-		},
-		focusInlineCreateForm : function() {
-		    if (this.$$inlineEditionform != null && this.$$inlineEditionform.find('input')[0]) {
-			this.$$inlineEditionform.find('input')[0].focus();
-		    }
-		    return this;
-		},
-		setInlineCreateFormOnError : function() {
-		    this.$$inlineEditionform.addClass('has-error');
-		}
-	    }
-
-	} ]);
 var ListGroupCtrl = [
 	'$scope',
 	'$attrs',
@@ -330,7 +117,8 @@ var ListGroupCtrl = [
 	'$filter',
 	'$sce',
 	'$compile',
-	function($scope, $attrs, $parse, $filter, $sce, $compile) {
+	'$timeout',
+	function($scope, $attrs, $parse, $filter, $sce, $compile, $timeout) {
 
 	    var ctrl = this;
 
@@ -383,19 +171,22 @@ var ListGroupCtrl = [
 		    if (output) {
 			if (angular.isFunction(output.then)) {
 			    output.then(function(returnedValue) {
-
 				if (returnedValue === true) {
 				    ctrl.$selectItem(item);
-				    ctrl.afterSelectionChange({
-					item : item
-				    });
+				    $timeout(function() {
+					ctrl.afterSelectionChange({
+					    item : item
+					})
+				    }, 50, true);
 				}
 			    });
 			} else if (output === true) {
 			    ctrl.$selectItem(item);
-			    ctrl.afterSelectionChange({
-				item : item
-			    });
+			    $timeout(function() {
+				ctrl.afterSelectionChange({
+				    item : item
+				})
+			    }, 50, true);
 			}
 		    }
 		}
@@ -469,9 +260,9 @@ var ListGroupCtrl = [
 		return match;
 	    };
 
-	    var removeSelectedItemsListener = $scope.$watchCollection('listGroupCtrl.$$selectedItems', function(
-		    newValue, oldValue) {
-		if ($scope.selectedItems) {
+	    var removeSelectedItemsListener = $scope.$watchCollection('ctrl.$$selectedItems', function(newValue,
+		    oldValue) {
+		if ('selectedItems' in $attrs) {
 		    $scope.selectedItems = newValue;
 		}
 	    });
@@ -497,7 +288,7 @@ angularListGroupDirectives.directive('listGroup', [ '$templateCache', function($
 	    return $templateCache.get(templateName);
 	},
 	controller : ListGroupCtrl,
-	controllerAs : 'listGroupCtrl',
+	controllerAs : 'ctrl',
 	scope : {
 	    items : '=',
 	    labelFn : '@?',
@@ -621,7 +412,8 @@ var ListGroupEditorCtrl = [ '$scope', '$attrs', '$parse', '$filter', '$sce', '$c
 		$parse : $parse,
 		$filter : $filter,
 		$sce : $sce,
-		$compile : $compile
+		$compile : $compile,
+		$timeout : $timeout
 	    });
 
 	    angular.extend(ctrl, listGroupCtrl);
@@ -755,22 +547,22 @@ $templateCache.put('edit-inline-input.tpl.html',
 
 
   $templateCache.put('linked-list-group.tpl.html',
-    "<div class=\"list-group\"><a ng-href=\"\" class=\"list-group-item {{listGroupCtrl.resolveContextualClass(item)}}\" ng-repeat=\"item in listGroupCtrl.$$items | filter:listGroupCtrl.filter.text:compare track by $index\" ng-class=\"{active : (listGroupCtrl.isSelected(item) != -1), disabled : listGroupCtrl.isDisabled(item) }\" ng-click=\"listGroupCtrl.select(item)\"><list-group-item-content></list-group-item-content></a></div>"
+    "<div class=\"list-group\"><a ng-href=\"\" class=\"list-group-item {{ctrl.resolveContextualClass(item)}}\" ng-repeat=\"item in ctrl.$$items | filter:ctrl.filter.text:compare track by $index\" ng-class=\"{active : (ctrl.isSelected(item) != -1), disabled : ctrl.isDisabled(item) }\" ng-click=\"ctrl.select(item)\"><list-group-item-content></list-group-item-content></a></div>"
   );
 
 
   $templateCache.put('list-group-filter.tpl.html',
-    "<div><div class=\"input-group\" ng-if=\"listGroupCtrl.filter.auto === false\"><input type=\"text\" class=\"form-control\" placeholder=\"{{listGroupCtrl.filter.placeholder}}\" ng-model=\"listGroupCtrl.filter.text\"><div class=\"input-group-btn\"><button class=\"btn btn-default\" ng-click=\"listGroupCtrl.clearFilter(listGroupCtrl.filter.text)\" ng-disabled=\"!listGroupCtrl.filter.text\"><i class=\"glyphicon glyphicon-remove\"></i></button> <button class=\"btn btn-default\" ng-click=\"listGroupCtrl.executeFilter(listGroupCtrl.filter.text)\" ng-disabled=\"!listGroupCtrl.filter.text\"><i class=\"glyphicon glyphicon-search\"></i></button></div></div><input type=\"text\" class=\"form-control\" ng-model=\"listGroupCtrl.filter.text\" placeholder=\"{{listGroupCtrl.filter.placeholder}}\" ng-if=\"listGroupCtrl.filter.auto === true\"></div>"
+    "<div><div class=\"input-group\" ng-if=\"ctrl.filter.auto === false\"><input type=\"text\" class=\"form-control\" placeholder=\"{{ctrl.filter.placeholder}}\" ng-model=\"ctrl.filter.text\"><div class=\"input-group-btn\"><button class=\"btn btn-default\" ng-click=\"ctrl.clearFilter(ctrl.filter.text)\" ng-disabled=\"!ctrl.filter.text\"><i class=\"glyphicon glyphicon-remove\"></i></button> <button class=\"btn btn-default\" ng-click=\"ctrl.executeFilter(ctrl.filter.text)\" ng-disabled=\"!ctrl.filter.text\"><i class=\"glyphicon glyphicon-search\"></i></button></div></div><input type=\"text\" class=\"form-control\" ng-model=\"ctrl.filter.text\" placeholder=\"{{ctrl.filter.placeholder}}\" ng-if=\"ctrl.filter.auto === true\"></div>"
   );
 
 
   $templateCache.put('list-group.tpl.html',
-    "<ul class=\"list-group\"><li class=\"list-group-item {{listGroupCtrl.resolveContextualClass(item)}}\" ng-repeat=\"item in listGroupCtrl.$$items | filter:listGroupCtrl.filter.text:compare track by $index\"><list-group-item-content></list-group-item-content></li></ul>"
+    "<ul class=\"list-group\"><li class=\"list-group-item {{ctrl.resolveContextualClass(item)}}\" ng-repeat=\"item in ctrl.$$items | filter:ctrl.filter.text:compare track by $index\"><list-group-item-content></list-group-item-content></li></ul>"
   );
 
 
   $templateCache.put('panel-editable-list-group.tpl.html',
-    "<div class=\"panel panel-default\" ng-cloak=\"\"><div class=\"panel-heading\"><h3 class=\"panel-title\"><span ng-bind-html=\"::ctrl.title\"></span> <a ng-click=\"ctrl.$$onAdd()\"><i class=\"fa fa-plus-square-o pull-right\"></i></a></h3></div><div class=\"panel-body\" ng-if=\"filterable\"><list-group-filter></list-group-filter></div><ul class=\"list-group list-group-input-group\"><li class=\"list-group-item\" ng-repeat=\"item in ctrl.$$items | filter:ctrl.filter.text:compare\"><div class=\"input-group\"><!--       <input type=\"text\" class=\"form-control\" placeholder=\"Search for...\"> --><div class=\"form-control-static\"><list-group-item-content></list-group-item-content></div><span class=\"input-group-btn\"><button class=\"btn btn-default\" type=\"button\" ng-disabled=\"ctrl.isActionDisabled(item, action)\" ng-repeat=\"action in ctrl.$$itemActions track by $index\" ng-click=\"ctrl.$$invokeAction(action, item)\"><i class=\"fa {{::action.icon}}\"></i></button></span></div></li></ul></div>"
+    "<div class=\"panel panel-default lit-group-editor\" ng-cloak=\"\"><div class=\"panel-heading\"><h3 class=\"panel-title\"><span ng-bind-html=\"::ctrl.title\"></span> <a ng-click=\"ctrl.$$onAdd()\"><i class=\"fa fa-plus-square-o pull-right\"></i></a></h3></div><div class=\"panel-body\" ng-if=\"filterable\"><list-group-filter></list-group-filter></div><ul class=\"list-group list-group-input-group\"><li class=\"list-group-item\" ng-repeat=\"item in ctrl.$$items | filter:ctrl.filter.text:compare\"><div class=\"input-group\" ng-class=\"{active : (ctrl.isSelected(item) != -1), disabled : ctrl.isDisabled(item) }\" ng-click=\"ctrl.select(item)\"><div class=\"form-control-static\"><list-group-item-content></list-group-item-content></div><span class=\"input-group-btn\"><button class=\"btn btn-default\" type=\"button\" ng-disabled=\"ctrl.isActionDisabled(item, action)\" ng-repeat=\"action in ctrl.$$itemActions track by $index\" ng-click=\"ctrl.$$invokeAction(action, item)\"><i class=\"fa {{::action.icon}}\"></i></button></span></div></li></ul></div>"
   );
 
 

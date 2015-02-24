@@ -69,11 +69,8 @@ $scope.mySelectedItems = [];
 	<list-group items="colors" selectable="multiple"
 		selected-items="mySelectedItems"> </list-group>
 
-	<div class="panel panel-info">
-		<div class="panel-heading">
-			<h3 class="panel-title">Selected items</h3>
-		</div>
-		<div class="panel-body">{{mySelectedItems}}</div>
+	<div class="well">
+		{{mySelectedItems}}
 	</div>
 </div>
 
@@ -163,12 +160,7 @@ $scope.beforeSelectionChangeAsyncHandler = function(item) {
 		before-selection-change="beforeSelectionChangeAsyncHandler(item)">
 	</list-group>
 
-	<div class="panel panel-info">
-		<div class="panel-heading">
-			<h3 class="panel-title">Selected items</h3>
-		</div>
-		<div class="panel-body">{{mySelectedItems02}}</div>
-	</div>
+	<div class="well">{{mySelectedItems02}}</div>
 </div>
 
 <div class="col-md-4">
@@ -199,11 +191,5 @@ $scope.afterSelectionChangeHandler = function(item) {
 		after-selection-change="afterSelectionChangeHandler(item)">
 	</list-group>
 
-	<div class="panel panel-info">
-		<div class="panel-heading">
-			<h3 class="panel-title">Message</h3>
-		</div>
-		<div class="panel-body">{{message}}</div>
-	</div>
-
+	<div class="well">{{message}}</div>
 </div>
