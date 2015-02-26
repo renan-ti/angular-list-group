@@ -2,6 +2,17 @@
 
 module.exports = function(grunt) {
 
+    grunt.loadNpmTasks('grunt-angular-templates');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-ngmin');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-ngdocs');
+    grunt.loadNpmTasks('grunt-gh-pages');
+    grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-bump');
+
     grunt.initConfig({
 	pkg : grunt.file.readJSON('package.json'),
 	templates : [ 'templates/**.html' ],
@@ -86,28 +97,36 @@ module.exports = function(grunt) {
 		files : [ {
 		    expand : true,
 		    cwd : '<%= dist %>',
-		    src : [ '<%= pkg.name %>.js', '<%= pkg.name %>.min.js' ],
+		    src : [ '<%= pkg.name %>.js', '<%= pkg.name %>.min.js', '*.css' ],
 		    dest : 'demo/bower_components/<%= pkg.name %>/<%= dist %>'
+		} ]
+	    },
+	    css : {
+		files : [ {
+		    expand : true,
+		    cwd : 'src/css',
+		    src : [ '*.css' ],
+		    dest : '<%= dist %>'
 		} ]
 	    }
 	},
-	ngdocs : {
-	    options : {
-		dest : '<%= dist %>/docs',
-		scripts : [ 'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.js',
-			'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular-route.min.js',
-			'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular-animate.min.js',
-			// '../angular-list-group.min.js'
-			'../angular-list-group.js' ],
-		// html5Mode: true,
-		startPage : '/api',
-		title : 'Angular List Group',
-	    },
-	    api : {
-		src : [ 'src/**/*.js' ],
-		title : 'API Documentation'
-	    }
-	},
+//	ngdocs : {
+//	    options : {
+//		dest : '<%= dist %>/docs',
+//		scripts : [ 'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.js',
+//			'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular-route.min.js',
+//			'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular-animate.min.js',
+//			// '../angular-list-group.min.js'
+//			'../angular-list-group.js' ],
+//		// html5Mode: true,
+//		startPage : '/api',
+//		title : 'Angular List Group',
+//	    },
+//	    api : {
+//		src : [ 'src/**/*.js' ],
+//		title : 'API Documentation'
+//	    }
+//	},
 	karma : {
 	    unit : {
 		configFile : 'karma.conf.js'
@@ -120,25 +139,16 @@ module.exports = function(grunt) {
 	    },
 	    src : [ 'index.html', 'app/**', 'bower_components/**', 'partials/**', 'style/**' ]
 	},
+	bump : {
+	    options : {
+		files : [ 'package.json', 'bower.json' ],
+	    }
+	}
     });
 
-    grunt.loadNpmTasks('grunt-angular-templates');
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-ngmin');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-ngdocs');
-    grunt.loadNpmTasks('grunt-gh-pages');
-    grunt.loadNpmTasks('grunt-karma');
-
-    // grunt.registerTask('build', [ 'ngtemplates', 'concat:dist', 'ngmin:dist',
-    // 'uglify:dist', 'concat:banner', 'clean:build' ]);
-    grunt.registerTask('build', [ 'ngtemplates', 'concat:dist', 'ngmin:dist', 'clean:build' ]);
-
+    grunt.registerTask('build', [ 'ngtemplates', 'concat:dist', 'ngmin:dist', 'copy:css', 'clean:build' ]);
     grunt.registerTask('docs', [ 'clean:docs', 'ngdocs' ]);
     grunt.registerTask('build:demo', [ 'build', 'copy:demo' ]);
     grunt.registerTask('deploy:demo', [ 'gh-pages' ]);
-
     grunt.registerTask('test', [ 'karma' ]);
 };

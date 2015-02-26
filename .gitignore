@@ -9,7 +9,6 @@ node_modules/
 /docs/
 /test/coverage/
 !.gitignore
-dist/
 .project
 .grunt
 .settings
