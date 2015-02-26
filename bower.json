@@ -1,6 +1,6 @@
 {
   "name": "angular-list-group",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "homepage": "https://github.com/gnavarro77/angular-list-group",
   "keywords": [
     "angular",
@@ -27,7 +27,7 @@
     "package.json",
     "gruntfile.js",
     "karma.conf.js",
-    "README.md"
+    "README.md",
     "demo",
     ".gitignore"
   ],
