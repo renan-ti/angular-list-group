@@ -24,6 +24,9 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'listGroup' ]).conf
 	    }).when('/listgroup/heading', {
 		templateUrl : 'partials/listgroup/heading.html',
 		controller : 'ListGroupCtrl'
+	    }).when('/listgroup/datasource', {
+		templateUrl : 'partials/listgroup/datasource.html',
+		controller : 'ListGroupCtrl'
 	    }).when('/listgroupeditor/actions/builtin', {
 		templateUrl : 'partials/listgroupeditor/builtin-actions.html',
 		controller : 'ListGroupEditorCtrl'
@@ -67,6 +70,9 @@ var demo = angular.module('demo', [ 'ngRoute', 'ngSanitize', 'listGroup' ]).conf
 	}, {
 	    'title' : 'Heading',
 	    'path' : '/listgroup/heading'
+	}, {
+	    'title' : 'Datasource',
+	    'path' : '/listgroup/datasource'
 	} ]
     }, {
 	'title' : 'List Group Editor',
