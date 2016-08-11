@@ -126,7 +126,8 @@ var ListGroupCtrl = [
 				return true;
 			};
 
-			ctrl.$$items = ctrl.$$selectedItems = [];
+			ctrl.$$items = [];
+			ctrl.$$selectedItems = [];
 			ctrl.filter = {
 				text : '',
 				comparator : 'contains',
