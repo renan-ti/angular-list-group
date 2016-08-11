@@ -1,0 +1,21 @@
+<div class="col-md-4">
+	<div class="well">
+	Use <code>datasource</code> attribute to populate items from a remote datasource. 
+	<p><code>datasource</code> must be a function returning a <code>promise</code>.</p>
+	</div>
+<h3>Controller</h3>
+<pre>
+	<code class="language-javascript" prism>$scope.myDatasource = function() {
+		var deferred = $q.defer();
+		var promise = deferred.promise;
+		$timeout(function() {
+			deferred.resolve($scope.colors);
+		}, 1000);
+		return promise;
+	}</code>
+</pre>
+	<h3>Markup</h3>
+	<pre><code class="language-markup" prism>	
+&#60;list-group datasource="myDatasource">&#60;/list-group></code></pre>
+	<list-group datasource="myDatasource"></list-group>
+</div>

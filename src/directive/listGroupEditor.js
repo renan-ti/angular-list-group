@@ -110,7 +110,7 @@ var ListGroupEditorCtrl = [ '$scope', '$attrs', '$parse', '$filter', '$sce', '$c
 
 	} ];
 
-angularListGroupDirectives.directive('listGroupEditor', [ '$templateCache', function($templateCache) {
+listGroupDirectives.directive('listGroupEditor', [ '$templateCache', function($templateCache) {
     return {
 	restrict : 'EA',
 	replace : true,

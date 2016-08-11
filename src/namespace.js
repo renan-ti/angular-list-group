@@ -16,8 +16,8 @@ function isPromise(obj) {
     return promise;
 }
 
-var angularListGroupServices = angular.module('angularListGroup.services', []);
-var angularListGroupDirectives = angular.module('angularListGroup.directives', []);
-var angularListGroupFilters = angular.module('angularListGroup.filters', []);
+var listGroupServices = angular.module('listGroup.services', []);
+var listGroupDirectives = angular.module('listGroup.directives', []);
+var listGroupFilters = angular.module('listGroup.filters', []);
 
-angular.module('listGroup', [ 'angularListGroup.services', 'angularListGroup.filters', 'angularListGroup.directives' ]);
+angular.module('listGroup', [ 'listGroup.services', 'listGroup.filters', 'listGroup.directives' ]);

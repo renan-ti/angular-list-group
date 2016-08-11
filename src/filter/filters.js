@@ -1,6 +1,6 @@
 'use strict';
 
-angularListGroupFilters.filter('listGroupItemContextualClass', function() {
+listGroupFilters.filter('listGroupItemContextualClass', function() {
     return function(value) {
 	var clazz = '';
 	var acceptedValues = [ 'success', 'info', 'warning', 'danger' ];
@@ -13,7 +13,7 @@ angularListGroupFilters.filter('listGroupItemContextualClass', function() {
     };
 });
 
-angularListGroupFilters.filter('startsWith', function($filter) {
+listGroupFilters.filter('startsWith', function($filter) {
     return function(str, starts, ignoreCase) {
 	var comparator = function(str, starts) {
 	    if (starts === '') {
@@ -29,7 +29,7 @@ angularListGroupFilters.filter('startsWith', function($filter) {
 	return $filter('compare')(str, starts, comparator, ignoreCase);
     }
 });
-angularListGroupFilters.filter('eq', function($filter) {
+listGroupFilters.filter('eq', function($filter) {
     return function(str, text, ignoreCase) {
 	var comparator = function(str, text) {
 	    return angular.equals(str, text);
@@ -37,7 +37,7 @@ angularListGroupFilters.filter('eq', function($filter) {
 	return $filter('compare')(str, text, comparator, ignoreCase);
     }
 });
-angularListGroupFilters.filter('neq', function($filter) {
+listGroupFilters.filter('neq', function($filter) {
     return function(str, text, ignoreCase) {
 	var comparator = function(str, text) {
 	    return !angular.equals(obj, text)
@@ -46,7 +46,7 @@ angularListGroupFilters.filter('neq', function($filter) {
     }
 });
 
-angularListGroupFilters.filter('endsWith', function($filter) {
+listGroupFilters.filter('endsWith', function($filter) {
     return function(str, text, ignoreCase) {
 	var comparator = function(str, ends) {
 	    if (ends === '') {
@@ -62,7 +62,7 @@ angularListGroupFilters.filter('endsWith', function($filter) {
 	return $filter('compare')(str, ends, comparator, ignoreCase);
     }
 });
-angularListGroupFilters.filter('contains', function($filter) {
+listGroupFilters.filter('contains', function($filter) {
     return function(str, contains, ignoreCase) {
 	var comparator = function(str, contains) {
 	    return str.indexOf(contains) > -1;
@@ -71,7 +71,7 @@ angularListGroupFilters.filter('contains', function($filter) {
     }
 });
 
-angularListGroupFilters.filter('compare', function() {
+listGroupFilters.filter('compare', function() {
     return function(obj, text, comparator, ignoreCase) {
 	if (text === '')
 	    return true;
