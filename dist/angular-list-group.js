@@ -565,12 +565,12 @@ listGroupDirectives.directive('listGroupEditor', [ '$templateCache', function($t
 } ]);
 angular.module('listGroup').run(['$templateCache', function($templateCache) {
 $templateCache.put('edit-inline-input.tpl.html',
-    "<div class=\"input-group\"><input type=\"text\" class=\"form-control\" ng-model=\"$$model.editedValue\"><span class=\"input-group-btn\"><button class=\"btn btn-default\" type=\"button\" ng-click=\"$inlineEdition.update()\"><span class=\"glyphicon glyphicon-ok\"></span></button> <button class=\"btn btn-default\" type=\"button\" ng-click=\"$inlineEdition.cancel()\"><span class=\"glyphicon glyphicon-remove\"></span></button></span></div>"
+    "<div class=\"input-group\"><input type=\"text\" class=\"form-control\" ng-model=\"$$model.editedValue\"> <span class=\"input-group-btn\"><button class=\"btn btn-default\" type=\"button\" ng-click=\"$inlineEdition.update()\"><span class=\"glyphicon glyphicon-ok\"></span></button> <button class=\"btn btn-default\" type=\"button\" ng-click=\"$inlineEdition.cancel()\"><span class=\"glyphicon glyphicon-remove\"></span></button></span></div>"
   );
 
 
   $templateCache.put('linked-list-group.tpl.html',
-    "<div class=\"list-group\"><a ng-href=\"\" class=\"list-group-item {{ctrl.resolveContextualClass(item)}}\" ng-repeat=\"item in ctrl.$$items | filter:ctrl.filter.text:compare track by $index\" ng-class=\"{active : (ctrl.isSelected(item) != -1), disabled : ctrl.isDisabled(item) }\" ng-click=\"ctrl.select(item)\"><list-group-item-content></list-group-item-content></a></div>"
+    "<div class=\"list-group\"><a ng-href class=\"list-group-item {{ctrl.resolveContextualClass(item)}}\" ng-repeat=\"item in ctrl.$$items | filter:ctrl.filter.text:compare track by $index\" ng-class=\"{active : (ctrl.isSelected(item) != -1), disabled : ctrl.isDisabled(item) }\" ng-click=\"ctrl.select(item)\"><list-group-item-content></list-group-item-content></a></div>"
   );
 
 
@@ -585,7 +585,7 @@ $templateCache.put('edit-inline-input.tpl.html',
 
 
   $templateCache.put('panel-editable-list-group.tpl.html',
-    "<div class=\"panel panel-default lit-group-editor\" ng-cloak=\"\"><div class=\"panel-heading\"><h3 class=\"panel-title\"><span ng-bind-html=\"::ctrl.title\"></span> <a ng-click=\"ctrl.$$onAdd()\"><i class=\"fa fa-plus-square-o pull-right\"></i></a></h3></div><div class=\"panel-body\" ng-if=\"filterable\"><list-group-filter></list-group-filter></div><ul class=\"list-group list-group-input-group\"><li class=\"list-group-item\" ng-repeat=\"item in ctrl.$$items | filter:ctrl.filter.text:compare\"><div class=\"input-group\" ng-class=\"{active : (ctrl.isSelected(item) != -1), disabled : ctrl.isDisabled(item) }\" ng-click=\"ctrl.select(item)\"><div class=\"form-control-static\"><list-group-item-content></list-group-item-content></div><span class=\"input-group-btn\"><button class=\"btn btn-default\" type=\"button\" ng-disabled=\"ctrl.isActionDisabled(item, action)\" ng-repeat=\"action in ctrl.$$itemActions track by $index\" ng-click=\"ctrl.$$invokeAction(action, item)\"><i class=\"fa {{::action.icon}}\"></i></button></span></div></li></ul></div>"
+    "<div class=\"panel panel-default lit-group-editor\" ng-cloak><div class=\"panel-heading\" ng-if=\"header\"><h3 class=\"panel-title\"><span ng-bind-html=\"::ctrl.title\"></span> <a ng-click=\"ctrl.$$onAdd()\"><i class=\"fa fa-plus-square-o pull-right\"></i></a></h3></div><div class=\"panel-body\" ng-if=\"filterable\"><list-group-filter></list-group-filter></div><ul class=\"list-group list-group-input-group\"><li class=\"list-group-item\" ng-repeat=\"item in ctrl.$$items | filter:ctrl.filter.text:compare\"><div class=\"input-group\" ng-class=\"{active : (ctrl.isSelected(item) != -1), disabled : ctrl.isDisabled(item) }\" ng-click=\"ctrl.select(item)\"><div class=\"form-control-static\"><list-group-item-content></list-group-item-content></div><span class=\"input-group-btn\"><button class=\"btn btn-default\" type=\"button\" ng-disabled=\"ctrl.isActionDisabled(item, action)\" ng-repeat=\"action in ctrl.$$itemActions track by $index\" ng-click=\"ctrl.$$invokeAction(action, item)\"><i class=\"fa {{::action.icon}}\"></i></button></span></div></li></ul></div>"
   );
 
 
@@ -595,7 +595,7 @@ $templateCache.put('edit-inline-input.tpl.html',
 
 
   $templateCache.put('panel-list-group.tpl.html',
-    "<div class=\"panel panel-default\" ng-cloak=\"\"><div class=\"panel-heading\" ng-if=\"header\"><panel-list-group-title></panel-list-group-title></div><div class=\"panel-body\" ng-if=\"filterable\"><list-group-filter></list-group-filter></div><list-group-html ng-if=\"!selectable\"></list-group-html><linked-list-group-html ng-if=\"selectable\"></linked-list-group-html><!-- \t<div class=\"panel-footer\" ng-if=\"$displayFooter()\" --><!-- \t\tng-bind-html=\"footer\"></div> --></div>"
+    "<div class=\"panel panel-default\" ng-cloak><div class=\"panel-heading\" ng-if=\"header\"><panel-list-group-title></panel-list-group-title></div><div class=\"panel-body\" ng-if=\"filterable\"><list-group-filter></list-group-filter></div><list-group-html ng-if=\"!selectable\"></list-group-html><linked-list-group-html ng-if=\"selectable\"></linked-list-group-html><!-- \t<div class=\"panel-footer\" ng-if=\"$displayFooter()\" --><!-- \t\tng-bind-html=\"footer\"></div> --></div>"
   );
 
 }]);
